@@ -14,3 +14,7 @@ libtool
 Makefile
 modulecmd
 stamp-h*
+work
+*/work
+*/*/work
+*/*/*/work
