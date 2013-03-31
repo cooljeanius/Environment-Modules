@@ -1,0 +1,99 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+
+name                environment-modules
+set my_name         modules
+version             3.2.10
+categories          sysutils tcl
+platforms           darwin
+maintainers         gwmail.gwu.edu:egall openmaintainer
+license             GPL-2+
+
+description         The ${name} package provides for an easy dynamic \
+                    modification of a user's environment via modulefiles
+
+long_description    ${description}, which typically instruct the module \
+                    command to alter or set shell environment variables \
+                    such as PATH, MANPATH, etc. as well as define aliases \
+                    over a variety of shells.
+
+homepage            http://${my_name}.sourceforge.net
+distname            ${my_name}-${version}
+# For some reason I couldn't get this to fetch using the sourceforge fetchgroup...
+master_sites        http://sourceforge.net/projects/${my_name}/files/Modules/${distname}/
+
+checksums           rmd160  8e6833c1679d31c905cee695c3d3b14ea000fef7 \
+                    sha256  fb05c82a83477805a1d97737a9f0ca0db23f69b7bce504f1609ba99477b03955
+
+# This is mostly trying to reproduce what I did when building it manually
+pre-patch {
+    file mkdir ${worksrcpath}/m4
+    eval xinstall -m 644 [glob ${worksrcpath}/*.m4] ${worksrcpath}/m4
+    eval xinstall -m 644 [glob ${worksrcpath}/config/*.m4] ${worksrcpath}/m4
+    file copy ${prefix}/share/gettext/gettext.h ${worksrcpath}
+    file copy ${prefix}/share/aclocal/autobuild.m4 ${worksrcpath}/m4
+    file copy ${prefix}/share/aclocal/ax_check_gnu_make.m4 ${worksrcpath}/m4
+    file copy ${prefix}/share/aclocal/ax_prog_tcl.m4 ${worksrcpath}/m4
+}
+    
+
+patchfiles-append   patch-configure.ac.diff \
+                    patch-Makefile.am.diff
+
+use_autoreconf      yes
+autoreconf.args     -fvi
+
+depends_build-append \
+                    port:autoconf-archive \
+                    port:autobuild \
+                    port:gettext \
+                    port:gawk
+
+depends_lib-append  port:libiconv \
+                    port:gettext \
+                    port:tcl
+
+configure.args-append \
+                    --with-tcl=${prefix}/lib \
+                    --with-tcl-lib=${prefix}/lib \
+                    --with-tcl-inc=${prefix}/include \
+                    --with-module-path=${prefix}/share/${my_name}/modulefiles \
+                    --with-version-path=${prefix}/share/${my_name}/versions \
+                    --with-man-path=${prefix}/share/man \
+                    --with-etc-path=${prefix}/etc \
+                    --with-skel-path=${prefix}/share/skel \
+                    --with-log-dir=${prefix}/var/log \
+                    --without-x
+
+destroot.keepdirs   ${prefix}/share/${my_name}/modulefiles \
+                    ${prefix}/share/${my_name}/versions \
+                    ${prefix}/share/skel \
+                    ${prefix}/var/log
+
+# Setting for debugging
+use_parallel_build  no
+
+variant x11 {
+    depends_build-append \
+                    port:imake
+    depends_lib-append \
+                    port:xorg-libX11 \
+                    port:xorg-libice
+    configure.env-append \
+                    XMKMF=${prefix}/bin/xmkmf
+    configure.args-delete \
+                    --without-x
+    configure.args-append \
+                    --with-x \
+                    --x-includes=${prefix}/include \
+                    --x-libraries=${prefix}/lib
+}
+
+# Making this a variant until https://trac.macports.org/ticket/38208 is solved
+variant tests description {Enable tests} {
+    depends_build-append \
+                    port:dejagnu
+    test.run        yes
+}

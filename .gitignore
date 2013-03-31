@@ -1,0 +1,15 @@
+*DS_Store*
+*deps/*.*o
+*/*deps/*.*o
+*libs/*
+*/*libs/*
+*.o
+*.lo
+*~
+*.log
+*.cache
+config.h
+*.status
+libtool
+Makefile
+modulecmd

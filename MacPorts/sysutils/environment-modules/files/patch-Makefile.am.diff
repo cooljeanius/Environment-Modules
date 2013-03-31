@@ -1,0 +1,18 @@
+--- Makefile.am	2012-12-19 12:02:16.000000000 -0500
++++ /private/var/root/Downloads/modules-3.2.10/Makefile.am	2013-03-30 20:46:00.000000000 -0400
+@@ -12,13 +12,13 @@
+ ##	aclocal.m4  /
+ ##
+ 
+-ACLOCAL_AMFLAGS= -I config
++ACLOCAL_AMFLAGS= -I m4
+ 
+ man_MANS = doc/module.1 doc/modulefile.4
+ SUBDIRS = . init modulefiles @EXTDIR@ doc
+ DIST_SUBDIRS = . init modulefiles etc ext doc
+ SOURCES_H = modules_def.h getopt.h config.h
+-EXTRA_DIST = modules_def.h getopt.h testsuite INSTALL.RH7x		\
++EXTRA_DIST = config/config.rpath  [config]dnl/config.rpath  modules_def.h getopt.h testsuite INSTALL.RH7x		\
+ 	init/filter init/bash.in init/sh.in init/zsh.in			\
+ 	init/csh.in init/ksh.in init/perl.pm.in init/python.py.in	\
+ 	init/ruby.rb.in init/cmake.in init/bash_completion.in		\

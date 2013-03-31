@@ -1,0 +1,14 @@
+#----------------------------------------------------------------------#
+# system-wide profile.modules                                          #
+# Initialize modules for all sh-derivative shells                      #
+#----------------------------------------------------------------------#
+trap "" 1 2 3
+
+case "$0" in
+    -bash|bash|*/bash) . /opt/local/Modules/default/init/bash ;; 
+       -ksh|ksh|*/ksh) . /opt/local/Modules/default/init/ksh ;; 
+       -zsh|zsh|*/zsh) . /opt/local/Modules/default/init/zsh ;;
+                    *) . /opt/local/Modules/default/init/sh ;; # sh and default for scripts
+esac
+
+trap 1 2 3
