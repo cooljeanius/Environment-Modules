@@ -13,3 +13,4 @@ config.h
 libtool
 Makefile
 modulecmd
+stamp-h*
