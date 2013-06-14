@@ -4,7 +4,7 @@ if ($?tcsh) then
 else
         set modules_shell="csh"
 endif
-alias module 'eval `/opt/local/Modules/$MODULE_VERSION/bin/modulecmd '$modules_shell '\!*`'
+alias module 'eval `/usr/local/Modules/$MODULE_VERSION/bin/modulecmd '$modules_shell '\!*`'
 #alias module 'eval `${exec_prefix}/bin/modulecmd '$modules_shell '\!*`'
 
 if (! $?prompt) exit			#exit if not interactive

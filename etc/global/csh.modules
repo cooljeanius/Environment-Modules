@@ -3,7 +3,7 @@
 # Initialize modules for all csh-derivative shells                     #
 #----------------------------------------------------------------------#
 if ($?tcsh) then
-	source /opt/local/Modules/default/init/tcsh
+	source /usr/local/Modules/default/init/tcsh
 else
-	source /opt/local/Modules/default/init/csh
+	source /usr/local/Modules/default/init/csh
 endif

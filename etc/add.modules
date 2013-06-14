@@ -144,7 +144,7 @@ case "\$0" in
        -zsh|zsh|*/zsh)	modules_shell=zsh ;;
     -bash|bash|*/bash)	modules_shell=bash ;;
 esac
-module() { eval \`/opt/local/Modules/\$MODULE_VERSION/bin/modulecmd \$modules_shell \$*\`; }
+module() { eval \`/usr/local/Modules/\$MODULE_VERSION/bin/modulecmd \$modules_shell \$*\`; }
 #module() { eval \`${exec_prefix}/bin/modulecmd \$modules_shell \$*\`; }
 !
 				elif [ x$3 = xcsh ]
@@ -155,8 +155,8 @@ if (\$?tcsh) then
 else
         set modules_shell="csh"
 endif
-alias module 'eval \`/opt/local/\$MODULE_VERSION/bin/modulecmd '\$modules_shell '\!*\`'
-#alias module 'eval \`/opt/local/Modules/3.2.10/bin/modulecmd '\$modules_shell '\!*\`'
+alias module 'eval \`/usr/local/\$MODULE_VERSION/bin/modulecmd '\$modules_shell '\!*\`'
+#alias module 'eval \`/usr/local/Modules/3.2.10/bin/modulecmd '\$modules_shell '\!*\`'
 !
 				fi
 				/bin/cat /tmp/$1.$$ >> $1 && /bin/rm /tmp/$1.$$
