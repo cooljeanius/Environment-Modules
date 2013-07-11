@@ -24,13 +24,11 @@
 #		TCL_INCLUDE_SPEC	Full path to the Tcl include directory
 #------------------------------------------------------------------------
 
-AC_DEFUN([EM_SET_TCL], [
-	AC_ARG_WITH(tcl-ver,
-	AC_HELP_STRING([--with-tcl-ver=X.Y],
-	[Tcl version to use [[search]]]), with_tclver=${withval},
-	)
+AC_DEFUN([EM_SET_TCL], [AC_ARG_WITH([tcl-ver],
+	[AC_HELP_STRING([--with-tcl-ver=X.Y],[Tcl version to use [[search]]])], 
+	[with_tclver=${withval}],[])
 	AC_MSG_CHECKING([for Tcl version])
-	AC_CACHE_VAL(em_cv_tclver,[
+	AC_CACHE_VAL([em_cv_tclver],[
 	    # First check to see if --with-tcl-ver was specified.
 	    if test x"${with_tclver}" = x ; then #{{
 		em_cv_tclver=`echo 'puts [[info tclversion]]' | tclsh 2>/dev/null`
@@ -46,9 +44,8 @@ AC_DEFUN([EM_SET_TCL], [
 	])
 	TCL_VERSION="${em_cv_tclver}"
 
-	AC_ARG_WITH(tcl-lib,
-	AC_HELP_STRING([--with-tcl-lib=<dir>],
-	[directory containing tcl libraries (libtclX.Y) [[none]]]),
+	AC_ARG_WITH([tcl-lib],[AC_HELP_STRING([--with-tcl-lib=<dir>],
+	[directory containing tcl libraries (libtclX.Y) [[none]]])],
 	[if test "$withval" = "no" || test "$withval" = "yes"; then #{{
 	   AC_MSG_ERROR([must give a value if using --with-tcl-lib])
 	else #}{
@@ -56,7 +53,7 @@ AC_DEFUN([EM_SET_TCL], [
 	fi #}}], [with_tcllib=not_given])
 	if test x"$with_tcllib" != x"not_given" ; then #{
 	AC_MSG_CHECKING([for Tcl lib directory])
-	AC_CACHE_VAL(em_cv_tcllib,[
+	AC_CACHE_VAL([em_cv_tcllib],[
 
 	    # First check to see if --with-tcl-lib was specified.
 	    if test x"${with_tcllib}" = x ; then #{{
@@ -73,9 +70,8 @@ AC_DEFUN([EM_SET_TCL], [
 	TCL_LIB_SPEC="-L${em_cv_tcllib} -ltcl${em_cv_tclver}"
 	fi #}
 
-	AC_ARG_WITH(tcl-inc,
-	AC_HELP_STRING([--with-tcl-inc=<dir>],
-	[directory containing tcl include files (tclDecls.h,...) [[none]]]),
+	AC_ARG_WITH([tcl-inc],
+	[AC_HELP_STRING([--with-tcl-inc=<dir>],[directory containing tcl include files (tclDecls.h,...) [[none]]])],
 	[if test "$withval" = "no" || test "$withval" = "yes"; then #{{
 	   AC_MSG_ERROR([must give a value if using --with-tcl-inc])
 	else #}{
@@ -83,7 +79,7 @@ AC_DEFUN([EM_SET_TCL], [
 	fi #}}], [with_tclinc=not_given])
 	if test x"$with_tclinc" != x"not_given" ; then
 	AC_MSG_CHECKING([for Tcl include directory])
-	AC_CACHE_VAL(em_cv_tclinc,[
+	AC_CACHE_VAL([em_cv_tclinc],[
 
 	    # First check to see if --with-tcl-inc was specified.
 	    if test x"${with_tclinc}" = x ; then #{{
@@ -118,31 +114,29 @@ AC_DEFUN([EM_SET_TCL], [
 AC_DEFUN([EM_CHECK_TCL], [
 	AC_MSG_CHECKING([TCL_VERSION])
 	if test x"$TCL_VERSION" = x ; then #{{
-		AC_MSG_ERROR(
-		[TCL_VERSION not found, need to use --with-tcl-ver])
+		AC_MSG_ERROR([TCL_VERSION not found, need to use --with-tcl-ver])
 	else #}{
 		AC_MSG_RESULT([$TCL_VERSION])
 	fi #}}
-	AC_SUBST(TCL_VERSION)
+	AC_SUBST([TCL_VERSION])
 
 	AC_MSG_CHECKING([TCL_LIB_SPEC])
 	if test x"$TCL_LIB_SPEC" = x ; then #{{
-		AC_MSG_ERROR(
-		[TCL_LIB_SPEC not found, need to use --with-tcl-lib])
+		AC_MSG_ERROR([TCL_LIB_SPEC not found, need to use --with-tcl-lib])
 	else #}{
 		AC_MSG_RESULT([$TCL_LIB_SPEC])
 	fi #}}
-	AC_SUBST(TCL_LIB_SPEC)
+	AC_SUBST([TCL_LIB_SPEC])
 
 	AC_MSG_CHECKING([TCL_INCLUDE_SPEC])
 	if test x"$TCL_INCLUDE_SPEC" = x ; then #{{
-		AC_MSG_ERROR(
-		[TCL_INCLUDE_SPEC not found, need to use --with-tcl-inc])
+		AC_MSG_ERROR([TCL_INCLUDE_SPEC not found, need to use --with-tcl-inc])
 	else #}{
 		AC_MSG_RESULT([$TCL_INCLUDE_SPEC])
 	fi #}}
-	AC_SUBST(TCL_INCLUDE_SPEC)
+	AC_SUBST([TCL_INCLUDE_SPEC])
 ])
+
 #------------------------------------------------------------------------
 # EM_SET_TCLX --
 #
@@ -165,13 +159,10 @@ AC_DEFUN([EM_CHECK_TCL], [
 #		TCLX_INCLUDE_SPEC	Full path to the TclX include directory
 #------------------------------------------------------------------------
 
-AC_DEFUN([EM_SET_TCLX], [
-	AC_ARG_WITH(tclx-ver,
-	AC_HELP_STRING([--with-tclx-ver=X.Y],
-	[TclX version to use [[search]]]), with_tclxver=${withval},
-	)
+AC_DEFUN([EM_SET_TCLX], [AC_ARG_WITH([tclx-ver],
+	[AC_HELP_STRING([--with-tclx-ver=X.Y],[TclX version to use [[search]]])], [with_tclxver=${withval}],[])
 	AC_MSG_CHECKING([for TclX version])
-	AC_CACHE_VAL(em_cv_tclxver,[
+	AC_CACHE_VAL([em_cv_tclxver],[
 	    # First check to see if --with-tclx-ver was specified.
 	    if test x"${with_tclxver}" = x ; then #{{
 		em_cv_tclxver=`echo 'puts [[info tclversion]]' | tclsh 2>/dev/null`
@@ -187,9 +178,8 @@ AC_DEFUN([EM_SET_TCLX], [
 	])
 	TCLX_VERSION="${em_cv_tclxver}"
 
-	AC_ARG_WITH(tclx-lib,
-	AC_HELP_STRING([--with-tclx-lib=<dir>],
-	[directory containing tclx libraries (libtclxX.Y) [[none]]]),
+	AC_ARG_WITH([tclx-lib],[AC_HELP_STRING([--with-tclx-lib=<dir>],
+	[directory containing tclx libraries (libtclxX.Y) [[none]]])],
 	[if test "$withval" = "no" || test "$withval" = "yes"; then #{{
 	   AC_MSG_ERROR([must give a value if using --with-tclx-lib])
 	else #}{
@@ -197,7 +187,7 @@ AC_DEFUN([EM_SET_TCLX], [
 	fi #}}], [with_tclxlib=not_given])
 	if test x"$with_tclxlib" != x"not_given" ; then #{
 	AC_MSG_CHECKING([for Tclx lib directory])
-	AC_CACHE_VAL(em_cv_tclxlib,[
+	AC_CACHE_VAL([em_cv_tclxlib],[
 
 	    # First check to see if --with-tclx-lib was specified.
 	    if test x"${with_tclxlib}" = x ; then #{{
@@ -214,7 +204,7 @@ AC_DEFUN([EM_SET_TCLX], [
 	TCLX_LIB_SPEC="-L${em_cv_tclxlib} -ltclx${em_cv_tclxver}"
 	fi #}
 
-	AC_ARG_WITH(tclx-inc,
+	AC_ARG_WITH([tclx-inc],
 	AC_HELP_STRING([--with-tclx-inc=<dir>],
 	[directory containing tclx include files (tclExtend.h,...) [[none]]]),
 	[if test "$withval" = "no" || test "$withval" = "yes"; then #{{
@@ -224,7 +214,7 @@ AC_DEFUN([EM_SET_TCLX], [
 	fi #}}], [with_tclxinc=not_given])
 	if test x"$with_tclxinc" != x"not_given" ; then #{
 	AC_MSG_CHECKING([for TclX include directory])
-	AC_CACHE_VAL(em_cv_tclxinc,[
+	AC_CACHE_VAL([em_cv_tclxinc],[
 
 	    # First check to see if --with-tclx-inc was specified.
 	    if test x"${with_tclxinc}" = x ; then #{{
@@ -264,29 +254,29 @@ AC_DEFUN([EM_CHECK_TCLX], [
 	else #}{
 		AC_MSG_RESULT([$TCLX_VERSION])
 	fi #}}
-	AC_SUBST(TCLX_VERSION)
+	AC_SUBST([TCLX_VERSION])
 
 	AC_MSG_CHECKING([TCLX_LIB_SPEC])
 	if test x"$TCLX_LIB_SPEC" = x ; then #{{
 		no_tclx=true
 		no_tclx_lib=true
-		AC_MSG_RESULT(
-		[TCLX_LIB_SPEC not found, need to use --with-tclx-lib])
+		AC_MSG_RESULT([TCLX_LIB_SPEC not found, need to use --with-tclx-lib])
 	else #}{
 		no_tclx=
 		no_tclx_lib=
 		AC_MSG_RESULT([$TCLX_LIB_SPEC])
 	fi #}}
-	AC_SUBST(TCLX_LIB_SPEC)
+	AC_SUBST([TCLX_LIB_SPEC])
 
 	AC_MSG_CHECKING([TCLX_INCLUDE_SPEC])
 	if test x"$TCLX_INCLUDE_SPEC" = x ; then #{{
 		no_tclx=true
-		AC_MSG_RESULT(
-		[TCLX_INCLUDE_SPEC not found, need to use --with-tclx-inc])
+		AC_MSG_RESULT([TCLX_INCLUDE_SPEC not found, need to use --with-tclx-inc])
 	else #}{
 		test x"$no_tclx_lib" = x && no_tclx=
 		AC_MSG_RESULT([$TCLX_INCLUDE_SPEC])
 	fi #}}
-	AC_SUBST(TCLX_INCLUDE_SPEC)
+	AC_SUBST([TCLX_INCLUDE_SPEC])
 ])
+
+# EOF

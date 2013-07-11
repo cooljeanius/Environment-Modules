@@ -12,12 +12,13 @@
 ##	aclocal.m4  /
 ##
 
-ACLOCAL_AMFLAGS= -I m4
+ACLOCAL_AMFLAGS = -I m4
+AM_WARNFLAGS = -Wall
 
 man_MANS = doc/module.1 doc/modulefile.4
-SUBDIRS = . init modulefiles @EXTDIR@ doc
+SUBDIRS = . init modulefiles @EXTDIR@ doc po
 DIST_SUBDIRS = . init modulefiles etc ext doc
-SOURCES_H = modules_def.h getopt.h config.h
+SOURCES_H = modules_def.h getopt.h config.h gettext.h
 EXTRA_DIST = config/config.rpath  [config]dnl/config.rpath  modules_def.h getopt.h testsuite INSTALL.RH7x		\
 	init/filter init/bash.in init/sh.in init/zsh.in			\
 	init/csh.in init/ksh.in init/perl.pm.in init/python.py.in	\
@@ -25,7 +26,6 @@ EXTRA_DIST = config/config.rpath  [config]dnl/config.rpath  modules_def.h getopt
 	LICENSE.GPL ChangeLog
 
 bin_PROGRAMS = modulecmd
-# bin_SCRIPTS = etc/mkroot etc/add.modules ext/add.ext
 modulecmd_CFLAGS=@TCLX_INCLUDE_SPEC@  @TCL_INCLUDE_SPEC@ @X_CFLAGS@
 modulecmd_LDADD= @TCLX_LIB_SPEC@ @TCL_LIB_SPEC@ @X_LIBS@ @X_EXTRA_LIBS@ @LIBS@
 modulecmd_SOURCES = \
@@ -53,10 +53,8 @@ CTAGS:	$(modulecmd_SOURCES)
 
 cxref:
 	$(MAKE) clean
-#	may need to edit the cxref-cc script setting
-#	EGREP=/bin/egrep
+# may need to edit the cxref-cc script setting
 	$(MAKE) CC=cxref-cc CXREFCC=$(CC)
-#	cxref-cc $(modulecmd_SOURCES) $(SOURCES_H)
 	@echo "==============================="
 	@echo "You may need to run this twice!"
 	@echo "==============================="
@@ -166,9 +164,7 @@ disthelp:
 	@echo "make distclean - cleans & removes most made files"
 	@echo "make maintainer-clean - cleans even more"
 	@echo "================ requires git access ======================="
-#	@echo "make tag       - does a git rtag"
 	@echo "make CL        - remakes the ChangeLog from the git commits"
-#	@echo "make patch     - creates a patch file after tagging"
 	@echo "================ maintainers only =========================="
 	@echo "make lsm       - send off to the Linux Software Map"
 	@echo "make ftp-local - upload tarball (good test)"

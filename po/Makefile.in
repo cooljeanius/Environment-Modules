@@ -13,9 +13,6 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
-
-###########################################################################
-###########################################################################
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -81,9 +78,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = etc
-DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
-	$(srcdir)/add.modules.in $(srcdir)/mkroot.in README
+subdir = po
+DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am ChangeLog
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/autobuild.m4 \
 	$(top_srcdir)/m4/ax_check_gnu_make.m4 \
@@ -101,7 +97,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = add.modules mkroot
+CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -307,8 +303,6 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = foreign dejagnu no-installinfo
-EXTRA_scripts = add.modules mkroot
 all: all-am
 
 .SUFFIXES:
@@ -321,9 +315,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign etc/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign po/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign etc/Makefile
+	  $(AUTOMAKE) --foreign po/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -342,10 +336,6 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-add.modules: $(top_builddir)/config.status $(srcdir)/add.modules.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-mkroot: $(top_builddir)/config.status $(srcdir)/mkroot.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -486,7 +476,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-data-local
+install-data-am:
 
 install-dvi: install-dvi-am
 
@@ -530,7 +520,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-local
+uninstall-am:
 
 .MAKE: check-am install-am install-strip
 
@@ -538,31 +528,14 @@ uninstall-am: uninstall-local
 	clean-libtool cscopelist-am ctags-am distclean \
 	distclean-DEJAGNU distclean-generic distclean-libtool distdir \
 	dvi dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-data-local install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags-am uninstall uninstall-am uninstall-local
-
-
-install-data-local : $(EXTRA_scripts)
-	$(mkinstalldirs) $(DESTDIR)$(prefix)/bin
-	@list='$(EXTRA_scripts)'; for p in $$list; do \
-	  if test -f $$p \
-	  ; then \
-	   echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$p $(DESTDIR)$(prefix)/bin/$$p"; \
-	   $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$p $(DESTDIR)$(prefix)/bin/$$p; \
-	  else :; fi; \
-	done
-
-uninstall-local :
-	@list='$(EXTRA_scripts)'; for p in $$list; do \
-	  echo " rm -f $(DESTDIR)$(prefix)/bin/$$p"; \
-	  rm -f $(DESTDIR)$(prefix)/bin/$$p; \
-	done
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags-am uninstall \
+	uninstall-am
 
 check :
 

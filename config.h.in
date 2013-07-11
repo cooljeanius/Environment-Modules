@@ -36,8 +36,8 @@
    one-level of variable expansion.) */
 #undef BEGINENV
 
-/* CACHE_AVAIL: This symbol, if defined, indicates that Modules should cache
-   the directories in MODULEPATH when doing an avail. */
+/* This symbol, if defined, indicates that Modules should cache the
+   directories in MODULEPATH when doing an avail. */
 #undef CACHE_AVAIL
 
 /* CACHE_UMASK: This symbol, if defined, is used as the umask for creating
@@ -73,20 +73,20 @@
    remove it. */
 #undef EVAL_ALIAS
 
-/* HAS_BOURNE_ALIAS: This symbol, if defined, indicates that the Bourne shell
-   can define aliases (in other words not a "true" Bourne shell). */
+/* This symbol, if defined, indicates that the Bourne shell can define aliases
+   */
 #undef HAS_BOURNE_ALIAS
 
-/* HAS_BOURNE_FUNCS: This symbol, if defined, indicates that the Bourne shell
-   can define aliases as shell functions. */
+/* This symbol, if defined, indicates that the Bourne shell can define aliases
+   as shell functions. */
 #undef HAS_BOURNE_FUNCS
 
-/* HAS_TCLXLIBS: This symbol, if defined, indicates that Modules should
-   support extended TCL (tclX) commands. */
+/* This symbol, if defined, indicates that Environment Modules should support
+   extended TCL (tclX) commands. */
 #undef HAS_TCLXLIBS
 
-/* HAS_X11LIBS: This symbol, if defined, indicates that the C program can use
-   X11 directly. */
+/* This symbol, if defined, indicates that the C program can use X11 directly.
+   */
 #undef HAS_X11LIBS
 
 /* Define to 1 if you have the <assert.h> header file. */
@@ -156,6 +156,9 @@
 /* Define to 1 if you have the `X11' library (-lX11). */
 #undef HAVE_LIBX11
 
+/* Define to 1 if you have the `Xmu' library (-lXmu). */
+#undef HAVE_LIBXMU
+
 /* Define to 1 if you have the <locale.h> header file. */
 #undef HAVE_LOCALE_H
 
@@ -187,6 +190,9 @@
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
@@ -280,9 +286,6 @@
 /* MODULES_INIT_DIR: Directory that contains the modules init files. */
 #undef MODULES_INIT_DIR
 
-/* Define to 1 if your C compiler doesn't accept -c and -o together. */
-#undef NO_MINUS_C_MINUS_O
-
 /* Name of package */
 #undef PACKAGE
 
@@ -320,8 +323,7 @@
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 #undef TM_IN_SYS_TIME
 
-/* USE_FREE: By default, Modules will not call free() for any dynamic data.
-   This define enables these calls. */
+/* This define enables calls to free() */
 #undef USE_FREE
 
 /* Enable extensions on AIX 3, Interix.  */

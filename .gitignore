@@ -19,3 +19,10 @@ work
 */*/work
 */*/*/work
 confdefs.h
+*(Autosaved)*
+tmpwrk*/*
+conftest*
+modules.sum
+*.out
+*.err
+site.exp
