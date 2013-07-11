@@ -6,7 +6,7 @@
 ##
 ###########################################################################
 ##
-## run  automake to generate a Makefile.in
+## run  automake to generate a Makefile.in:
 ##	Makefile.am \
 ##	configure.ac >  Makefile.in
 ##	aclocal.m4  /
@@ -59,8 +59,8 @@ cxref:
 	@echo "You may need to run this twice!"
 	@echo "==============================="
 
-SED=sed
-CVS=cvs
+SED=@SED@
+CVS=@CVS@
 GZIP=gzip
 BZIP2=bzip2
 

@@ -7,7 +7,7 @@
 ###########################################################################
 
 
-AUTOMAKE_OPTIONS=foreign no-installinfo
+AUTOMAKE_OPTIONS = foreign no-installinfo -Wall
 
 EXTRA_SCRIPTS=							\
 	sh ksh zsh bash bash_completion				\
@@ -19,7 +19,6 @@ INIT_FILES=${EXTRA_SCRIPTS}
 
 MAKEDIRS= $(initdir)
 
-# all:    $(INIT_FILES)
 #
 # only make the init files when an install is done.
 # why? because we want to get the latest $DESTDIR & $bindir
@@ -66,5 +65,5 @@ tcsh : csh
 
 check :
 
-clean :
+clean-local :
 	rm -f ${INIT_FILES}

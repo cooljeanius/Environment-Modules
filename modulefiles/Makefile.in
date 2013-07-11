@@ -88,8 +88,15 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(srcdir)/use.own.in $(srcdir)/dot.in $(srcdir)/version.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/autobuild.m4 \
+	$(top_srcdir)/m4/ax_ac_append_to_file.m4 \
+	$(top_srcdir)/m4/ax_ac_print_to_file.m4 \
+	$(top_srcdir)/m4/ax_add_am_macro_static.m4 \
+	$(top_srcdir)/m4/ax_am_macros_static.m4 \
 	$(top_srcdir)/m4/ax_check_gnu_make.m4 \
-	$(top_srcdir)/m4/ax_prog_tcl.m4 $(top_srcdir)/m4/emtcl.m4 \
+	$(top_srcdir)/m4/ax_cvs.m4 $(top_srcdir)/m4/ax_file_escapes.m4 \
+	$(top_srcdir)/m4/ax_print_to_file.m4 \
+	$(top_srcdir)/m4/ax_prog_tcl.m4 \
+	$(top_srcdir)/m4/ax_split_version.m4 $(top_srcdir)/m4/emtcl.m4 \
 	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/iconv.m4 \
 	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/lib-ld.m4 \
 	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
@@ -133,6 +140,7 @@ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
+ANON_CVSROOT = @ANON_CVSROOT@
 AR = @AR@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
@@ -145,6 +153,9 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CVS = @CVS@
+CVSEDITOR = @CVSEDITOR@
+CVSROOT = @CVSROOT@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
@@ -166,6 +177,7 @@ ETCPATH = @ETCPATH@
 EXEEXT = @EXEEXT@
 EXTDIR = @EXTDIR@
 FGREP = @FGREP@
+GAWK = @GAWK@
 GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GMSGFMT = @GMSGFMT@
 GMSGFMT_015 = @GMSGFMT_015@
@@ -232,6 +244,8 @@ TCL_INCLUDE_SPEC = @TCL_INCLUDE_SPEC@
 TCL_LIB_SPEC = @TCL_LIB_SPEC@
 TCL_VERSION = @TCL_VERSION@
 UNAME = @UNAME@
+USEREMAIL = @USEREMAIL@
+USERNAME = @USERNAME@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 VERSIONING = @VERSIONING@
@@ -310,7 +324,7 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = foreign no-installinfo
+AUTOMAKE_OPTIONS = foreign no-installinfo -Wall
 BASEMODULES = \
 	dot module-git module-info modules null use.own
 
@@ -484,7 +498,9 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean: clean-am
+
+clean-am: clean-generic clean-libtool clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -551,7 +567,7 @@ uninstall-am: uninstall-local
 .MAKE: check-am install-am install-strip
 
 .PHONY: all all-am check check-DEJAGNU check-am clean clean-generic \
-	clean-libtool cscopelist-am ctags-am distclean \
+	clean-libtool clean-local cscopelist-am ctags-am distclean \
 	distclean-DEJAGNU distclean-generic distclean-libtool distdir \
 	dvi dvi-am html html-am info info-am install install-am \
 	install-data install-data-am install-data-local install-dvi \
@@ -619,9 +635,30 @@ uninstall-basemodules :
 	  echo "*** Do This Yourself If you really want to ***"; \
 	fi
 
+dot : dot.in ../config.status
+	(cd ..; config.status modulefiles/dot)
+
+module-git : module-git.in ../config.status
+	(cd ..; config.status modulefiles/module-git)
+
+module-info : module-info.in ../config.status
+	(cd ..; config.status modulefiles/module-info)
+
+modules : modules.in ../config.status
+	(cd ..; config.status modulefiles/modules)
+
+null : null.in ../config.status
+	(cd ..; config.status modulefiles/null)
+
+use.own : use.own.in ../config.status
+	(cd ..; config.status modulefiles/use.own)
+
+version : version.in ../config.status
+	(cd ..; config.status modulefiles/version)
+
 check :
 
-clean :
+clean-local :
 	rm -f ${BASEMODULES}
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

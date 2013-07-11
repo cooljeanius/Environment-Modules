@@ -7,7 +7,7 @@
 ###########################################################################
 
 
-AUTOMAKE_OPTIONS=foreign dejagnu no-installinfo
+AUTOMAKE_OPTIONS = foreign dejagnu no-installinfo -Wall
 
 EXTRA_scripts = add.ext mkroot
 
@@ -29,4 +29,4 @@ uninstall-local :
 
 check :
 
-clean :
+clean-local :

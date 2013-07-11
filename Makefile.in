@@ -113,8 +113,15 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/config/missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/autobuild.m4 \
+	$(top_srcdir)/m4/ax_ac_append_to_file.m4 \
+	$(top_srcdir)/m4/ax_ac_print_to_file.m4 \
+	$(top_srcdir)/m4/ax_add_am_macro_static.m4 \
+	$(top_srcdir)/m4/ax_am_macros_static.m4 \
 	$(top_srcdir)/m4/ax_check_gnu_make.m4 \
-	$(top_srcdir)/m4/ax_prog_tcl.m4 $(top_srcdir)/m4/emtcl.m4 \
+	$(top_srcdir)/m4/ax_cvs.m4 $(top_srcdir)/m4/ax_file_escapes.m4 \
+	$(top_srcdir)/m4/ax_print_to_file.m4 \
+	$(top_srcdir)/m4/ax_prog_tcl.m4 \
+	$(top_srcdir)/m4/ax_split_version.m4 $(top_srcdir)/m4/emtcl.m4 \
 	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/iconv.m4 \
 	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/lib-ld.m4 \
 	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
@@ -331,6 +338,7 @@ distcleancheck_listfiles = find . -type f -print
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
+ANON_CVSROOT = @ANON_CVSROOT@
 AR = @AR@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
@@ -343,6 +351,9 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CVS = @CVS@
+CVSEDITOR = @CVSEDITOR@
+CVSROOT = @CVSROOT@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
@@ -364,6 +375,7 @@ ETCPATH = @ETCPATH@
 EXEEXT = @EXEEXT@
 EXTDIR = @EXTDIR@
 FGREP = @FGREP@
+GAWK = @GAWK@
 GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GMSGFMT = @GMSGFMT@
 GMSGFMT_015 = @GMSGFMT_015@
@@ -416,7 +428,7 @@ RANLIB = @RANLIB@
 RAWCPP = @RAWCPP@
 RAWCPPFLAGS = @RAWCPPFLAGS@
 RUNTEST = @RUNTEST@
-SED = sed
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SKELPATH = @SKELPATH@
@@ -430,6 +442,8 @@ TCL_INCLUDE_SPEC = @TCL_INCLUDE_SPEC@
 TCL_LIB_SPEC = @TCL_LIB_SPEC@
 TCL_VERSION = @TCL_VERSION@
 UNAME = @UNAME@
+USEREMAIL = @USEREMAIL@
+USERNAME = @USERNAME@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 VERSIONING = @VERSIONING@
@@ -533,7 +547,6 @@ modulecmd_SOURCES = \
 	cmdChdir.c cmdTrace.c cmdVersion.c cmdVerbose.c cmdWhatis.c		\
 	init.c locate_module.c utility.c main.c error.c getopt.c version.c
 
-CVS = cvs
 GZIP = gzip
 BZIP2 = bzip2
 DISTNAME = $(distdir)

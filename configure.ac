@@ -18,7 +18,7 @@ AC_INIT([modules],[3.2],[modules-interest@lists.sourceforge.net])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.9.6 foreign dejagnu no-installinfo dist-bzip2])
+AM_INIT_AUTOMAKE([1.9.6 foreign dejagnu no-installinfo dist-bzip2 -Wall])
 AM_MAINTAINER_MODE
 AC_EXEEXT
 AC_CONFIG_SRCDIR([version.c])
@@ -183,7 +183,8 @@ export BASEPREFIX
 export MODULES_INIT_DIR
 
 dnl#---------------------------------------------------------------------------
-dnl# Some standard autoconfig stuff
+dnl# Some standard autoconf stuff
+dnl#---------------------------------------------------------------------------
 dnl# Checks for programs
 dnl#---------------------------------------------------------------------------
 
@@ -191,10 +192,13 @@ AB_INIT
 AC_PROG_CC
 AM_PROG_CC_C_O
 XORG_PROG_RAWCPP
+AC_LANG([C])
 AC_PROG_CXX
 AC_PROG_GCC_TRADITIONAL
 AC_PROG_INSTALL
 AC_PROG_LN_S
+AC_PROG_SED
+AC_PROG_RANLIB
 AC_AIX
 AC_ISC_POSIX
 AC_USE_SYSTEM_EXTENSIONS
@@ -206,22 +210,25 @@ AC_SEARCH_LIBS([strerror],[cposix])
 AC_PATH_PROG([UNAME],[uname],[""])dnl
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.18])
-AX_PROG_TCL([8.4])
+AX_PROG_TCL([8.3])
 AX_CHECK_GNU_MAKE
+AX_CVS([anonymous@cvs.modules.sourceforge.net:/cvsroot/modules])
 
 dnl#---------------------------------------------------------------------------
 dnl# Checks for header files
 dnl#---------------------------------------------------------------------------
 
 AC_HEADER_DIRENT
-AC_CHECK_HEADERS([assert.h ctype.h errno.h fcntl.h libintl.h locale.h \
-	stdarg.h stdio.h syslog.h sys/ioctl.h \
-	sys/mode.h sys/param.h sys/termios.h termio.h varargs.h])dnl
+AC_CHECK_HEADERS([assert.h ctype.h dejagnu.h errno.h fcntl.h libintl.h \
+	locale.h modules_def.h stdarg.h stdio.h sysconf.h syslog.h \
+	sys/ioctl.h sys/mode.h sys/param.h sys/termios.h termio.h \
+	varargs.h])dnl
 
 dnl#---------------------------------------------------------------------------
 dnl# Checks for typedefs, structures, and compiler characteristics.
 dnl#---------------------------------------------------------------------------
 
+AC_C_PROTOTYPES
 AC_C_CONST
 AC_C_INLINE
 AC_TYPE_UID_T

@@ -107,6 +107,9 @@
    */
 #undef HAVE_DCGETTEXT
 
+/* Define to 1 if you have the <dejagnu.h> header file. */
+#undef HAVE_DEJAGNU_H
+
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
 #undef HAVE_DIRENT_H
@@ -175,6 +178,9 @@
 /* Define to 1 if you have the `mktemp' function. */
 #undef HAVE_MKTEMP
 
+/* Define to 1 if you have the <modules_def.h> header file. */
+#undef HAVE_MODULES_DEF_H
+
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #undef HAVE_NDIR_H
 
@@ -221,6 +227,9 @@
 
 /* Define to 1 if you have the `strstr' function. */
 #undef HAVE_STRSTR
+
+/* Define to 1 if you have the <sysconf.h> header file. */
+#undef HAVE_SYSCONF_H
 
 /* Define to 1 if you have the `syslog' function. */
 #undef HAVE_SYSLOG
@@ -313,6 +322,9 @@
 
 /* PREFIX: Usually equivalent to /usr/local/Modules[/version_number] */
 #undef PREFIX
+
+/* Define to 1 if the C compiler supports function prototypes. */
+#undef PROTOTYPES
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
@@ -455,6 +467,9 @@
 
 /* Define to 1 if you need to in order for `stat' and other things to work. */
 #undef _POSIX_SOURCE
+
+/* Define like PROTOTYPES; this can be used by system headers. */
+#undef __PROTOTYPES
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const

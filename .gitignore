@@ -26,3 +26,5 @@ modules.sum
 *.out
 *.err
 site.exp
+site.bak
+aminclude_static.am

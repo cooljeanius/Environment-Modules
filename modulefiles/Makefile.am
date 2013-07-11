@@ -7,12 +7,12 @@
 ###########################################################################
 
 
-AUTOMAKE_OPTIONS=foreign no-installinfo
+AUTOMAKE_OPTIONS = foreign no-installinfo -Wall
 
-BASEMODULES= \
+BASEMODULES = \
 	dot module-git module-info modules null use.own
 
-EXTRA_SCRIPTS= ${BASEMODULES} version
+EXTRA_SCRIPTS = ${BASEMODULES} version
 
 all:	${EXTRA_SCRIPTS}
 
@@ -69,28 +69,28 @@ uninstall-basemodules :
 	  echo "*** Do This Yourself If you really want to ***"; \
 	fi
 
-##dot : dot.in ../config.status
-##	(cd ..; config.status modulefiles/dot)
-##
-##module-git : module-git.in ../config.status
-##	(cd ..; config.status modulefiles/module-git)
-##
-##module-info : module-info.in ../config.status
-##	(cd ..; config.status modulefiles/module-info)
-##
-##modules : modules.in ../config.status
-##	(cd ..; config.status modulefiles/modules)
-##
-##null : null.in ../config.status
-##	(cd ..; config.status modulefiles/null)
-##
-##use.own : use.own.in ../config.status
-##	(cd ..; config.status modulefiles/use.own)
-##
-##version : version.in ../config.status
-##	(cd ..; config.status modulefiles/version)
+dot : dot.in ../config.status
+	(cd ..; config.status modulefiles/dot)
+
+module-git : module-git.in ../config.status
+	(cd ..; config.status modulefiles/module-git)
+
+module-info : module-info.in ../config.status
+	(cd ..; config.status modulefiles/module-info)
+
+modules : modules.in ../config.status
+	(cd ..; config.status modulefiles/modules)
+
+null : null.in ../config.status
+	(cd ..; config.status modulefiles/null)
+
+use.own : use.own.in ../config.status
+	(cd ..; config.status modulefiles/use.own)
+
+version : version.in ../config.status
+	(cd ..; config.status modulefiles/version)
 
 check :
 
-clean :
+clean-local :
 	rm -f ${BASEMODULES}

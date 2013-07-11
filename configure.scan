@@ -40,5 +40,6 @@ AC_CONFIG_FILES([Makefile
                  etc/Makefile
                  ext/Makefile
                  init/Makefile
-                 modulefiles/Makefile])
+                 modulefiles/Makefile
+                 po/Makefile])
 AC_OUTPUT
