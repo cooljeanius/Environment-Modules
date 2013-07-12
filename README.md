@@ -18,7 +18,7 @@
 ```
 
 1. Introduction
-_______________
+-----------------
 
 This directory contains a copy of The Modules Package that uses Tcl (Tool Command Language) developed by John Ousterhout at Sun Microsystems.
 You must obtain a copy of Tcl (at least version 8.3).
@@ -27,12 +27,13 @@ Tcl should be available either at the same site you obtained The Modules Package
 For an introduction to The Modules Package, see the paper, "Modules: Providing a Flexible User Environment",
 in the Proceeding of the 1991 Large Installation Systems Administrators USENIX Conference (USENIX LISA V).
 A copy of the paper is included in Postscript form in `./doc/Modules-Paper.ps`.
-The paper describes the concepts behind Modules and a prototype/proof-of-concept implementation based on shell scripts being sourced into the user environment.
+The paper describes the concepts behind Modules.
+It also includes a prototype/proof-of-concept implementation based on shell scripts being sourced into the user environment.
 The implementation details have changed, but the package concepts haven't.
 
 
 2. Documentation
-________________
+-----------------
 
 The `./doc` directory contains both the paper and man pages describing the user's and the module writer's usage.
 Look at `./ChangeLog` for detailed information regarding changes.
@@ -85,7 +86,7 @@ Big changes for 2.2:
    -  Paths and modulefile names with '`+`'s in them should work now.
    -  Multi-level paths should work.  Well, at least better than 2.0.
    -  "`module load .`" shouldn't dump core any more.
-   -  Support for "perl" output.
+   -  Support for "`perl`" output.
    -  Ability to exit without having modulefile listed as "loaded". Use an argument to exit other than 0 or 1.
    -  More stringent checking of user-level command names.
    -  A sysconf.h file to help with multi-platform support. (This area and the installation process still needs work)
@@ -117,19 +118,20 @@ Big changes for 2.0:
    -  Locating modulefiles is recursive and ignores files ending in '`~`' and which don't have the "`#%Module`" magic header.
    -  The `switch` command should really work now.
    -  Added `uname` command for fast access to system information.  (Not sure if `uname` is portable though)
-   -  `Unload` using a directory name will look for a version that is already loaded instead of the default version specified by the `.version` file or by the highest lexicographical name in the directory.
+   -  `Unload` using a directory name will look for a version that is already loaded,
+   instead of the default version specified by the `.version` file or by the highest lexicographical name in the directory.
    -  Added ability for modulefile-specific help and modulefile-specific display.
 
 
-
 3. Building and Installing Modules
-__________________________________
+-----------------------------------
 (Read the `./INSTALL` file for a more recent description of installation procedures.)
 
 First, you'll need to decide on a location to keep Modules on your network.
 
 The path name to the initialization files must be the same on all of the systems using Modules.
-This is because your users' `~/.cshrc` or other shell startup files must hard code this directory in order to source their Modules initialization file.
+This is because your users' `~/.cshrc` or other shell startup files must hard code this directory,
+in order to source their Modules initialization file.
 
 You will also need to choose a location for the '`modulecmd`' program and all of your modulefiles.
 The location of these can be different on different systems, but it is not recommended.
@@ -139,13 +141,13 @@ Use the `--prefix` flag with the `./configure` script to control the installatio
 See below for more configure options.
 
 Example:
-	If you decide to keep Modules in `/depot/Modules`, run "`configure --prefix=/depot/Modules`" 
+	If you decide to keep Modules in `/depot/Modules`, run "`./configure --prefix=/depot/Modules`" 
 
     	 initialization file   -->  /depot/Modules/init
     	 modulefiles           -->  /depot/Modules/modulefiles
     	 modulecmd             -->  /depot/Modules/bin
      	 manual pages          -->  /depot/Modules/man
-     	 Tcl libraries	       -->  /depot/Modules/lib/tcl	 			(if any)
+     	 Tcl libraries	       -->  /depot/Modules/lib/tcl (if any)
 
 The Modules Package is written in conformant ANSI C and should build on any UNIX machine with an ANSI C compiler like the GNU C compiler.
 Check the `./MACHINES` file for a list of machines and OSes on which Modules has successfully been test-built.
@@ -154,7 +156,8 @@ At the moment there's no support for traditional vargargs handling using '`varar
 
 To build Modules, first build Tcl and run the tests provided with Tcl to verify it built correctly.
 
-If you want to use the test-suite, you should install dejagnu-1.2 or better before configuring modules. Be sure to have your PATH pointing to '`runtest`' when calling '`./configure`'.
+If you want to use the test-suite, you should install dejagnu-1.2 or better before configuring modules.
+Be sure to have your PATH pointing to '`runtest`' when calling '`./configure`'.
 
 Then run the GNU autoconf script, `./configure`.
 A Makefile will be automatically generated.
@@ -166,16 +169,16 @@ The one of interest is `@VERSION@` for using the current module version.
 e.g.:  `--prefix=/usr/local/Modules/@VERSION@`
 
 ------------------------------------------------------------------------
-    --with-etc-path=<path>      use etc path=<path>			 [/etc]
-    --with-skel-path=<path>     use skel path=<path>		 	[/etc/skel]
+    --with-etc-path=<path>      use etc path=<path>  [/etc]
+    --with-skel-path=<path>     use skel path=<path> [/etc/skel]
 
    -  Place to find the csh.modules * profile.modules files and where the new user dot files are
    (both are needed by the `add.modules` script).
    - The skeleton user dot files need to point to the etc path for setting up Modules environment on login.
 
 ------------------------------------------------------------------------
-    --with-split-size=<size>	With split size=<size>			 [TEST]
-    --without-split-size		Without  - " -
+    --with-split-size=<size>	With split size=<size> [TEST]
+    --without-split-size	Without  - "" -
 
    - Most C Shell implementations have a size requirement on the length of the line which can be evaluated.
    If you run into very long environment changes, you may run into this problem.
@@ -187,7 +190,7 @@ e.g.:  `--prefix=/usr/local/Modules/@VERSION@`
    *Just* specifying `--with-split-size` *without* a value will default to a value of 1000.
 
 ------------------------------------------------------------------------
-    --enable-shell-funcs	With sh functions		[TEST]
+    --enable-shell-funcs	With sh functions [TEST]
     --disable-shell-funcs	Without  - "" -
 
    - Does your Bourne Shell support functions?
@@ -197,7 +200,7 @@ e.g.:  `--prefix=/usr/local/Modules/@VERSION@`
    but specifying either option will override the tested characteristic.
 
 ------------------------------------------------------------------------
-    --enable-shell-alias	With sh functions		[TEST]
+    --enable-shell-alias	With sh functions [TEST]
     --disable-shell-alias	Without  - "" -
 
    - Does your Bourne Shell support aliases?
@@ -208,7 +211,7 @@ e.g.:  `--prefix=/usr/local/Modules/@VERSION@`
    but specifying either option will override the tested characteristic.
 
 ------------------------------------------------------------------------
-    --enable-shell-eval		With shell alias eval			 [DEF]
+    --enable-shell-eval		With shell alias eval [DEF]
     --disable-shell-eval	Without  - "" -
 
    - This specifies whether aliases will be evaluated by the shell or sourced from a temporary file.
@@ -219,7 +222,7 @@ e.g.:  `--prefix=/usr/local/Modules/@VERSION@`
  
 ------------------------------------------------------------------------
     --enable-free		With free() calls
-    --disable-free		Without  - "" -		[DEF]
+    --disable-free		Without  - "" -	  [DEF]
 
    - Since the `modulecmd` is transient, disabling calls to `free()` can provide some small performance enhancements,
    since the memory usage is low, and the program will exit rapidly.
@@ -227,7 +230,7 @@ e.g.:  `--prefix=/usr/local/Modules/@VERSION@`
 
 ------------------------------------------------------------------------
     --enable-cache		With directory cache
-    --disable-cache		Without  - " -			[DEF]
+    --disable-cache		Without  - "" -	     [DEF]
 
    - Modules will maintain a cache of the available modulefiles for each directory in the modulefile search path.
    The cache greatly accelerates how long it takes to determine the list of available modulefiles,
@@ -235,7 +238,7 @@ e.g.:  `--prefix=/usr/local/Modules/@VERSION@`
 
 ------------------------------------------------------------------------
     --with-cache-umask=<umask> With cache files umask=<umask>
-    --without-cache-umask      0				[DEF]
+    --without-cache-umask      0			     [DEF]
 
    - Set the umask for creating cache files.
    The default of 0 creates modulecachefiles that are writable by anyone.
@@ -244,7 +247,7 @@ e.g.:  `--prefix=/usr/local/Modules/@VERSION@`
 
 ------------------------------------------------------------------------
      --with-static		Link static (don't use dynamic libraries)
-     --without-static		Use dynamic libraries			 [DEF]
+     --without-static		Use dynamic libraries			  [DEF]
 
    - A note.  The original author found that at least the X11 libraries should be linked statically.
    If you encounter problems, e.g. getting some warnings about version mismatch of dynamic libraries, link the `modulecmd` statically.
@@ -254,7 +257,7 @@ e.g.:  `--prefix=/usr/local/Modules/@VERSION@`
 
 ------------------------------------------------------------------------
      --with-tclx		With extended TCL (tclX) commands
-     --without-tclx		Without  - " -			[DEF]
+     --without-tclx		Without  - "" -			  [DEF]
 
    - Extended Tcl is a superset of standard Tcl and is built alongside the standard Tcl sources.
    It adds many new commands to standard Tcl, e.g. Unix Access Commands, File I/O Commands,
@@ -263,9 +266,9 @@ e.g.:  `--prefix=/usr/local/Modules/@VERSION@`
 
 ------------------------------------------------------------------------
      --with-module-path=<path>	With user defined MODULEPATH
-     --without-module-path	Default $prefix/modulefiles		 [DEF]
+     --without-module-path	Default $prefix/modulefiles [DEF]
 
-   - Set the `MODULEFILE` environment variable in all initialization files to the given <path> (colon separated!).
+   - Set the `MODULEFILE` environment variable in all initialization files to the given \<path\> (colon separated!).
    The default is to use `$prefix/modulefiles` (which usually contains version-specific modulefiles).
    - Every site should use this to specify where local modulefiles are placed which are independent of module versions.
 
@@ -278,9 +281,9 @@ e.g.:  `--prefix=/usr/local/Modules/@VERSION@`
 ------------------------------------------------------------------------
      --with-autoload-path=<path>	directories where Tcl will search
                 					for libraries to load
-     --without-autoload-path		Default $prefix/lib/tcl		 [DEF]
+     --without-autoload-path		Default $prefix/lib/tcl	[DEF]
 
-   - <path> will be prepended to Tcl's `auto_path` variable.
+   - \<path\> will be prepended to Tcl's `auto_path` variable.
    These directories are searched for library functions that can be autoloaded.
    Note that this path has to be *space* separated and enclosed in double quotes!!
    The default is to use `"$prefix/lib/tcl"`.
@@ -291,13 +294,13 @@ e.g.:  `--prefix=/usr/local/Modules/@VERSION@`
      --with-tclx=<path>		directory containting TclX configuration
             				(tclxConfig.sh)
 
-   - the `tclConfig.sh` file was created when Tcl was built, and has pointers to where the libraries and header files were installed.
+   - The `tclConfig.sh` file was created when Tcl was built, and has pointers to where the libraries and header files were installed.
    It is usually found in `$prefix/lib`, where `$prefix` is the directory you installed Tcl.
    (The same goes for TclX, too.)
 
 ------------------------------------------------------------------------
      --with-debug=<level>		Set up the debug level to the
-            					specified value
+            			        specified value
      --without-debug			Disable debugging [DEF]
 
    - The debug level will be set to the specified value.
@@ -321,7 +324,8 @@ e.g.:  `--prefix=/usr/local/Modules/@VERSION@`
      --enable-version-magic             set .version magic requirement[DEF]
      --disable-version-magic            unset requirement
 
-   - Enable or disable the requirement that `.version` files need the "`#%Module1.0`" magic cookie at the file start to be properly recognized and parsed.
+   - Enable or disable the requirement that `.version` files need the "`#%Module1.0`" magic cookie
+   (at the file start) to be properly recognized and parsed.
 
 ------------------------------------------------------------------------
 NO LONGER AVAILABLE
@@ -398,20 +402,22 @@ Finally, type '`make install`', and then '`modulecmd`' (along with the initfiles
 
 
 4. modules-interest@lists.sourceforge.net
-_________________________________________
+------------------------------------------
 
-As of release 2.0, I have worked with Richard Elling to create a Modules interest alias for discussion about Modules and other Modules-related packages, such as Richard's `user-setup`.
+As of release 2.0,
+the original author has worked with Richard Elling to create a Modules interest alias for discussion about Modules,
+as well as other Modules-related packages, such as Richard's `user-setup`.
 
-The email list was moved from eng.auburn.edu to SourceForge.net with version 3.0.
+The email list was moved from [eng.auburn.edu](http://eng.auburn.edu/) to [SourceForge.net](http://sourceforge.net/) with version 3.0.
 If you would like to be added to the modules-interest alias,
 email [majordomo@lists.sourceforge.net](mailto:majordomo@lists.sourceforge.net) with "subscribe modules-interest
 address" in the body of the message where "address" is your Internet e-mail address.
 
 
 5. Miscellaneous
-________________
+-----------------
 
-`tcsh(1)` user might want to add the following to their tcsh startup file
+`tcsh(1)` users might want to add the following to their tcsh startup file
 (`~/.cshrc` or `~/.tcshrc`): 
 
 ```
@@ -436,52 +442,54 @@ You might want to add the following line to `/etc/magic`, so that `file(1)` reco
 
 
 6. Special Thanks
-_________________
+------------------
 
-Ken Manheimer and Don Libes at the National Institute of Standards and Technology deserve special thanks for their help and ideas toward the original paper, design considerations, and the use of Tcl.
+Ken Manheimer and Don Libes at the National Institute of Standards and Technology deserve special thanks.
+This is for their help and ideas toward the original paper, design considerations, and the use of Tcl.
 
-Maureen Chew and others at Sun Microsystems have provided me with a test site and many ideas on how to improve my Tcl implementation of Modules.
+Maureen Chew and others at Sun Microsystems provided the original author with a test site.
+They also provided the original author with many ideas on how to improve his Tcl implementation of Modules.
 
 Leif Hedstrom added GNU's autoconf support, x-resource command,
 helped significantly with the port to Tcl 7.x, and has provided valuable input.
 
-I would also like to thank Richard Elling at Auburn University for his comments,
+The original author would also like to thank Richard Elling at Auburn University for his comments,
 help with the Modules' man pages and his application '`user-setup`'.
 A paper on '`user-setup`' was presented at this year's USENIX LISA VI conference.
 The paper and the application can be acquired via anonymous ftp from [ftp.eng.auburn.edu](ftp://ftp.eng.auburn.edu).
 
-Peter W. Osel [<pwo@guug.de>](mailto:pwo@guug.de) added support for Extended Tcl (TclX),
+Peter W. Osel [\<pwo@guug.de\>](mailto:pwo@guug.de) added support for Extended Tcl (TclX),
 autoloading of Tcl functions, autoconf 2.x;
  
 There are many others that deserve thanks but too many to list here -- thanks to everyone who has helped.
 
-R.K.Owen [<rk@owen.sj.ca.us>](rk@owen.sj.ca.us) added the modules versioning, ported to Linux,
+R.K.Owen [\<rk@owen.sj.ca.us\>](rk@owen.sj.ca.us) added the modules versioning, ported to Linux,
 reworked the code to use higher level Tcl calls eliminating the need for
 Tcl internal header files, various code fixes and changes, added some useful scripts,
 and is the current maintainer of the modules-3.1 distribution.
 
-Robert Minsk [<egbert@centropolisfx.com>](mailto:egbert@centropolisfx.com), added the "module-info specified"
+Robert Minsk [\<egbert@centropolisfx.com\>](mailto:egbert@centropolisfx.com), added the "module-info specified"
 and the "is-loaded" modulefile commands, and for various code and script fixes.
 
 Further & updated list of contributors can be found in the `./ChangeLog` file.
 
 
 7. Bugs and Comments
-____________________
+---------------------
 
-Report bugs to '[modules-interest@Eng.Auburn.EDU](mailto:modules-interest@Eng.Auburn.EDU)'.  Please try to provide
-a full environment listing and a copy of the modulefiles you're trying to manipulate.
+Report bugs to '[modules-interest@Eng.Auburn.EDU](mailto:modules-interest@Eng.Auburn.EDU)'.
+Please try to provide a full environment listing and a copy of the modulefiles you're trying to manipulate.
 Be as explicit and detailed as possible.
 
 Comments and suggestions for improvement are always welcome.
 
 
 8. Getting the Sources
-______________________
+-----------------------
 
-There are two ways to get the sources.  If you just intend to use
-modules and have no interest in modifying or improving them, then
-get them via anonymous ftp from:
+There are two mainways to get the sources.
+If you just intend to use modules and have no interest in modifying or improving them,
+then get them via anonymous ftp from:
 
 ```
     Primary-site:	ftp1.sourceforge.net	/pub/sourceforge/m/mo/modules
@@ -522,6 +530,9 @@ to generate the rest of the build infrastructure.
 For a brief HOWTO on CVS, read [http://kooz.sj.ca.us/rkowen/howto/cvsF.html](http://kooz.sj.ca.us/rkowen/howto/cvsF.html).
 
 To contribute code patches, please "`cvs diff -u`" them against the modules CVS repository.
+
+If you are viewing this on GitHub, you can also get the sources via `git`,
+just be aware that is a fork and not the original sources.
 
 
 Thanks,
