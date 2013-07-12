@@ -107,6 +107,10 @@
    */
 #undef HAVE_DCGETTEXT
 
+/* Define to 1 if you have the declaration of `tzname', and to 0 if you don't.
+   */
+#undef HAVE_DECL_TZNAME
+
 /* Define to 1 if you have the <dejagnu.h> header file. */
 #undef HAVE_DEJAGNU_H
 
@@ -120,9 +124,6 @@
 /* Define to 1 if you have the `dup2' function. */
 #undef HAVE_DUP2
 
-/* Define to 1 if you have the <errno.h> header file. */
-#undef HAVE_ERRNO_H
-
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
@@ -135,11 +136,24 @@
 /* Define if the GNU gettext() function is already present or preinstalled. */
 #undef HAVE_GETTEXT
 
+/* Define to 1 if you have the `gmtime_r' function. */
+#undef HAVE_GMTIME_R
+
 /* Define if you have the iconv() function and it works. */
 #undef HAVE_ICONV
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* Define if <inttypes.h> exists, doesn't clash with <sys/types.h>, and
+   declares uintmax_t. */
+#undef HAVE_INTTYPES_H_WITH_UINTMAX
+
+/* Define to 1 if you have the `ioctl' function. */
+#undef HAVE_IOCTL
+
+/* Defined to 1 if langinfo is available */
+#undef HAVE_LANGINFO
 
 /* Define to 1 if you have the `dl' library (-ldl). */
 #undef HAVE_LIBDL
@@ -165,6 +179,12 @@
 /* Define to 1 if you have the <locale.h> header file. */
 #undef HAVE_LOCALE_H
 
+/* Define to 1 if you have the `localtime_r' function. */
+#undef HAVE_LOCALTIME_R
+
+/* Define to 1 if the system has the type 'long long int'. */
+#undef HAVE_LONG_LONG_INT
+
 /* Define to 1 if your system has a GNU libc compatible `malloc' function, and
    to 0 otherwise. */
 #undef HAVE_MALLOC
@@ -184,6 +204,21 @@
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #undef HAVE_NDIR_H
 
+/* Defined to 1 if net/errno.h is available */
+#undef HAVE_NET_ERRNO_H
+
+/* Define to 1 if you have the `pthread_attr_setstacksize' function. */
+#undef HAVE_PTHREAD_ATTR_SETSTACKSIZE
+
+/* Define if the <pthread.h> defines PTHREAD_MUTEX_RECURSIVE. */
+#undef HAVE_PTHREAD_MUTEX_RECURSIVE
+
+/* Define if the POSIX multithreading library has read/write locks. */
+#undef HAVE_PTHREAD_RWLOCK
+
+/* Define to 1 if you have the `readdir_r' function. */
+#undef HAVE_READDIR_R
+
 /* Define to 1 if your system has a GNU libc compatible `realloc' function,
    and to 0 otherwise. */
 #undef HAVE_REALLOC
@@ -196,6 +231,10 @@
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
+
+/* Define if <stdint.h> exists, doesn't clash with <sys/types.h>, and declares
+   uintmax_t. */
+#undef HAVE_STDINT_H_WITH_UINTMAX
 
 /* Define to 1 if you have the <stdio.h> header file. */
 #undef HAVE_STDIO_H
@@ -222,11 +261,23 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
+/* Define to 1 if you have the `strlen' function. */
+#undef HAVE_STRLEN
+
 /* Define to 1 if you have the `strrchr' function. */
 #undef HAVE_STRRCHR
 
 /* Define to 1 if you have the `strstr' function. */
 #undef HAVE_STRSTR
+
+/* Defined to 1 if the dirent64 struct is available */
+#undef HAVE_STRUCT_DIRENT64
+
+/* Defined to 1 if the stat64 struct is available */
+#undef HAVE_STRUCT_STAT64
+
+/* Define to 1 if `tm_zone' is a member of `struct tm'. */
+#undef HAVE_STRUCT_TM_TM_ZONE
 
 /* Define to 1 if you have the <sysconf.h> header file. */
 #undef HAVE_SYSCONF_H
@@ -241,8 +292,14 @@
    */
 #undef HAVE_SYS_DIR_H
 
+/* Define to 1 if you have the <sys/filio.h> header file. */
+#undef HAVE_SYS_FILIO_H
+
 /* Define to 1 if you have the <sys/ioctl.h> header file. */
 #undef HAVE_SYS_IOCTL_H
+
+/* Define to 1 if you have the <sys/modem.h> header file. */
+#undef HAVE_SYS_MODEM_H
 
 /* Define to 1 if you have the <sys/mode.h> header file. */
 #undef HAVE_SYS_MODE_H
@@ -260,6 +317,9 @@
 /* Define to 1 if you have the <sys/termios.h> header file. */
 #undef HAVE_SYS_TERMIOS_H
 
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef HAVE_SYS_TIME_H
+
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
@@ -269,14 +329,40 @@
 /* Define to 1 if you have the <termio.h> header file. */
 #undef HAVE_TERMIO_H
 
+/* Defined to 1 if the timezone variable is available */
+#undef HAVE_TIMEZONE_VAR
+
 /* Define to 1 if you have the `tmpnam' function. */
 #undef HAVE_TMPNAM
+
+/* Defined to 1 if tm_gmtoff is available in struct tm */
+#undef HAVE_TM_GMTOFF
+
+/* Defined to 1 if tm_tzadj is available in struct tm */
+#undef HAVE_TM_TZADJ
+
+/* Define to 1 if your `struct tm' has `tm_zone'. Deprecated, use
+   `HAVE_STRUCT_TM_TM_ZONE' instead. */
+#undef HAVE_TM_ZONE
+
+/* Defined to 1 if the off64 type is available */
+#undef HAVE_TYPE_OFF64_T
+
+/* Define to 1 if you don't have `tm_zone' but do have the external array
+   `tzname'. */
+#undef HAVE_TZNAME
+
+/* Define if you have the 'uintmax_t' type in <stdint.h> or <inttypes.h>. */
+#undef HAVE_UINTMAX_T
 
 /* Define to 1 if you have the `uname' function. */
 #undef HAVE_UNAME
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Define to 1 if the system has the type 'unsigned long long int'. */
+#undef HAVE_UNSIGNED_LONG_LONG_INT
 
 /* Define to 1 if you have the <varargs.h> header file. */
 #undef HAVE_VARARGS_H
@@ -294,6 +380,33 @@
 
 /* MODULES_INIT_DIR: Directory that contains the modules init files. */
 #undef MODULES_INIT_DIR
+
+/* Defined to 1 if there is no dirent.h */
+#undef NO_DIRENT_H
+
+/* Defined to 1 if there is no dlfcn.h */
+#undef NO_DLFCN_H
+
+/* Defined to 1 if there is no errno.h */
+#undef NO_ERRNO_H
+
+/* Defined to 1 if there is no float.h */
+#undef NO_FLOAT_H
+
+/* Defined to 1 if there is no limits.h */
+#undef NO_LIMITS_H
+
+/* Defined to 1 if there is no stdlib.h */
+#undef NO_STDLIB_H
+
+/* Defined to 1 if there is no string.h */
+#undef NO_STRING_H
+
+/* Defined to 1 if there is no sys/wait.h */
+#undef NO_SYS_WAIT_H
+
+/* Defined to 1 if there is no values.h */
+#undef NO_VALUES_H
 
 /* Name of package */
 #undef PACKAGE
@@ -316,6 +429,9 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
+/* XIM peeking works under XFree86. */
+#undef PEEK_XCLOSEIM
+
 /* PHOSTNAME: Last resort to get the hostname, if uname() and gethostname()
    are not available. */
 #undef PHOSTNAME
@@ -326,8 +442,35 @@
 /* Define to 1 if the C compiler supports function prototypes. */
 #undef PROTOTYPES
 
+/* Define if the pthread_in_use() detection is hard. */
+#undef PTHREAD_IN_USE_DETECTION_HARD
+
+/* Define to 1 if static build is requested */
+#undef STATIC_BUILD
+
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
+
+/* Defined to 1 if compiling for debugging */
+#undef TCL_COMPILE_DEBUG
+
+/* Defined to 1 if compiling with stats */
+#undef TCL_COMPILE_STATS
+
+/* Defined to 1 if using Tcl's memdebug */
+#undef TCL_MEM_DEBUG
+
+/* Defined to 1 if using Tcl threads */
+#undef TCL_THREADS
+
+/* Defined to 1 if wide int is long */
+#undef TCL_WIDE_INT_IS_LONG
+
+/* Tcl wide int type */
+#undef TCL_WIDE_INT_TYPE
+
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#undef TIME_WITH_SYS_TIME
 
 /* TMP_DIR: tmp directory name */
 #undef TMP_DIR
@@ -335,8 +478,41 @@
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 #undef TM_IN_SYS_TIME
 
+/* Defined to 1 if using a.out.h */
+#undef USE_A_OUT_H
+
+/* Defined to 1 if using delta for tz */
+#undef USE_DELTA_FOR_TZ
+
+/* FIONBIO */
+#undef USE_FIONBIO
+
 /* This define enables calls to free() */
 #undef USE_FREE
+
+/* Define if the POSIX multithreading library can be used. */
+#undef USE_POSIX_THREADS
+
+/* Define if references to the POSIX multithreading library should be made
+   weak. */
+#undef USE_POSIX_THREADS_WEAK
+
+/* Define if the GNU Pth multithreading library can be used. */
+#undef USE_PTH_THREADS
+
+/* Define if references to the GNU Pth multithreading library should be made
+   weak. */
+#undef USE_PTH_THREADS_WEAK
+
+/* Defined to 1 if using sgtty */
+#undef USE_SGTTY
+
+/* Define if the old Solaris multithreading library can be used. */
+#undef USE_SOLARIS_THREADS
+
+/* Define if references to the old Solaris multithreading library should be
+   made weak. */
+#undef USE_SOLARIS_THREADS_WEAK
 
 /* Enable extensions on AIX 3, Interix.  */
 #ifndef _ALL_SOURCE
@@ -360,6 +536,25 @@
 #endif
 
 
+/* Defined to 1 if using sys/exec_aout.h */
+#undef USE_SYS_EXEC_AOUT_H
+
+/* Defined to 1 if using sys/exec.h */
+#undef USE_SYS_EXEC_H
+
+/* Defined to 1 if using termio */
+#undef USE_TERMIO
+
+/* Defined to 1 if using termios */
+#undef USE_TERMIOS
+
+/* Defined to 1 if trying to use the special thread-based allocator that
+   significantly reduces lock contention */
+#undef USE_THREAD_ALLOC
+
+/* Define if the native Windows multithreading API can be used. */
+#undef USE_WINDOWS_THREADS
+
 /* Version number of package */
 #undef VERSION
 
@@ -371,7 +566,7 @@
    out. */
 #undef VERSION_MAGIC
 
-/* WANTS_VERSIONING Does the system want to use modules versions */
+/* Defined to 1 if the system wants to use Modules versions */
 #undef WANTS_VERSIONING
 
 /* WITH_DEBUG_INFO: Debug info level if defined */
@@ -458,15 +653,40 @@
 /* Define to 1 if the X Window System is missing or not being used. */
 #undef X_DISPLAY_MISSING
 
+/* Test define */
+#undef _ISOC99_SOURCE
+
+/* Test define */
+#undef _LARGEFILE64_SOURCE
+
 /* Define to 1 if on MINIX. */
 #undef _MINIX
+
+/* A define which is needed in sys/socket.h */
+#undef _OE_SOCKETS
 
 /* Define to 2 if the system does not provide POSIX.1 features except with
    this defined. */
 #undef _POSIX_1_SOURCE
 
+/* Defined to 1 if using POSIX pthread semantics */
+#undef _POSIX_PTHREAD_SEMANTICS
+
 /* Define to 1 if you need to in order for `stat' and other things to work. */
 #undef _POSIX_SOURCE
+
+/* If not defined, then Solaris will not define thread-safe library routines.
+   */
+#undef _REENTRANT
+
+/* Defined to 1 if thread-safe */
+#undef _THREAD_SAFE
+
+/* Defined to 1 if using the XOPEN network library */
+#undef _XOPEN_SOURCE
+
+/* Defined to 1 if using the XOPEN network library */
+#undef _XOPEN_SOURCE_EXTENDED
 
 /* Define like PROTOTYPES; this can be used by system headers. */
 #undef __PROTOTYPES
@@ -495,5 +715,12 @@
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
 
+/* Defined to fixstrtod if the original strtod was buggy */
+#undef strtod
+
 /* Define to `int' if <sys/types.h> doesn't define. */
 #undef uid_t
+
+/* Define to unsigned long or unsigned long long if <stdint.h> and
+   <inttypes.h> don't define. */
+#undef uintmax_t
