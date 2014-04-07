@@ -28,3 +28,4 @@ modules.sum
 site.exp
 site.bak
 aminclude_static.am
+.spec

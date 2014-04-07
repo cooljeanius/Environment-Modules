@@ -1,9 +1,0 @@
-#----------------------------------------------------------------------#
-# system-wide csh.modules                                              #
-# Initialize modules for all csh-derivative shells                     #
-#----------------------------------------------------------------------#
-if ($?tcsh) then
-	source /usr/local/Modules/default/init/tcsh
-else
-	source /usr/local/Modules/default/init/csh
-endif

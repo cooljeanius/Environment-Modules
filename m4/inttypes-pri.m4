@@ -6,7 +6,7 @@ dnl with or without modifications, as long as this notice is preserved.
 
 dnl From Bruno Haible.
 
-AC_PREREQ([2.53])
+AC_PREREQ([2.69])
 
 # Define PRI_MACROS_BROKEN if <inttypes.h> exists and defines the PRI*
 # macros to non-string values.  This is the case on AIX 4.3.3.

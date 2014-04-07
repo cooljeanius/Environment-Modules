@@ -109,7 +109,7 @@ _AM_AUTOCONF_VERSION(m4_defn([AC_AUTOCONF_VERSION]))])
 
 AC_DEFUN([AM_AUX_DIR_EXPAND],
 [dnl Rely on autoconf to set up CDPATH properly.
-AC_PREREQ([2.50])dnl
+AC_PREREQ([2.69])dnl
 # expand $ac_aux_dir to an absolute path
 am_aux_dir=`cd $ac_aux_dir && pwd`
 ])
@@ -129,7 +129,7 @@ am_aux_dir=`cd $ac_aux_dir && pwd`
 # -------------------------------------
 # Define a conditional.
 AC_DEFUN([AM_CONDITIONAL],
-[AC_PREREQ(2.52)dnl
+[AC_PREREQ([2.69])dnl
  ifelse([$1], [TRUE],  [AC_FATAL([$0: invalid condition: $1])],
 	[$1], [FALSE], [AC_FATAL([$0: invalid condition: $1])])dnl
 AC_SUBST([$1_TRUE])dnl
@@ -454,7 +454,7 @@ AU_DEFUN([AM_CONFIG_HEADER], [AC_CONFIG_HEADERS($@)])
 # arguments mandatory, and then we can depend on a new Autoconf
 # release and drop the old call support.
 AC_DEFUN([AM_INIT_AUTOMAKE],
-[AC_PREREQ([2.62])dnl
+[AC_PREREQ([2.69])dnl
 dnl Autoconf wants to disallow AM_ names.  We explicitly allow
 dnl the ones we care about.
 m4_pattern_allow([^AM_[A-Z]+FLAGS$])dnl
@@ -755,7 +755,7 @@ fi
 # ---------------
 # Check for `mkdir -p'.
 AC_DEFUN([AM_PROG_MKDIR_P],
-[AC_PREREQ([2.60])dnl
+[AC_PREREQ([2.69])dnl
 AC_REQUIRE([AC_PROG_MKDIR_P])dnl
 dnl Automake 1.8 to 1.9.6 used to define mkdir_p.  We now use MKDIR_P,
 dnl while keeping a definition of mkdir_p for backward compatibility.

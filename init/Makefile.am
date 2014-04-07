@@ -50,7 +50,7 @@ uninstall-inits :
 	done
 
 # We need to filter the *.in files to produce the init scripts
-# since we don't know the value of '@prefix@' until Make time.
+# since we do NOT know the value of '@prefix@' until Make time.
 # (We can not rely on configure to give us correct values.)
 % : %.in $(top_builddir)/config.status
 	sed -e "/@$(if $(subst 0,,$(WANTS_VERSIONING)),NOT,)VERSIONING\@/d; \

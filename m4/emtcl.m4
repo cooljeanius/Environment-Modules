@@ -25,7 +25,7 @@
 #------------------------------------------------------------------------
 
 AC_DEFUN([EM_SET_TCL], [AC_ARG_WITH([tcl-ver],
-	[AC_HELP_STRING([--with-tcl-ver=X.Y],[Tcl version to use [[search]]])], 
+	[AS_HELP_STRING([--with-tcl-ver=X.Y],[Tcl version to use [[search]]])], 
 	[with_tclver=${withval}],[])
 	AC_MSG_CHECKING([for Tcl version])
 	AC_CACHE_VAL([em_cv_tclver],[
@@ -44,8 +44,7 @@ AC_DEFUN([EM_SET_TCL], [AC_ARG_WITH([tcl-ver],
 	])
 	TCL_VERSION="${em_cv_tclver}"
 
-	AC_ARG_WITH([tcl-lib],[AC_HELP_STRING([--with-tcl-lib=<dir>],
-	[directory containing tcl libraries (libtclX.Y) [[none]]])],
+	AC_ARG_WITH([tcl-lib],[AS_HELP_STRING([--with-tcl-lib=<dir>],[directory containing tcl libraries (libtclX.Y) [[none]]])],
 	[if test "$withval" = "no" || test "$withval" = "yes"; then #{{
 	   AC_MSG_ERROR([must give a value if using --with-tcl-lib])
 	else #}{
@@ -71,7 +70,7 @@ AC_DEFUN([EM_SET_TCL], [AC_ARG_WITH([tcl-ver],
 	fi #}
 
 	AC_ARG_WITH([tcl-inc],
-	[AC_HELP_STRING([--with-tcl-inc=<dir>],[directory containing tcl include files (tclDecls.h,...) [[none]]])],
+	[AS_HELP_STRING([--with-tcl-inc=<dir>],[directory containing tcl include files (tclDecls.h,...) [[none]]])],
 	[if test "$withval" = "no" || test "$withval" = "yes"; then #{{
 	   AC_MSG_ERROR([must give a value if using --with-tcl-inc])
 	else #}{
@@ -160,7 +159,7 @@ AC_DEFUN([EM_CHECK_TCL], [
 #------------------------------------------------------------------------
 
 AC_DEFUN([EM_SET_TCLX], [AC_ARG_WITH([tclx-ver],
-	[AC_HELP_STRING([--with-tclx-ver=X.Y],[TclX version to use [[search]]])], [with_tclxver=${withval}],[])
+	[AS_HELP_STRING([--with-tclx-ver=X.Y],[TclX version to use [[search]]])], [with_tclxver=${withval}],[])
 	AC_MSG_CHECKING([for TclX version])
 	AC_CACHE_VAL([em_cv_tclxver],[
 	    # First check to see if --with-tclx-ver was specified.
@@ -178,8 +177,7 @@ AC_DEFUN([EM_SET_TCLX], [AC_ARG_WITH([tclx-ver],
 	])
 	TCLX_VERSION="${em_cv_tclxver}"
 
-	AC_ARG_WITH([tclx-lib],[AC_HELP_STRING([--with-tclx-lib=<dir>],
-	[directory containing tclx libraries (libtclxX.Y) [[none]]])],
+	AC_ARG_WITH([tclx-lib],[AS_HELP_STRING([--with-tclx-lib=<dir>],[directory containing tclx libraries (libtclxX.Y) [[none]]])],
 	[if test "$withval" = "no" || test "$withval" = "yes"; then #{{
 	   AC_MSG_ERROR([must give a value if using --with-tclx-lib])
 	else #}{
@@ -205,8 +203,7 @@ AC_DEFUN([EM_SET_TCLX], [AC_ARG_WITH([tclx-ver],
 	fi #}
 
 	AC_ARG_WITH([tclx-inc],
-	AC_HELP_STRING([--with-tclx-inc=<dir>],
-	[directory containing tclx include files (tclExtend.h,...) [[none]]]),
+	AS_HELP_STRING([--with-tclx-inc=<dir>],[directory containing tclx include files (tclExtend.h,...) [[none]]]),
 	[if test "$withval" = "no" || test "$withval" = "yes"; then #{{
 	   AC_MSG_ERROR([must give a value if using --with-tclx-inc])
 	else #}{

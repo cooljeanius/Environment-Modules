@@ -11,9 +11,9 @@ dnl Written by Paul Eggert.
 # Define HAVE_WORKING_O_NOFOLLOW to 1 if O_NOFOLLOW works, or to 0 otherwise.
 AC_DEFUN([gl_FCNTL_O_FLAGS],
 [
-  dnl Persuade glibc <fcntl.h> to define O_NOATIME and O_NOFOLLOW.
-  dnl AC_USE_SYSTEM_EXTENSIONS was introduced in autoconf 2.60 and obsoletes
-  dnl AC_GNU_SOURCE.
+  dnl# Persuade glibc <fcntl.h> to define O_NOATIME and O_NOFOLLOW.
+  dnl# AC_USE_SYSTEM_EXTENSIONS was introduced in autoconf 2.60 and
+  dnl# obsoletes AC\_GNU\_SOURCE.
   m4_ifdef([AC_USE_SYSTEM_EXTENSIONS],
     [AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])],
     [AC_REQUIRE([AC_GNU_SOURCE])])

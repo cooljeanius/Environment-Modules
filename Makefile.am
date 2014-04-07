@@ -12,13 +12,14 @@
 ##	aclocal.m4  /
 ##
 
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I m4 --install
 AM_WARNFLAGS = -Wall
 
 man_MANS = doc/module.1 doc/modulefile.4
 SUBDIRS = . init modulefiles @EXTDIR@ doc po
 DIST_SUBDIRS = . init modulefiles etc ext doc
 SOURCES_H = modules_def.h getopt.h config.h gettext.h
+DISTCLEANFILES = *~ .DS_Store
 EXTRA_DIST = config/config.rpath  [config]dnl/config.rpath  modules_def.h getopt.h testsuite INSTALL.RH7x		\
 	init/filter init/bash.in init/sh.in init/zsh.in			\
 	init/csh.in init/ksh.in init/perl.pm.in init/python.py.in	\
@@ -31,13 +32,14 @@ modulecmd_LDADD= @TCLX_LIB_SPEC@ @TCL_LIB_SPEC@ @X_LIBS@ @X_EXTRA_LIBS@ @LIBS@
 modulecmd_SOURCES = \
 	ModuleCmd_Avail.c \
         ModuleCmd_Clear.c ModuleCmd_Display.c ModuleCmd_Help.c \
-	ModuleCmd_Init.c ModuleCmd_List.c ModuleCmd_Load.c ModuleCmd_Purge.c \
-	ModuleCmd_Switch.c ModuleCmd_Update.c ModuleCmd_Use.c \
-	ModuleCmd_Whatis.c ModuleCmd_Refresh.c \
-	cmdAlias.c cmdConflict.c cmdIsLoaded.c cmdInfo.c cmdMisc.c cmdModule.c\
-	cmdPath.c cmdSetenv.c cmdUname.c cmdXResource.c cmdUlvl.c cmdLog.c \
-	cmdChdir.c cmdTrace.c cmdVersion.c cmdVerbose.c cmdWhatis.c		\
-	init.c locate_module.c utility.c main.c error.c getopt.c version.c
+	ModuleCmd_Init.c ModuleCmd_List.c ModuleCmd_Load.c \
+	ModuleCmd_Purge.c ModuleCmd_Switch.c ModuleCmd_Update.c \
+	ModuleCmd_Use.c ModuleCmd_Whatis.c ModuleCmd_Refresh.c \
+	cmdAlias.c cmdConflict.c cmdIsLoaded.c cmdInfo.c cmdMisc.c \
+	cmdModule.c cmdPath.c cmdSetenv.c cmdUname.c cmdXResource.c \
+	cmdUlvl.c cmdLog.c cmdChdir.c cmdTrace.c cmdVersion.c \
+	cmdVerbose.c cmdWhatis.c init.c locate_module.c utility.c \
+	main.c error.c getopt.c version.c
 
 test: check-local
 
@@ -47,9 +49,9 @@ check-local:	modulecmd
 	$(RUNTEST) --srcdir $$TESTSUITEDIR \
 	$(AM_RUNTESTFLAGS) $(RUNTESTFLAGS) --tool=modules
 
-ctags:	CTAGS
-CTAGS:	$(modulecmd_SOURCES)
-	ctags	$(modulecmd_SOURCES) $(SOURCES_H)
+ctags-local: CTAGS
+CTAGS-local: $(modulecmd_SOURCES)
+	ctags $(modulecmd_SOURCES) $(SOURCES_H)
 
 cxref:
 	$(MAKE) clean
@@ -90,7 +92,7 @@ CL: rmChangeLog
 	@echo "Updating ChangeLog"
 	-@./gitlog2changelog.py
 
-rmChangeLog:
+rmChangeLog: NEWS
 	-@rm -f ChangeLog
 
 
@@ -100,6 +102,9 @@ lsm:
 	mail -s add modules@kooz.sj.ca.us,lsm@execpc.com < modules.lsm
 
 DISTNAME=$(distdir)
+
+distclean-local:
+	rm -rf autom4te.cache || rmdir autom4te.cache
 
 ftp-local: dist
 # this should be done by the maintainer (R.K.Owen) only!
@@ -163,9 +168,9 @@ disthelp:
 	@echo "make dist      - creates a distribution tarballs"
 	@echo "make distclean - cleans & removes most made files"
 	@echo "make maintainer-clean - cleans even more"
-	@echo "================ requires git access ======================="
+	@echo "=============== requires git access ======================="
 	@echo "make CL        - remakes the ChangeLog from the git commits"
-	@echo "================ maintainers only =========================="
+	@echo "=============== maintainers only =========================="
 	@echo "make lsm       - send off to the Linux Software Map"
 	@echo "make ftp-local - upload tarball (good test)"
 	@echo "make ftp-ibiblio      - upload to ibiblio"

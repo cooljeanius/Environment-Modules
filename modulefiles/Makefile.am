@@ -69,26 +69,33 @@ uninstall-basemodules :
 	  echo "*** Do This Yourself If you really want to ***"; \
 	fi
 
-dot : dot.in ../config.status
+regen_dot : dot.in ../config.status
 	(cd ..; config.status modulefiles/dot)
+.PHONY: regen_dot
 
-module-git : module-git.in ../config.status
+regen_module-git : module-git.in ../config.status
 	(cd ..; config.status modulefiles/module-git)
+.PHONY: regen_module-git
 
-module-info : module-info.in ../config.status
+regen_module-info : module-info.in ../config.status
 	(cd ..; config.status modulefiles/module-info)
+.PHONY: regen_module-info
 
-modules : modules.in ../config.status
+regen_modules : modules.in ../config.status
 	(cd ..; config.status modulefiles/modules)
+.PHONY: regen_modules
 
-null : null.in ../config.status
+regen_null : null.in ../config.status
 	(cd ..; config.status modulefiles/null)
+.PHONY: regen_null
 
-use.own : use.own.in ../config.status
+regen_use.own : use.own.in ../config.status
 	(cd ..; config.status modulefiles/use.own)
+.PHONY: regen_use.own
 
-version : version.in ../config.status
+regen_version : version.in ../config.status
 	(cd ..; config.status modulefiles/version)
+.PHONY: regen_version
 
 check :
 
