@@ -159,19 +159,19 @@ if test "x${prefix}" != "xNONE" ; then
   PREFIX=${prefix}
 else
   if test "${WANTS_VERSIONING}" -eq 1 ; then
-    DEFAULTPATH=$ac_default_prefix/Modules/default
-    NODEFAULTPATH=$ac_default_prefix/Modules/$VERSION
-    BASEPREFIX=$ac_default_prefix
-    ac_default_prefix=$BASEPREFIX/Modules/$VERSION
+    DEFAULTPATH=${ac_default_prefix}/Modules/default
+    NODEFAULTPATH=${ac_default_prefix}/Modules/${VERSION}
+    BASEPREFIX=${ac_default_prefix}
+    ac_default_prefix=${BASEPREFIX}/Modules/${VERSION}
     export ac_default_prefix
   else
-    DEFAULTPATH=$ac_default_prefix/Modules
-    NODEFAULTPATH=$ac_default_prefix/Modules
-    BASEPREFIX=$ac_default_prefix
-    ac_default_prefix=$BASEPREFIX/Modules
+    DEFAULTPATH=${ac_default_prefix}/Modules
+    NODEFAULTPATH=${ac_default_prefix}/Modules
+    BASEPREFIX=${ac_default_prefix}
+    ac_default_prefix=${BASEPREFIX}/Modules
     export ac_default_prefix
   fi
-  PREFIX=$ac_default_prefix
+  PREFIX=${ac_default_prefix}
 fi
 if test "x${exec_prefix}" != "xNONE" ; then
   EXECPREFIX=${exec_prefix}
@@ -189,7 +189,8 @@ dnl#
 
 AC_DEFINE_UNQUOTED([MODULES_INIT_DIR],["${MODULES_INIT_DIR}"])dnl
 AC_ARG_ENABLE([use-default],
-	[AS_HELP_STRING([--enable-use-default],[use DEFAULTPATH in init scripts [[yes]]])],
+	[AS_HELP_STRING([--enable-use-default],
+                        [use DEFAULTPATH in init scripts [[yes]]])],
 	[if test "x${enableval}" = "xno" -o ${WANTS_VERSIONING} -eq 0; then
 		DEFAULTPATH=${NODEFAULTPATH}
 	fi])dnl
@@ -245,7 +246,7 @@ dnl#
 AC_HEADER_DIRENT
 AC_CHECK_HEADERS([assert.h ctype.h dejagnu.h fcntl.h libintl.h \
 	locale.h modules_def.h stdarg.h stdio.h sysconf.h syslog.h \
-	sys/mode.h sys/termios.h termio.h varargs.h])dnl
+	sys/ioctl.h sys/mode.h sys/termios.h termio.h varargs.h])dnl
 gl_AC_HEADER_INTTYPES_H
 SC_MISSING_POSIX_HEADERS
 
@@ -704,7 +705,8 @@ AC_ARG_WITH([log-facility-verbose],
                         [Log facility [[stderr]]])],
 	[if test "x${withval}" != "xno"; then
 		test "${withval}" = "yes" && withval="stderr"
-		AC_DEFINE_UNQUOTED([WITH_LOG_FACILITY_VERBOSE],["${withval}"])
+		AC_DEFINE_UNQUOTED([WITH_LOG_FACILITY_VERBOSE],
+                                   ["${withval}"])
 	fi])dnl
 
 AC_ARG_WITH([log-facility-info],
@@ -720,23 +722,25 @@ AC_ARG_WITH([log-facility-debug],
                         [Log facility    [[local7.notice]]])],
 	[if test "x${withval}" != "xno"; then
 		test "x${withval}" = "xyes" && withval="local7.notice"
-		AC_DEFINE_UNQUOTED(WITH_LOG_FACILITY_DEBUG, "$withval")
+		AC_DEFINE_UNQUOTED([WITH_LOG_FACILITY_DEBUG],
+                                   ["${withval}"])
 	fi])dnl
 
 AC_ARG_WITH([log-facility-trace],
 	[AS_HELP_STRING([--with-log-facility-trace[=<facility>]],
-                        [Log facility    [[local7.notice]]])],
+                        [Log facility [[local7.notice]]])],
 	[if test "x${withval}" != "xno"; then
 		test "x${withval}" = "xyes" && withval="local7.notice"
-		AC_DEFINE_UNQUOTED(WITH_LOG_FACILITY_TRACE, "$withval")
+		AC_DEFINE_UNQUOTED([WITH_LOG_FACILITY_TRACE],
+                                   ["${withval}"])
 	fi])dnl
 
 AC_ARG_WITH([log-facility-warn],
 	[AS_HELP_STRING([--with-log-facility-warn[=<facility>]],
-                        [Log facility    [[local7.warning]]])],
+                        [Log facility [[local7.warning]]])],
 	[if test "x${withval}" != "xno"; then
 		test "x${withval}" = "xyes" && withval="local7.warning"
-		AC_DEFINE_UNQUOTED(WITH_LOG_FACILITY_WARN, "$withval")
+		AC_DEFINE_UNQUOTED([WITH_LOG_FACILITY_WARN],["${withval}"])
 	fi])dnl
 
 AC_ARG_WITH([log-facility-problem],
@@ -744,14 +748,16 @@ AC_ARG_WITH([log-facility-problem],
                         [Log facility [[local7.error]]])],
 	[if test "x${withval}" != "xno"; then
 		test "x${withval}" = "xyes" && withval="local7.error"
-		AC_DEFINE_UNQUOTED(WITH_LOG_FACILITY_PROB, "$withval")
+		AC_DEFINE_UNQUOTED([WITH_LOG_FACILITY_PROB],["${withval}"])
 	fi])dnl
 
 AC_ARG_WITH([log-facility-error],
-	[AS_HELP_STRING([--with-log-facility-error[=<facility>]],[Log facility    [[local7.error]]])],
+	[AS_HELP_STRING([--with-log-facility-error[=<facility>]],
+                        [Log facility [[local7.error]]])],
 	[if test "x${withval}" != "xno"; then
 		test "x${withval}" = "xyes" && withval="local7.error"
-		AC_DEFINE_UNQUOTED(WITH_LOG_FACILITY_ERROR, "$withval")
+		AC_DEFINE_UNQUOTED([WITH_LOG_FACILITY_ERROR],
+                                   ["${withval}"])
 	fi])dnl
 
 AC_ARG_WITH([log-facility-fatal],
@@ -759,7 +765,8 @@ AC_ARG_WITH([log-facility-fatal],
                         [Log facility [[local7.error]]])],
 	[if test "x${withval}" != "xno"; then
 		test "x${withval}" = "xyes" && withval="local7.error"
-		AC_DEFINE_UNQUOTED(WITH_LOG_FACILITY_FATAL, "$withval")
+		AC_DEFINE_UNQUOTED([WITH_LOG_FACILITY_FATAL],
+                                   ["${withval}"])
 	fi])dnl
 
 AC_ARG_WITH([log-facility-panic],
@@ -767,7 +774,8 @@ AC_ARG_WITH([log-facility-panic],
                         [Log facility [[local7.error]]])],
 	[if test "x${withval}" != "xno"; then
 		test "x${withval}" = "xyes" && withval="local7.error"
-		AC_DEFINE_UNQUOTED(WITH_LOG_FACILITY_PANIC, "$withval")
+		AC_DEFINE_UNQUOTED([WITH_LOG_FACILITY_PANIC],
+                                   ["${withval}"])
 	fi])dnl
 
 dnl#
@@ -799,9 +807,10 @@ AC_ARG_WITH([trace-load],
                         [specify a pattern for trace [[no]]])],
 	[if test "x${withval}" != "xno"; then
 		if test "x${withval}" = "xyes"; then
-			AC_DEFINE_UNQUOTED(WITH_TRACE_LOAD, _all_on)
+			AC_DEFINE_UNQUOTED([WITH_TRACE_LOAD],[_all_on])
 		else
-			AC_DEFINE_UNQUOTED(WITH_TRACE_LOAD, "$withval")
+			AC_DEFINE_UNQUOTED([WITH_TRACE_LOAD],
+                                           ["${withval}"])
 		fi
 	fi])dnl
 
@@ -810,9 +819,10 @@ AC_ARG_WITH([trace-unload],
                         [specify a pattern for trace [[no]]])],
 	[if test "x${withval}" != "xno"; then
 		if test "x${withval}" = "xyes"; then
-			AC_DEFINE_UNQUOTED(WITH_TRACE_UNLOAD, _all_on)
+			AC_DEFINE_UNQUOTED([WITH_TRACE_UNLOAD],[_all_on])
 		else
-			AC_DEFINE_UNQUOTED(WITH_TRACE_UNLOAD, "$withval")
+			AC_DEFINE_UNQUOTED([WITH_TRACE_UNLOAD],
+                                           ["${withval}"])
 		fi
 	fi])dnl
 
@@ -821,9 +831,10 @@ AC_ARG_WITH([trace-switch],
                         [specify a pattern for trace [[no]]])],
 	[if test "x${withval}" != "xno"; then
 		if test "x${withval}" = "xyes"; then
-			AC_DEFINE_UNQUOTED(WITH_TRACE_SWITCH, _all_on)
+			AC_DEFINE_UNQUOTED([WITH_TRACE_SWITCH],[_all_on])
 		else
-			AC_DEFINE_UNQUOTED(WITH_TRACE_SWITCH, "$withval")
+			AC_DEFINE_UNQUOTED([WITH_TRACE_SWITCH],
+                                           ["${withval}"])
 		fi
 	fi])dnl
 
@@ -832,9 +843,10 @@ AC_ARG_WITH([trace-disp],
                         [specify a pattern for trace [[no]]])],
 	[if test "x${withval}" != "xno"; then
 		if test "x${withval}" = "xyes"; then
-			AC_DEFINE_UNQUOTED(WITH_TRACE_DISP, _all_on)
+			AC_DEFINE_UNQUOTED([WITH_TRACE_DISP],[_all_on])
 		else
-			AC_DEFINE_UNQUOTED(WITH_TRACE_DISP, "$withval")
+			AC_DEFINE_UNQUOTED([WITH_TRACE_DISP],
+                                           ["${withval}"])
 		fi
 	fi])dnl
 
@@ -843,9 +855,10 @@ AC_ARG_WITH([trace-list],
                         [specify a pattern for trace [[no]]])],
 	[if test "x${withval}" != "xno"; then
 		if test "x${withval}" = "xyes"; then
-			AC_DEFINE_UNQUOTED(WITH_TRACE_LIST, _all_on)
+			AC_DEFINE_UNQUOTED([WITH_TRACE_LIST],[_all_on])
 		else
-			AC_DEFINE_UNQUOTED(WITH_TRACE_LIST, "$withval")
+			AC_DEFINE_UNQUOTED([WITH_TRACE_LIST],
+                                           ["${withval}"])
 		fi
 	fi])dnl
 
@@ -854,9 +867,10 @@ AC_ARG_WITH([trace-avail],
                         [specify a pattern for trace [[no]]])],
 	[if test "x${withval}" != "xno"; then
 		if test "x${withval}" = "xyes"; then
-			AC_DEFINE_UNQUOTED(WITH_TRACE_AVAIL, _all_on)
+			AC_DEFINE_UNQUOTED([WITH_TRACE_AVAIL],[_all_on])
 		else
-			AC_DEFINE_UNQUOTED(WITH_TRACE_AVAIL, "$withval")
+			AC_DEFINE_UNQUOTED([WITH_TRACE_AVAIL],
+                                           ["${withval}"])
 		fi
 	fi])dnl
 
@@ -865,9 +879,10 @@ AC_ARG_WITH([trace-help],
                         [specify a pattern for trace [[no]]])],
 	[if test "x${withval}" != "xno"; then
 		if test "x${withval}" = "xyes"; then
-			AC_DEFINE_UNQUOTED(WITH_TRACE_HELP, _all_on)
+			AC_DEFINE_UNQUOTED([WITH_TRACE_HELP],[_all_on])
 		else
-			AC_DEFINE_UNQUOTED(WITH_TRACE_HELP, "$withval")
+			AC_DEFINE_UNQUOTED([WITH_TRACE_HELP],
+                                           ["${withval}"])
 		fi
 	fi])dnl
 
@@ -876,9 +891,10 @@ AC_ARG_WITH([trace-init],
                         [specify a pattern for trace [[no]]])],
 	[if test "x${withval}" != "xno"; then
 		if test "x${withval}" = "xyes"; then
-			AC_DEFINE_UNQUOTED(WITH_TRACE_INIT, _all_on)
+			AC_DEFINE_UNQUOTED([WITH_TRACE_INIT],[_all_on])
 		else
-			AC_DEFINE_UNQUOTED(WITH_TRACE_INIT, "$withval")
+			AC_DEFINE_UNQUOTED([WITH_TRACE_INIT],
+                                           ["${withval}"])
 		fi
 	fi])dnl
 
@@ -887,9 +903,9 @@ AC_ARG_WITH([trace-use],
                         [specify a pattern for trace [[no]]])],
 	[if test "x${withval}" != "xno"; then
 		if test "x${withval}" = "xyes"; then
-			AC_DEFINE_UNQUOTED(WITH_TRACE_USE, _all_on)
+			AC_DEFINE_UNQUOTED([WITH_TRACE_USE],[_all_on])
 		else
-			AC_DEFINE_UNQUOTED(WITH_TRACE_USE, "$withval")
+			AC_DEFINE_UNQUOTED([WITH_TRACE_USE],["${withval}"])
 		fi
 	fi])dnl
 
@@ -898,9 +914,10 @@ AC_ARG_WITH([trace-unuse],
                         [specify a pattern for trace [[no]]])],
 	[if test "x${withval}" != "xno"; then
 		if test "x${withval}" = "xyes"; then
-			AC_DEFINE_UNQUOTED(WITH_TRACE_UNUSE, _all_on)
+			AC_DEFINE_UNQUOTED([WITH_TRACE_UNUSE],[_all_on])
 		else
-			AC_DEFINE_UNQUOTED(WITH_TRACE_UNUSE, "$withval")
+			AC_DEFINE_UNQUOTED([WITH_TRACE_UNUSE],
+                                           ["${withval}"])
 		fi
 	fi])dnl
 
@@ -909,9 +926,10 @@ AC_ARG_WITH([trace-update],
                         [specify a pattern for trace [[no]]])],
 	[if test "x${withval}" != "xno"; then
 		if test "x${withval}" = "xyes"; then
-			AC_DEFINE_UNQUOTED(WITH_TRACE_UPDATE, _all_on)
+			AC_DEFINE_UNQUOTED([WITH_TRACE_UPDATE],[_all_on])
 		else
-			AC_DEFINE_UNQUOTED(WITH_TRACE_UPDATE, "$withval")
+			AC_DEFINE_UNQUOTED([WITH_TRACE_UPDATE],
+                                           ["${withval}"])
 		fi
 	fi])dnl
 
@@ -920,9 +938,10 @@ AC_ARG_WITH([trace-purge],
                        [specify a pattern for trace [[no]]])],
 	[if test "x${withval}" != "xno"; then
 		if test "x${withval}" = "xyes"; then
-			AC_DEFINE_UNQUOTED(WITH_TRACE_PURGE, _all_on)
+			AC_DEFINE_UNQUOTED([WITH_TRACE_PURGE],[_all_on])
 		else
-			AC_DEFINE_UNQUOTED(WITH_TRACE_PURGE, "$withval")
+			AC_DEFINE_UNQUOTED([WITH_TRACE_PURGE],
+                                           ["${withval}"])
 		fi
 	fi])dnl
 
@@ -931,9 +950,10 @@ AC_ARG_WITH([trace-clear],
                         [specify a pattern for trace [[no]]])],
 	[if test "x${withval}" != "xno"; then
 		if test "x${withval}" = "xyes"; then
-			AC_DEFINE_UNQUOTED(WITH_TRACE_CLEAR, _all_on)
+			AC_DEFINE_UNQUOTED([WITH_TRACE_CLEAR],[_all_on])
 		else
-			AC_DEFINE_UNQUOTED(WITH_TRACE_CLEAR, "$withval")
+			AC_DEFINE_UNQUOTED([WITH_TRACE_CLEAR],
+                                           ["${withval}"])
 		fi
 	fi])dnl
 
@@ -942,9 +962,10 @@ AC_ARG_WITH([trace-whatis],
                         [specify a pattern for trace [[no]]])],
 	[if test "x${withval}" != "xno"; then
 		if test "x${withval}" = "xyes"; then
-			AC_DEFINE_UNQUOTED(WITH_TRACE_WHATIS, _all_on)
+			AC_DEFINE_UNQUOTED([WITH_TRACE_WHATIS],[_all_on])
 		else
-			AC_DEFINE_UNQUOTED(WITH_TRACE_WHATIS, "$withval")
+			AC_DEFINE_UNQUOTED([WITH_TRACE_WHATIS],
+                                           ["${withval}"])
 		fi
 	fi])dnl
 
@@ -953,9 +974,10 @@ AC_ARG_WITH([trace-apropos],
                         [specify a pattern for trace [[no]]])],
 	[if test "x${withval}" != "xno"; then
 		if test "x${withval}" = "xyes"; then
-			AC_DEFINE_UNQUOTED(WITH_TRACE_APROPOS, _all_on)
+			AC_DEFINE_UNQUOTED([WITH_TRACE_APROPOS],[_all_on])
 		else
-			AC_DEFINE_UNQUOTED(WITH_TRACE_APROPOS, "$withval")
+			AC_DEFINE_UNQUOTED([WITH_TRACE_APROPOS],
+                                           ["${withval}"])
 		fi
 	fi])dnl
 
@@ -969,7 +991,7 @@ dnl#
 
 LT_LIB_M
 AC_CHECK_LIB([m],[log])dnl
-if test "${STATIC-foobar}" = "foobar"; then
+if test "x${STATIC-foobar}" = "xfoobar"; then
     dnl# libtool already checks for dlopen, so use a different symbol here:
     AC_CHECK_LIB([dl],[dlsym])
 fi
@@ -1046,14 +1068,14 @@ MODULEPATH: Directory that contains all the system module files])dnl
 AC_ARG_WITH([module-path],
 	[AS_HELP_STRING([--with-module-path=<path>],
                         [use module path=<path> [[PREFIX/Modules/modulefiles]]])],
-	[MODULEPATH="$withval"
+	[MODULEPATH="${withval}"
 	AC_MSG_RESULT([MODULEPATH = ${with_module_path}])
 	AC_DEFINE_UNQUOTED([MODULEPATH],["${withval}"])dnl
 	],[
-	if test ! -z "$withval"; then
+	if test ! -z "${withval}"; then
 		AC_MSG_WARN([if using '--with-module-path': need to specify a path!])
 	fi
-	withval="$BASEPREFIX/Modules/modulefiles"
+	withval="${BASEPREFIX}/Modules/modulefiles"
 	AC_MSG_WARN([will use MODULEPATH=${withval} : rerun configure using --with-module-path to override default])
 	MODULEPATH="${withval}"
 	AC_DEFINE_UNQUOTED([MODULEPATH],["${withval}"])])dnl
@@ -1107,8 +1129,8 @@ AH_TEMPLATE([DEFAULTMANPATH],[DEFAULTMANPATH: default man path])dnl
 AC_ARG_WITH([man-path],
 	[AS_HELP_STRING([--with-man-path=<dir>],
                         [use <dir> for the default MANPATH [[/usr/man:/usr/share/man]]])],
-	[AC_DEFINE_UNQUOTED(DEFAULTMANPATH, "$withval")dnl
-	AC_MSG_RESULT([DEFAULTMANPATH = $withval])],
+	[AC_DEFINE_UNQUOTED([DEFAULTMANPATH],["${withval}"])dnl
+	AC_MSG_RESULT([DEFAULTMANPATH = ${withval}])],
         [if test -d "/usr/man" ; then
            withval="/usr/man"
            if test -d "/usr/share/man" ; then
@@ -1143,7 +1165,7 @@ AC_ARG_WITH([autoload-path],
 		fi
 	fi
 	AUTOLOADPATH="${withval}"
-	AC_DEFINE_UNQUOTED(AUTOLOADPATH, "$withval")])dnl
+	AC_DEFINE_UNQUOTED([AUTOLOADPATH],["${withval}"])])dnl
 
 dnl#
 dnl#-----------------------------------------------------------------------
@@ -1257,7 +1279,8 @@ AC_CONFIG_FILES([Makefile modules.lsm .spec doc/Makefile
 	po/Makefile])dnl
 
 dnl# We want these to be recreated for each install:
-dnl#	init/bash init/csh init/ksh init/perl.pm init/python.py init/sh init/zsh
+dnl#	init/bash init/csh init/ksh init/perl.pm init/python.py
+dnl#	init/sh init/zsh
 
 AC_CONFIG_COMMANDS([default],[[date > stamp-h]],[[]])dnl
 AC_OUTPUT

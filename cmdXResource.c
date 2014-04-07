@@ -37,7 +37,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: e6fc28fce15ed84f961b4e38341d9212cf285c25 $";
@@ -50,9 +50,9 @@ static void *UseId[] = { &UseId, Id };
 #include "modules_def.h"
 
 #ifdef HAS_X11LIBS
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
-#endif
+# include <X11/Xlib.h>
+# include <X11/Xatom.h>
+#endif /* HAS_X11LIBS */
 
 /** ************************************************************************ **/
 /** 				  LOCAL DATATYPES			     **/
@@ -64,27 +64,27 @@ typedef struct _ResourceDB {
     Window root;
     Atom prop;
 } ResourceDB;
-#endif
+#endif /* HAS_X11LIBS */
 
 /** ************************************************************************ **/
 /** 				     CONSTANTS				     **/
 /** ************************************************************************ **/
 
 #ifndef R_OK
-#define F_OK		0		/** does file exist		     **/
-#define X_OK		1		/** is it executable by caller	     **/
-#define W_OK		2		/** is it writable by caller	     **/
-#define R_OK		4		/** is it readable by caller	     **/
-#endif
+# define F_OK		0		/** does file exist		     **/
+# define X_OK		1		/** is it executable by caller	     **/
+# define W_OK		2		/** is it writable by caller	     **/
+# define R_OK		4		/** is it readable by caller	     **/
+#endif /* !R_OK */
 
 /** ************************************************************************ **/
 /**				      MACROS				     **/
 /** ************************************************************************ **/
 
 #ifdef HAS_X11LIBS
-#define MAXHOSTNAME	 255
-#define Resolution( pixels, mm)	(((pixels * 100000 / mm) + 50) / 100)
-#endif
+# define MAXHOSTNAME	 255
+# define Resolution( pixels, mm)	(((pixels * 100000 / mm) + 50) / 100)
+#endif /* HAS_X11LIBS */
 
 /** ************************************************************************ **/
 /** 				    LOCAL DATA				     **/
@@ -288,7 +288,7 @@ static	void	 doScreenDefines( int	scrno)
 {
     register Screen	*screen;
     register Visual	*visual;
-    
+
 #if WITH_DEBUGGING_UTIL_1
     ErrorLogger( NO_ERR_START, LOC, _proc_doScreenDefines, NULL);
 #endif
@@ -422,21 +422,23 @@ static	int	readFile(	register FILE	*input,
  ** ************************************************************************ **
  ++++*/
 
-static	ErrType getEntries(	Tcl_Interp	*interp,
-				Tcl_HashTable	*data,
-				register char	*buf,
-				int		 remove)
+static	ErrType getEntries(Tcl_Interp *interp, Tcl_HashTable *data,
+						   register char *buf, int remove)
 {
-    register Tcl_HashEntry	*entry;
-    char			*end,
-				 Res="^[ \t]*([^ \t]*)[ \t]*:[ \t]*(.*)[ \t]*$";
-    static Tcl_Obj		*res_obj = (Tcl_Obj *) NULL;
-    static Tcl_RegExp		 res_exp = (Tcl_RegExp) NULL;
-    int				 new_res;
+    register Tcl_HashEntry *entry;
+    char *end;
+	char *Res;
+    static Tcl_Obj *res_obj;
+    static Tcl_RegExp res_exp;
+    int new_res;
+
+	Res = "^[ \t]*([^ \t]*)[ \t]*:[ \t]*(.*)[ \t]*$";
+	res_obj = (Tcl_Obj *)NULL;
+	res_exp = (Tcl_RegExp)NULL;
 
 #if WITH_DEBUGGING_UTIL_1
-    ErrorLogger( NO_ERR_START, LOC, _proc_getEntries, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_getEntries, NULL);
+#endif /* WITH_DEBUGGING_UTIL_1 */
 
     /**
      **  The following regular expression matches pattern like
@@ -444,14 +446,18 @@ static	ErrType getEntries(	Tcl_Interp	*interp,
      **       <resource>:	<value>
      **
      **  The resource will be returned as \1 and the value as \2
-     **  Set the regexp pointer only, if it hasn't already been set. This 
+     **  Set the regexp pointer only, if it hasn't already been set. This
      **  is a constant regexp!
      **/
 
-    if(!res_obj)
-	res_obj = Tcl_NewStringObj(Res,strlen(Res));
-    if(!res_exp)
-	res_exp  = Tcl_GetRegExpFromObj(interp, res_obj,TCL_REG_ADVANCED);
+    if(!res_obj) {
+		/* not sure if these casts are correct... */
+		res_obj = Tcl_NewStringObj((const char *)Res,
+								   strlen((const char *)Res));
+	}
+    if(!res_exp) {
+		res_exp = Tcl_GetRegExpFromObj(interp, res_obj,TCL_REG_ADVANCED);
+	}
 
     /**
      **  Seek for the lines (buffers) end. Put a terminator there. Take care of
@@ -569,7 +575,7 @@ static	void	storeResProp(	register ResourceDB *rdb)
 #endif
 
     /**
-     **	 Write all attached resources into the buffer. Follow the X 
+     **	 Write all attached resources into the buffer. Follow the X
      **  resource syntax:
      **
      **        <resource>:	<value>
@@ -744,7 +750,7 @@ static	ErrType	initBuffers(	Tcl_Interp *interp,
 	if( !(buffer = (Tcl_DString *) module_malloc(sizeof(Tcl_DString)))) {
 	    if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
 		return( ERR_ALLOC);	/** ----- EXIT (OUT OF MEMORY) ----> **/
-	} else 
+	} else
 	    Tcl_DStringInit( buffer);
     } else
 	Tcl_DStringTrunc( buffer, 0);
@@ -885,8 +891,8 @@ int	cmdXResource(	ClientData	 client_data,
       /* don't bother trying to set display variables, if there is no display */
       return(TCL_OK);
     }
-    
-	
+
+
     /**
      **  Parameter check
      **/
@@ -923,7 +929,7 @@ int	cmdXResource(	ClientData	 client_data,
 	     **  Initialize read buffers
 	     **/
 
-	    if( NO_ERR != initBuffers(interp, is_file)) 
+	    if( NO_ERR != initBuffers(interp, is_file))
 		return( TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
 
 	    /**
@@ -935,7 +941,7 @@ int	cmdXResource(	ClientData	 client_data,
 	    } else {
 
 		if( NULL == (inp = (do_cpp ?
-		    popen( strcat( defines, argv[ opt_ind]), "r") : 
+		    popen( strcat( defines, argv[ opt_ind]), "r") :
 		    fopen( argv[ opt_ind], "r")) ) )
 		    if( OK != ErrorLogger( (do_cpp ? ERR_POPEN : ERR_OPEN), LOC,
 			"argv[ opt_ind]", "reading" ))
@@ -964,7 +970,7 @@ int	cmdXResource(	ClientData	 client_data,
 	}
 #endif
 
-	opt_ind++; 
+	opt_ind++;
 
     } /** while **/
 

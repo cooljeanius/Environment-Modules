@@ -31,7 +31,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 251840d8d1143e2ca603d419068bc07b85ae78bc $";
@@ -41,11 +41,18 @@ static void *UseId[] = { &UseId, Id };
 /** 				      HEADERS				     **/
 /** ************************************************************************ **/
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <time.h>
 #include "modules_def.h"
 #if defined HAVE_STRCOLL && defined HAVE_LOCALE_H && defined HAVE_SETLOCALE
 #  include <locale.h>
-#endif
+#endif /* HAVE_STRCOLL && HAVE_LOCALE_H && HAVE_SETLOCALE */
+#if defined(HAVE_SYS_IOCTL_H) && !defined(ioctl)
+# include <sys/ioctl.h>
+#endif /* HAVE_SYS_IOCTL_H && !ioctl */
 
 /** ************************************************************************ **/
 /** 				  LOCAL DATATYPES			     **/
@@ -70,15 +77,15 @@ typedef struct _subdir_node {
  **/
 
 #if !defined(isgraph) && defined(_P) && defined(_N)
-#define isgraph(c)	((_ctype_+1)[c]&(_P|_U|_L|_N))
-#endif
+# define isgraph(c)	((_ctype_+1)[c]&(_P|_U|_L|_N))
+#endif /* !isgraph && _P && _N */
 
 #define DIREST  50
 #define  CACHE_VERSION  "v3.0.0"
 
 #if !defined(CACHE_UMASK)
-#define CACHE_UMASK	0
-#endif
+# define CACHE_UMASK	0
+#endif /* !CACHE_UMASK */
 
 /** ************************************************************************ **/
 /**				      MACROS				     **/
@@ -165,8 +172,8 @@ static	char	 *_pick_file_list( int ndx);
 static	void	  print_terse_files( int terminal_width, int len, char *header,
 			int numbered);
 #ifdef CACHE_AVAIL
-static	char	**create_cache_list( FILE*, int*, char* );
-#endif
+static	char	**create_cache_list(FILE*, int*, char* );
+#endif /* CACHE_AVAIL */
 
 /*++++
  ** ** Function-Header ***************************************************** **
@@ -190,82 +197,82 @@ static	char	**create_cache_list( FILE*, int*, char* );
  ** ************************************************************************ **
  ++++*/
 
-int ModuleCmd_Avail(	Tcl_Interp	*interp,
-			int		 argc,
-                	char		*argv[])
+int ModuleCmd_Avail(Tcl_Interp *interp, int argc, char *argv[])
 {
     char	*dirname;
     char	*modpath;
     int		 Result = -TCL_ERROR;
-    
+
 #if WITH_DEBUGGING_MODULECMD
-    ErrorLogger( NO_ERR_START, LOC, _proc_ModuleCmd_Avail, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_ModuleCmd_Avail, NULL);
+#endif /* WITH_DEBUGGING_MODULECMD */
 
     /**
-     **  If there's no MODULEPATH defined, we cannot output anything
+     **  If there is/was no MODULEPATH defined, we cannot output anything
      **  We perform 1 level of env.var. expansion
      **/
 
-    if( !(modpath = (char *) xgetenv( "MODULEPATH")))
-	if( OK != ErrorLogger( ERR_MODULE_PATH, LOC, NULL))
-	    goto unwind0;
- 
+    if (!(modpath = (char *)xgetenv("MODULEPATH"))) {
+		if (OK != ErrorLogger(ERR_MODULE_PATH, LOC, NULL)) {
+			goto unwind0;
+		}
+	}
+
 #ifdef CACHE_AVAIL
-    if( (char *) NULL == (namebuf = stringer(NULL, MOD_BUFSIZE, NULL)))
-	if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
-	    goto unwind1;
-#endif
+    if ((char *)NULL == (namebuf = stringer(NULL, MOD_BUFSIZE, NULL))) {
+		if (OK != ErrorLogger( ERR_ALLOC, LOC, NULL)) {
+			goto unwind1;
+		}
+	}
+#endif /* CACHE_AVAIL */
 
 #if defined HAVE_STRCOLL && defined HAVE_SETLOCALE
     /**
      ** define the collation order using the locale
      **/
-    (void) setlocale(LC_COLLATE,"");
-#endif
+    (void)setlocale(LC_COLLATE,"");
+#endif /* HAVE_STRCOLL && HAVE_SETLOCALE */
 
     /**
-     **  If we're given a full-path, then we'll just check that directory.
-     **  Otherwise, we'll check every directory in MODULESPATH.
+     **  If we were/are given a full-path, then we will just check that
+	 **  directory. Otherwise, we will check every directory in MODULESPATH.
      **/
 
-    if( argc > 0 && **argv == '/') {
+    if ((argc > 0) && (**argv == '/')) {
+		while (argc--) {
+			/**
+			 ** Set the name of the module specified on the command line
+			 **/
 
-	while( argc--) {
+			g_specified_module = *argv;
 
-	    /**
-	     ** Set the name of the module specified on the command line
-	     **/
-
-	    g_specified_module = *argv;
-
-	    if( !check_dir( *argv))
-		if( OK != ErrorLogger( ERR_PARAM, LOC, NULL)) {
-		    Result = TCL_ERROR;	/** --- EXIT PROCEDURE (FAILURE) --> **/
+			if (!check_dir( *argv)) {
+				if (OK != ErrorLogger(ERR_PARAM, LOC, NULL)) {
+					Result = TCL_ERROR;	/** --- EXIT PROCEDURE (FAILURE) --> **/
+				} else {
+					print_dir(interp, *argv, NULL);
+				}
+			}
+			argv++;
 		}
-	    else
-		print_dir( interp, *argv, NULL);
-
-	    argv++;
-	}
-
     } else {
 
 	/**
-	 **  We're not given a full path. Tokenize the module path string and
-	 **  print the contents of each directory specified (if it exists ;-)
+	 **  We were not given a full path. Tokenize the module path string and
+	 **  print the contents of each directory specified (if it exists, that is)
 	 **/
 
-	if( sw_format & SW_LONG)
-	    fprintf( stderr, long_header);
+		if (sw_format & SW_LONG) {
+			fprintf(stderr, "%s", long_header);
+		}
 
 	/**
 	 **  If a module category is specified check whether it is part
 	 **  of the directory we're scanning at the moment.
 	 **/
 
-	if( argc > 0) {  /* show sub directory */
-	    while( argc--) {
+	if (argc > 0) {  /* show sub directory */
+	    while (argc--) {
 		/**
 		 ** Set the name of the module specified on the command line
 		 **/
@@ -281,7 +288,7 @@ int ModuleCmd_Avail(	Tcl_Interp	*interp,
 		     **/
 
 		    char *s;
-		
+
 		    if( s = strchr( dirname, ':'))
 			*s++ = '\0';
 
@@ -313,7 +320,7 @@ int ModuleCmd_Avail(	Tcl_Interp	*interp,
 		 **/
 
 		char *s;
-	    
+
 		if( s = strchr( dirname, ':'))
 		    *s++ = '\0';
 
@@ -383,7 +390,7 @@ int check_dir(	char	*dirname)
     ErrorLogger( NO_ERR_START, LOC, _proc_check_dir, NULL);
 #endif
 
-    if( !(dirp = opendir( dirname))) 
+    if( !(dirp = opendir( dirname)))
 	return( 0);
 
     if( -1 == closedir( dirp))
@@ -549,7 +556,7 @@ static	int	print_dir(	Tcl_Interp	*interp,
     if( !usecache && sw_create)
 	store_files( dirlst_head, count, tcount, dir);
 #endif
-    
+
     /**
      **  In case of any selection, we have to force all .modulrc's and .versions
      **  on the path
@@ -663,7 +670,7 @@ static	int	check_cache( char *dir)
 	        continue;
 
             if( stat( buf, &dir_stats) != -1) {
-                if( dir_stats.st_mtime <= info_time) 
+                if( dir_stats.st_mtime <= info_time)
                     continue;
             }
 
@@ -734,7 +741,7 @@ fi_ent	*get_dir(	char	*dir,
     			*dirlst_cur,	/** current			     **/
     			*dirlst_last;	/** and last			     **/
     char		*dirname;	/** Expanded directory path name     **/
-    char		*tmp;		
+    char		*tmp;
     int			 count = 0;
 
 #if WITH_DEBUGGING_UTIL_2
@@ -766,7 +773,7 @@ fi_ent	*get_dir(	char	*dir,
 	}
     }
     dirlst_last = dirlst_head + DIREST;
-  
+
     /**
      **  Read in the  contents of the directory. Ignore dotfiles
      **		and version directories.
@@ -781,9 +788,9 @@ fi_ent	*get_dir(	char	*dir,
 	 **/
 
         if(dirlst_cur == dirlst_last) {
-            if(!(dirlst_head = (fi_ent*) module_realloc( (char*) dirlst_head, 
-		(count<<1) * sizeof( fi_ent)))) 
-		if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL)) 
+            if(!(dirlst_head = (fi_ent*) module_realloc( (char*) dirlst_head,
+		(count<<1) * sizeof( fi_ent))))
+		if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
 		    goto unwind0;
             dirlst_cur = dirlst_head + count;
             dirlst_last = dirlst_head + (count<<1);
@@ -840,7 +847,7 @@ fi_ent	*get_dir(	char	*dir,
 		}
 	    } else {
 		if( NULL == (ndir = strdup( tmp)))
-		    if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL)) 
+		    if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
 			goto unwind1;
 	    }
 
@@ -873,8 +880,8 @@ fi_ent	*get_dir(	char	*dir,
 		&tmpcount);
 
             /**
-             **  Add the number of real modulefiles (i.e. not subdirs and 
-             **  not non-modulefiles) to our total number of modulefiles 
+             **  Add the number of real modulefiles (i.e. not subdirs and
+             **  not non-modulefiles) to our total number of modulefiles
              **  contained in the structure.
              **/
 
@@ -909,7 +916,7 @@ fi_ent	*get_dir(	char	*dir,
 
 	dirlst_cur->fi_prefix = prefix;
 	if( NULL == (dirlst_cur->fi_name = strdup( dp->d_name)))
-	    if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL)) 
+	    if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
 		goto unwind1;
 
 	/**
@@ -984,7 +991,7 @@ void	dirlst_to_list(	char	**list,
 			char	 *path,
 			char	 *module)
 {
-    fi_ent	*dirlst_cur;	
+    fi_ent	*dirlst_cur;
     int 	 i;
     char	*ptr;
     int		 mlen;
@@ -1046,7 +1053,7 @@ void	dirlst_to_list(	char	**list,
 
 	    if( NULL == (list[(*beginning)++] = strdup( ptr))) {
 		if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL)) {
-		    while( i--) 
+		    while( i--)
 			null_free((void *) list + (--(*beginning)));
 		    return;		/** ------- EXIT (FAILURE) --------> **/
 		}
@@ -1111,7 +1118,7 @@ void	delete_dirlst(	fi_ent	*dirlst_head,
 	 **  Recursivle decend to subdirectories
 	 **/
 
-        if( dirlst_cur->fi_subdir) 
+        if( dirlst_cur->fi_subdir)
             delete_dirlst( dirlst_cur->fi_subdir, dirlst_cur->fi_listcount);
     } /** for **/
 
@@ -1152,7 +1159,7 @@ void	delete_dirlst(	fi_ent	*dirlst_head,
 
 #ifdef CACHE_AVAIL
 
-static	void	store_files(	fi_ent	*dirlst_head, 
+static	void	store_files(	fi_ent	*dirlst_head,
             			int	 count,
 				int	 tcount,
 				char	*dir)
@@ -1228,7 +1235,7 @@ static	void	store_files(	fi_ent	*dirlst_head,
 
 static	void	store_dirlst(	FILE	*cacheinfo,
 				FILE	*cacheoutput,
-				fi_ent	*dirlst_head, 
+				fi_ent	*dirlst_head,
              			int	 count,
 				char	*dir)
 {
@@ -1253,7 +1260,7 @@ static	void	store_dirlst(	FILE	*cacheinfo,
                 fprintf( cacheinfo, "%s/%s/%s %d\n", dir, dirlst_cur->fi_prefix,
                          dirlst_cur->fi_name, (int)dirlst_cur->fi_stats.st_mtime);
             } else {
-                fprintf( cacheinfo, "%s/%s %d\n", dir, dirlst_cur->fi_name, 
+                fprintf( cacheinfo, "%s/%s %d\n", dir, dirlst_cur->fi_name,
                          (int)dirlst_cur->fi_stats.st_mtime);
             }
         }
@@ -1268,8 +1275,8 @@ static	void	store_dirlst(	FILE	*cacheinfo,
 	 **  Recursively descent into directories
 	 **/
 
-        if( dirlst_cur->fi_subdir) 
-            store_dirlst( cacheinfo, cacheoutput, dirlst_cur->fi_subdir, 
+        if( dirlst_cur->fi_subdir)
+            store_dirlst( cacheinfo, cacheoutput, dirlst_cur->fi_subdir,
                           dirlst_cur->fi_listcount, dir);
     } /** for **/
 
@@ -1385,24 +1392,24 @@ static	char	**create_cache_list(	FILE	*cacheinput,
      **  Check the version of the passed cache file at first
      **/
 
-    if( 1 != fscanf( cacheinput, "%s", buf)) 
+    if( 1 != fscanf( cacheinput, "%s", buf))
 	if( OK != ErrorLogger( ERR_READ, LOC, "cache", NULL))
 	    return( NULL);      /** ----------- EXIT (I/O error) ----------> **/
 
-    if( strcmp( buf, CACHE_VERSION)) 
+    if( strcmp( buf, CACHE_VERSION))
 	if( OK != ErrorLogger( ERR_CACHE_INVAL, LOC, buf, NULL))
 	    return( NULL);	/** -- EXIT (invalid cache file version) --> **/
-    
+
     /**
      **  Read the number of entries in the cache file and allocate enough
      **  memory for the resulting list.
      **/
 
-    if( 1 != fscanf( cacheinput, "%d", count)) 
+    if( 1 != fscanf( cacheinput, "%d", count))
         if( OK != ErrorLogger( ERR_READ, LOC, "cache", NULL))
 	    return( NULL);	/** ----------- EXIT (I/O error) ----------> **/
 
-    if( NULL == (list = (char**) module_malloc( *count * sizeof(char**)))) 
+    if( NULL == (list = (char**) module_malloc( *count * sizeof(char**))))
         if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
 	    return( NULL);	/** ------------ EXIT (FAILURE) -----------> **/
 
@@ -1499,7 +1506,7 @@ void delete_cache_list(	char	**list,
 
     for( i=0; i<tcount; i++)
         null_free((void *) (list + i));
-    
+
     null_free((void *)&list);
 
 } /** End of 'delete_cache_list' **/
@@ -1555,9 +1562,9 @@ void print_aligned_files(	Tcl_Interp	 *interp,
 #endif
 
     /**
-     **  In case of terse, human output we need to obtain the size of 
+     **  In case of terse, human output we need to obtain the size of
      **  the tty
-     **/ 
+     **/
 
     if( sw_format & (SW_HUMAN | SW_LONG) ) {
 	struct winsize window_size;
@@ -1710,9 +1717,9 @@ void print_aligned_files(	Tcl_Interp	 *interp,
 			}
 		}
 		_add_file_list( _file_list_buffer);
-	
+
 		tmp_len = strlen( _file_list_buffer);
-		if( tmp_len > maxlen) 
+		if( tmp_len > maxlen)
 		    maxlen = tmp_len;
 
 	    } else if ( sw_format & SW_LONG) {		/** long format **/
@@ -1752,7 +1759,7 @@ void print_aligned_files(	Tcl_Interp	 *interp,
      **/
 
     if( !(sw_format & SW_LONG) ) {
-	if( _file_list_wr_ndx > 0) 
+	if( _file_list_wr_ndx > 0)
 	    print_terse_files( terminal_width, maxlen, header, numbered);
     }
 
@@ -1807,7 +1814,7 @@ static	void	print_terse_files(  int terminal_width,
 	int col_ndx, row_ndx;
 	int rows;
         int mod_ndx;
-        
+
 	/**
 	 **  Print the header line
 	 **/
@@ -1818,7 +1825,7 @@ static	void	print_terse_files(  int terminal_width,
 
 	    fprintf( stderr, "\n");
 
-	    if( lin_len >= 2) 
+	    if( lin_len >= 2)
 		for( i = 0; i < lin_len / 2; i++)
 		    fprintf( stderr, "-");
 
@@ -1835,16 +1842,16 @@ static	void	print_terse_files(  int terminal_width,
 	 **  Print the columns
 	 **/
 
-        
+
 	if( !columns)
 	    columns = 1;
 	rows = (_file_list_wr_ndx + columns - 1) / columns;
 
         for( row_ndx = 0; row_ndx < rows; row_ndx++) {
-          for( col_ndx = 0; col_ndx < columns; col_ndx++) { 
-            
+          for( col_ndx = 0; col_ndx < columns; col_ndx++) {
+
             mod_ndx = row_ndx + col_ndx * rows;
-            
+
             if( module = _pick_file_list( mod_ndx)) {
               moduleright = _pick_file_list( row_ndx + (col_ndx+1)* rows);
 
@@ -1918,7 +1925,7 @@ static	void _add_file_list( char *name)
     if( _file_list_cnt <= _file_list_wr_ndx) {
 	_file_list_cnt += FILE_LIST_SEGM_SIZE;
 
-	if( !_file_list_ptr) 
+	if( !_file_list_ptr)
 	    _file_list_ptr =
 		(char **) module_malloc(_file_list_cnt * sizeof(char *));
 	else
@@ -2037,31 +2044,32 @@ static	void print_spaced_file(	char	*name,
  ** ************************************************************************ **
  ++++*/
 
-static	char *mkdirnm(	char	*dir,
-			char	*file)
+static	char *mkdirnm(char *dir, char *file)
 {
-    static char  dirbuf[ MOD_BUFSIZE];	/** Buffer for path creation	     **/
+    static char  dirbuf[MOD_BUFSIZE]; /** Buffer for path creation **/
 
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_START, LOC, _proc_mkdirnm, ", dir='", dir, ", file='",
-	file, "'", NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_mkdirnm, ", dir='", dir, ", file='",
+				file, "'", NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
     /**
      **  If only a file is given, or the file is in the current directory
      **  return just the file.
      **/
 
-    if( dir == NULL || *dir == '\0' || !strcmp(dir,"."))
-	return( strcpy( dirbuf, file));
+    if ((dir == NULL) || (*dir == '\0') || !strcmp(dir, ".")) {
+		return (strcpy(dirbuf, file));
+	}
 
     /**
      **  Check whether the full path fits into the buffer
      **/
 
-    if( (int) ( strlen( dir) + 1 + strlen( file) + 1 ) > MOD_BUFSIZE) {
-	if( OK != ErrorLogger( ERR_NAMETOLONG, LOC, dir, file, NULL))
-	    return( NULL);
+    if ((int)(strlen(dir) + 1 + strlen(file) + 1) > MOD_BUFSIZE) {
+		if (OK != ErrorLogger(ERR_NAMETOLONG, LOC, dir, file, NULL)) {
+			return( NULL);
+		}
     }
 
     /**
@@ -2069,10 +2077,11 @@ static	char *mkdirnm(	char	*dir,
      **  be no double slash ...
      **/
 
-    strcpy( dirbuf, dir);
-    if( dir[ strlen( dir) - 1] != '/' && file[0] != '/')
-	strcat( dirbuf, "/");
-    return( strcat( dirbuf, file));
+    strcpy(dirbuf, dir);
+    if ((dir[strlen(dir) - 1] != '/') && (file[0] != '/')) {
+		strcat(dirbuf, "/");
+	}
+    return (strcat(dirbuf, file));
 
 } /** End of 'mkdirnm' **/
 
@@ -2103,17 +2112,18 @@ static	char *mkdirnm(	char	*dir,
  ** ************************************************************************ **
  ++++*/
 
-static	int fi_ent_cmp(	const void	*fi1,
-			const void	*fi2)
+static	int fi_ent_cmp(const void *fi1, const void *fi2)
 {
 
 #ifdef DEF_COLLATE_BY_NUMBER
-	return colcomp( ((fi_ent*)fi1)->fi_name, ((fi_ent*)fi2)->fi_name);
+	return colcomp(((fi_ent*)fi1)->fi_name, ((fi_ent*)fi2)->fi_name);
 #else
 #  ifdef HAVE_STRCOLL
-	return strcoll( ((fi_ent*)fi1)->fi_name, ((fi_ent*)fi2)->fi_name);
+	return strcoll(((fi_ent*)fi1)->fi_name, ((fi_ent*)fi2)->fi_name);
 #  else
-	return strcmp( ((fi_ent*)fi1)->fi_name, ((fi_ent*)fi2)->fi_name);
-#  endif
-#endif
+	return strcmp(((fi_ent*)fi1)->fi_name, ((fi_ent*)fi2)->fi_name);
+#  endif /* HAVE_STRCOLL */
+#endif /* DEF_COLLATE_BY_NUMBER */
 }
+
+/* EOF */

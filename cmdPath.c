@@ -27,7 +27,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 1aa261a485ed8fb00714dd83cca77b3d187368ec $";
@@ -39,8 +39,8 @@ static void *UseId[] = { &UseId, Id };
 
 #include "modules_def.h"
 #ifdef	HAS_SYS_PARAM_H
-#include <sys/param.h>
-#endif
+# include <sys/param.h>
+#endif /* HAS_SYS_PARAM_H */
 
 /** ************************************************************************ **/
 /** 				  LOCAL DATATYPES			     **/
@@ -53,9 +53,9 @@ static void *UseId[] = { &UseId, Id };
 /** ************************************************************************ **/
 
 #ifdef	MAXPATHLEN
-#define	PATH_BUFLEN	MAXPATHLEN
+# define PATH_BUFLEN MAXPATHLEN
 #else
-#define	PATH_BUFLEN	1024
+# define PATH_BUFLEN 1024
 #endif
 
 /** ************************************************************************ **/
@@ -75,17 +75,19 @@ static	char	module_name[] = "cmdPath.c";	/** File name of this module **/
 static	char	_proc_cmdSetPath[] = "cmdSetPath";
 static	char	_proc_cmdRemovePath[] = "cmdRemovePath";
 static	char	_proc_Remove_Path[] = "Remove_Path";
-#endif
+#endif /* WITH_DEBUGGING_CALLBACK */
 
-static char buffer[ PATH_BUFLEN];
+static char buffer[PATH_BUFLEN];
 
 /** ************************************************************************ **/
 /**				    PROTOTYPES				     **/
 /** ************************************************************************ **/
 
-static int	Remove_Path( Tcl_Interp	*interp, char *variable, char *item, 
-			char *sw_marker, const char *delim);
+static int Remove_Path(Tcl_Interp *interp, char *variable, char *item,
+					   char *sw_marker, const char *delim);
 
+/* from utility.c (no applicable header): */
+void regex_quote(const char *path, char *newpath, int len);
 
 /*++++
  ** ** Function-Header ***************************************************** **
@@ -127,7 +129,7 @@ int	cmdSetPath(	ClientData	 client_data,
 		 *newpath,			/** New value of 'var'	     **/
 		 *sw_marker = APP_SW_MARKER,	/** arbitrary default	     **/
 		 *startp=NULL, *endp=NULL,	/** regexp match endpts	     **/
-		 *qualifiedpath,		/** List of dirs which 
+		 *qualifiedpath,		/** List of dirs which
 						    aren't already in path   **/
 		**pathlist;			/** List of dirs	     **/
     const char	 *delim = _colon;		/** path delimiter	     **/
@@ -147,7 +149,7 @@ int	cmdSetPath(	ClientData	 client_data,
      **/
     if( g_flags & (M_WHATIS | M_HELP))
         goto success0;
-	
+
     /**
      **   Check arguments. There should be at least 3 args:
      **     argv[0]  -  prepend/append
@@ -163,7 +165,7 @@ int	cmdSetPath(	ClientData	 client_data,
     /**
      **  Should this guy be removed from the variable ... If yes, do so!
      **/
-    if(g_flags & M_REMOVE) 
+    if(g_flags & M_REMOVE)
 	return( cmdRemovePath(client_data, interp, argc, argv));   /** ----> **/
 
     /**
@@ -171,11 +173,11 @@ int	cmdSetPath(	ClientData	 client_data,
      **/
     if( !( append = !!strncmp( argv[0], "pre", 3)))
 	sw_marker = PRE_SW_MARKER;
-  
+
     /**
      **  Non-persist mode?
      **/
-    
+
     if (g_flags & M_NONPERSIST) {
 	return (TCL_OK);
     }
@@ -225,7 +227,7 @@ int	cmdSetPath(	ClientData	 client_data,
 
     /**
      **  Split the new path into its components directories so each
-     **  directory can be checked to see whether it is already in the 
+     **  directory can be checked to see whether it is already in the
      **  existing path.
      **/
     if( !( pathlist = SplitIntoList( interp, (char *) argv[arg1+1], &numpaths,
@@ -250,7 +252,7 @@ int	cmdSetPath(	ClientData	 client_data,
 
 	/**
 	 **  Check to see if path is already in this path variable.
-	 **  It could be at the 
+	 **  It could be at the
 	 **     beginning ... ^path:
 	 **     middle    ... :path:
 	 **     end       ... :path$
@@ -268,7 +270,7 @@ int	cmdSetPath(	ClientData	 client_data,
 	null_free((void *) &newpath);
 
 	/**
-	 **  If the directory is not already in the path, 
+	 **  If the directory is not already in the path,
 	 **  add it to the qualified path.
 	 **/
 	if( !Tcl_RegExpExec(interp, chkexpPtr, oldpath, oldpath))
@@ -278,7 +280,7 @@ int	cmdSetPath(	ClientData	 client_data,
 		if( OK != ErrorLogger( ERR_STRING, LOC, NULL))
 		    goto unwind2;
 
-    }					/** End of loop that checks for 
+    }					/** End of loop that checks for
 					 ** already existent path
 					 **/
     /**
@@ -346,7 +348,7 @@ int	cmdSetPath(	ClientData	 client_data,
 			strcat(newpath, delim);
 		*startp = ch;
 		strcat(newpath, startp);
-               
+
 	    } else {
                 char ch = *endp;
 		*endp = '\0';
@@ -466,11 +468,11 @@ int	cmdRemovePath(	ClientData	 client_data,
 	    NULL))
 	    goto unwind0;
 
-  
+
     /**
      **  Non-persist mode?
      **/
-    
+
     if (g_flags & M_NONPERSIST) {
 	return (TCL_OK);
     }
@@ -485,13 +487,13 @@ int	cmdRemovePath(	ClientData	 client_data,
 	fprintf( stderr, "\n");
         goto success0;
     }
-  
+
     /**
      **  prepend or append. The default is append.
      **/
     if( ! strncmp( argv[0], "pre", 3))
 	sw_marker = PRE_SW_MARKER;
-  
+
     /**
      **  Check for the delimiter option
      **/
@@ -511,7 +513,7 @@ int	cmdRemovePath(	ClientData	 client_data,
     /**
      ** For switch state3, we're looking to remove the markers.
      **/
-    if( g_flags & M_SWSTATE3) 
+    if( g_flags & M_SWSTATE3)
 	argv[arg1+1] = sw_marker;
 
     /**
@@ -651,7 +653,7 @@ static int Remove_Path(
 			/**
 			 **  In state1, we're actually replacing old paths with
 			 **  the markers for future appends and prepends.
-			 **  
+			 **
 			 **  We only want to do this once to mark the location
 			 **  the module was formed around.
 			 **/

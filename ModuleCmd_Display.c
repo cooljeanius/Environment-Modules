@@ -24,7 +24,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 8bb7d4e6ce4a88b2e500fd9df80fb301bc606cf5 $";
@@ -63,7 +63,7 @@ char local_line[] =
 static	char	module_name[] = "ModuleCmd_Display.c";	/** File name of this module **/
 #if WITH_DEBUGGING_MODULECMD
 static	char	_proc_ModuleCmd_Display[] = "ModuleCmd_Display";
-#endif
+#endif /* WITH_DEBUGGING_MODULECMD */
 
 /** ************************************************************************ **/
 /**				    PROTOTYPES				     **/
@@ -100,97 +100,97 @@ static	char	_proc_ModuleCmd_Display[] = "ModuleCmd_Display";
  ** ************************************************************************ **
  ++++*/
 
-int ModuleCmd_Display(	Tcl_Interp	*interp,
-			int		 argc,
-                  	char		*argv[])
+int ModuleCmd_Display(Tcl_Interp *interp, int argc, char *argv[])
 {
     Tcl_Interp	*disp_interp;
     Tcl_DString	 cmdbuf;
     int		 i,
     		 result;
-    char	 modulefile[ MOD_BUFSIZE];
-    char	 modulename[ MOD_BUFSIZE];
-    
+    char	 modulefile[MOD_BUFSIZE];
+    char	 modulename[MOD_BUFSIZE];
+
 #if WITH_DEBUGGING_MODULECMD
-    ErrorLogger( NO_ERR_START, LOC, _proc_ModuleCmd_Display, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_ModuleCmd_Display, NULL);
+#endif /* WITH_DEBUGGING_MODULECMD */
 
     /**
      **  Initialize the command buffer and set up the modules flag to 'display
      **  only'
      **/
 
-    Tcl_DStringInit( &cmdbuf);
+    Tcl_DStringInit(&cmdbuf);
     g_flags |= M_DISPLAY;
 
     /**
-     **  Handle each passed module file. Create a Tcl interpreter for each 
+     **  Handle each passed module file. Create a Tcl interpreter for each
      **  module file to be handled and initialize it with custom module commands
      **/
 
-    for(i=0; i<argc && argv[i]; i++) {
+    for ((i = 0); ((i < argc) && argv[i]); i++) {
         /**
          ** Set the name of the module specified on the command line
          **/
 
         g_specified_module = argv[i];
 
-	disp_interp = EM_CreateInterp();
-	if( TCL_OK != (result = InitializeModuleCommands( disp_interp))) {
-	    EM_DeleteInterp( disp_interp);
-	    return( result);		/** -------- EXIT (FAILURE) -------> **/
-	}
+		disp_interp = EM_CreateInterp();
+		if (TCL_OK != (result = InitializeModuleCommands( disp_interp))) {
+			EM_DeleteInterp(disp_interp);
+			return (result);		/** -------- EXIT (FAILURE) -------> **/
+		}
 
-	/**
-	 **  locate the filename related to the passed module
-	 **/
+		/**
+		 **  locate the filename related to the passed module
+		 **/
 
-	if( Locate_ModuleFile(disp_interp, argv[i], modulename, modulefile) == 
+		if (Locate_ModuleFile(disp_interp, argv[i], modulename, modulefile) ==
             TCL_ERROR) {
-	    EM_DeleteInterp( disp_interp);
-	    if( OK != ErrorLogger( ERR_LOCATE, LOC, argv[i], NULL)) 
-		break;
-	    else
-		continue;
-	}
+			EM_DeleteInterp(disp_interp);
+			if (OK != ErrorLogger(ERR_LOCATE, LOC, argv[i], NULL)) {
+				break;
+			} else {
+				continue;
+			}
+		}
 
-	/**
-	 **  Print out everything that would happen if the module file were
-	 **  executed ...
-	 **/
+		/**
+		 **  Print out everything that would happen if the module file were
+		 **  executed ...
+		 **/
 
         g_current_module = modulename;
 
-        fprintf( stderr, local_line);
-	fprintf( stderr, "%s:\n\n", modulefile);
+        fprintf(stderr, "%s", local_line);
+		fprintf(stderr, "%s:\n\n", modulefile);
 
-	result = CallModuleProcedure( disp_interp, &cmdbuf, modulefile, 
-	    "ModulesDisplay", 0);
+		result = CallModuleProcedure(disp_interp, &cmdbuf, modulefile,
+									 "ModulesDisplay", 0);
 
-        fprintf( stderr, local_line);
+        fprintf(stderr, "%s", local_line);
 
-	/**
-	 **  Remove the Tcl interpreter that has been used for printing ...
-	 **/
+		/**
+		 **  Remove the Tcl interpreter that has been used for printing ...
+		 **/
 
-	EM_DeleteInterp( disp_interp);
+		EM_DeleteInterp( disp_interp);
 
-    } /** for **/
+    } /** end for-loop **/
 
     /**
      **  Leave the 'display only mode', free up what has been used and return
      **/
 
     g_flags &= ~M_DISPLAY;
-    fprintf( stderr, "\n");
+    fprintf(stderr, "\n");
 
-    Tcl_DStringFree( &cmdbuf);
+    Tcl_DStringFree(&cmdbuf);
 
 #if WITH_DEBUGGING_MODULECMD
-    ErrorLogger( NO_ERR_END, LOC, _proc_ModuleCmd_Display, NULL);
-#endif
+    ErrorLogger(NO_ERR_END, LOC, _proc_ModuleCmd_Display, NULL);
+#endif /* WITH_DEBUGGING_MODULECMD */
 
-    return( TCL_OK);
+    return (TCL_OK);
 
-} /** End of 'ModuleCmd_Display' **/
+} /** End of 'ModuleCmd_Display' function **/
 
+/* End of ModuleCmd_Display.c file */

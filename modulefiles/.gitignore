@@ -4,3 +4,4 @@ module-info
 modules
 null
 use.own
+version

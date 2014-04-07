@@ -49,7 +49,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 71346743bc4fa2cec67de59999a645f374273ef4 $";
@@ -222,7 +222,7 @@ int store_hash_value(	Tcl_HashTable* htable,
         Tcl_SetHashValue( hentry, (char*) stringer(NULL,0, (char *)value,NULL));
     else
         Tcl_SetHashValue( hentry, (char*) NULL);
-    
+
     return( TCL_OK);
 
 } /** End of 'store_hash_value' **/
@@ -271,7 +271,7 @@ int clear_hash_value(	Tcl_HashTable	*htable,
 
         Tcl_DeleteHashEntry( hentry);
     }
-    
+
     return( TCL_OK);
 
 } /** End of 'clear_hash_value' **/
@@ -321,14 +321,14 @@ static	void	Clear_Global_Hash_Tables( void)
 
     /**
      **  Loop for all the hash tables named above. If there's no value stored
-     **  in a hash table, skip to the next one. 
+     **  in a hash table, skip to the next one.
      **/
 
     for( ; *table_ptr; table_ptr++) {
 
-	if( ( hashEntry = Tcl_FirstHashEntry( *table_ptr, &searchPtr)) == NULL) 
+	if( ( hashEntry = Tcl_FirstHashEntry( *table_ptr, &searchPtr)) == NULL)
 	    continue;
-	
+
 	/**
 	 **  Otherwise remove all values stored in the table
 	 **/
@@ -340,7 +340,7 @@ static	void	Clear_Global_Hash_Tables( void)
 	} while( hashEntry = Tcl_NextHashEntry( &searchPtr));
 
 	/**
-	 **  Reinitialize the hash table by unlocking it from memory and 
+	 **  Reinitialize the hash table by unlocking it from memory and
 	 **  thereafter initializing it again.
 	 **/
 
@@ -570,7 +570,7 @@ unwind0:
  ** ************************************************************************ **
  ++++*/
 
-int Unwind_Modulefile_Changes(	Tcl_Interp	 *interp, 
+int Unwind_Modulefile_Changes(	Tcl_Interp	 *interp,
 				Tcl_HashTable	**oldTables )
 {
     Tcl_HashSearch	 searchPtr;	/** Tcl hash search handle	     **/
@@ -586,7 +586,7 @@ int Unwind_Modulefile_Changes(	Tcl_Interp	 *interp,
     if( oldTables) {
 
 	/**
-	 **  Use only entries 0 and 1 which do contain all changes to the 
+	 **  Use only entries 0 and 1 which do contain all changes to the
 	 **  shell varibles (setenv and unsetenv)
 	 **/
 
@@ -638,7 +638,7 @@ int Unwind_Modulefile_Changes(	Tcl_Interp	 *interp,
 static int keycmp(const void *a, const void *b) {
 	return strcmp(*(const char **) a, *(const char **) b);
 }
-                                                                                
+
 /*++++
  ** ** Function-Header ***************************************************** **
  ** 									     **
@@ -683,7 +683,7 @@ int Output_Modulefile_Changes(	Tcl_Interp	*interp)
 
     table[0] = setenvHashTable;
     table[1] = unsetenvHashTable;
-  
+
 #if WITH_DEBUGGING_UTIL_2
     ErrorLogger( NO_ERR_START, LOC, _proc_Output_Modulefile_Changes, NULL);
 #endif
@@ -753,7 +753,7 @@ int Output_Modulefile_Changes(	Tcl_Interp	*interp)
     Clear_Global_Hash_Tables();
     return( TCL_OK);
 
-} /* End of 'Output_Modulefile_Changes' */ 
+} /* End of 'Output_Modulefile_Changes' */
 
 /*++++
  ** ** Function-Header ***************************************************** **
@@ -902,7 +902,7 @@ static	int Output_Modulefile_Aliases( Tcl_Interp *interp)
      **/
 
     for( i=0; i<2; i++) {
-    
+
 	if( hashEntry = Tcl_FirstHashEntry( table[i], &searchPtr)) {
 
 	    do {
@@ -1122,7 +1122,7 @@ static	int	output_set_variable(	Tcl_Interp	*interp,
       fprintf( stdout, "%s=%s %sexport %s%s", var, escaped, shell_cmd_separator,
 	       var, shell_cmd_separator);
       free(escaped);
-      
+
     /**
      **  EMACS
      **/
@@ -1136,7 +1136,7 @@ static	int	output_set_variable(	Tcl_Interp	*interp,
 		char* escaped = stringer(NULL,strlen(val)*2+1,NULL);
 		EscapePerlString(val,escaped);
 		fprintf(stdout, "$ENV{'%s'} = '%s'%s", var, escaped,
-			shell_cmd_separator);  
+			shell_cmd_separator);
 		null_free((void *) &escaped);
 
     /**
@@ -1174,7 +1174,7 @@ static	int	output_set_variable(	Tcl_Interp	*interp,
         fprintf( stdout, "putenv \"%s\" \"%s\";", var, val);
 
     /**
-     **  Unknown shell type - print an error message and 
+     **  Unknown shell type - print an error message and
      **  return on error
      **/
     } else {
@@ -1230,9 +1230,9 @@ static	int	output_unset_variable( const char* var)
     } else if( !strcmp( shell_derelict, "emacs")) {
 	fprintf( stdout, "(setenv \"%s\" nil)\n", var);
     } else if( !strcmp( shell_derelict, "perl")) {
-	fprintf( stdout, "delete $ENV{'%s'}%s", var, shell_cmd_separator);  
+	fprintf( stdout, "delete $ENV{'%s'}%s", var, shell_cmd_separator);
     } else if( !strcmp( shell_derelict, "cmake")) {
-	fprintf( stdout, "unset(ENV{%s})%s", var, shell_cmd_separator);  
+	fprintf( stdout, "unset(ENV{%s})%s", var, shell_cmd_separator);
     } else if( !strcmp( shell_derelict, "python")) {
       fprintf( stdout, "os.environ['%s'] = ''\ndel os.environ['%s']\n",var,var);
     } else if( !strcmp( shell_derelict, "ruby")) {
@@ -1406,7 +1406,7 @@ static	int	output_set_alias(	const char	*alias,
             putc( *cptr++, aliasfile);
 
         } /** while **/
- 
+
 	/**
 	 **  Now close up the command using the alias command terminator as
 	 **  defined in the global variable
@@ -1613,7 +1613,7 @@ static	int	output_unset_alias(	const char	*alias,
 	/** ??? Unknown derelict ??? **/
 
     } /** if( sh-family) **/
-    
+
     return( TCL_OK);
 
 } /** End of 'output_unset_alias' **/
@@ -1681,10 +1681,10 @@ char	*getLMFILES( Tcl_Interp	*interp)
 	    /**
 	     **  Count up the variables length
 	     **/
-            cptr_len = strlen( cptr);	
+            cptr_len = strlen( cptr);
             old_lmsize = lmsize;
             lmsize += cptr_len;
- 
+
 	    /**
 	     **  Reallocate the value's buffer and copy the current split
 	     **  part at its end
@@ -1694,10 +1694,10 @@ char	*getLMFILES( Tcl_Interp	*interp)
 		    if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
 			return( NULL);		/** ---- EXIT (FAILURE) ---> **/
 	    }
-            
+
             strncpy( lmfiles + old_lmsize, cptr, cptr_len);
             *(lmfiles + old_lmsize + cptr_len) = '\0';
- 
+
 	    /**
 	     **  Read the next split part variable
 	     **/
@@ -1718,7 +1718,7 @@ char	*getLMFILES( Tcl_Interp	*interp)
 	    if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
 		return( NULL);		/** -------- EXIT (FAILURE) -------> **/
 
-	/** 
+	/**
 	 **  Set up lmfiles pointing to the new buffer in order to be able to
 	 **  disallocate when invoked next time.
 	 **/
@@ -1823,7 +1823,7 @@ static int __IsLoaded(	Tcl_Interp	 *interp,
      **/
     char	*loaded_modules = EMGetEnv( interp, "LOADEDMODULES");
     char	*loaded_modulefiles = getLMFILES( interp);
-    
+
 #if WITH_DEBUGGING_UTIL_2
     ErrorLogger( NO_ERR_START, LOC, _proc___IsLoaded, NULL);
 #endif
@@ -1835,10 +1835,10 @@ static int __IsLoaded(	Tcl_Interp	 *interp,
     if( !loaded_modules || !*loaded_modules) {
 	goto unwind0;
     }
-    
+
     /**
      **  Copy the list of currently loaded modules into a new allocated array
-     **  for further handling. If this fails it will be assumed, that the 
+     **  for further handling. If this fails it will be assumed, that the
      **  module is *NOT* loaded.
      **/
     if((char *) NULL == (l_modules = stringer(NULL,0,loaded_modules,NULL)))
@@ -1938,13 +1938,13 @@ static int __IsLoaded(	Tcl_Interp	 *interp,
 
 	    /**
 	     **  The position of the loaded module within the list of loaded
-	     **  modules has been counted in 'count'. The position of the 
+	     **  modules has been counted in 'count'. The position of the
 	     **  associated modulefile should be the same. So tokenize the
 	     **  list of modulefiles by the colon until the wanted position
 	     **  is reached.
 	     **/
             char* modulefile_path = xstrtok(l_modulefiles, ":");
-	
+
             while( count) {
                 if( !( modulefile_path = xstrtok( NULL, ":"))) {
 
@@ -1955,7 +1955,7 @@ static int __IsLoaded(	Tcl_Interp	 *interp,
 		     **  but it may just mean we're working intermittantly with
 		     **  an old version.  So, I'll just not touch filename which
 		     **  means the search will continue using the old method of
-		     **  looking through MODULEPATH.  
+		     **  looking through MODULEPATH.
                      */
 		    goto success0;
                 }
@@ -2080,7 +2080,7 @@ void set_marked_entry(	Tcl_HashTable	*table,
 static	char	*get_module_basename(	char	*modulename)
 {
     char *version;			/** Used to locate the version sep.  **/
-    
+
 #if WITH_DEBUGGING_UTIL_2
     ErrorLogger( NO_ERR_START, LOC, _proc_get_module_basename, NULL);
 #endif
@@ -2094,7 +2094,7 @@ static	char	*get_module_basename(	char	*modulename)
     } else {
 	modulename = NULL;
     }
- 
+
     /**
      **  Return the *COPIED* string
      **/
@@ -2134,7 +2134,7 @@ int Update_LoadedList(	Tcl_Interp	*interp,
     char 	*argv[4];
     char	*basename;
     char	*module;
- 
+
 #if WITH_DEBUGGING_UTIL_2
     ErrorLogger( NO_ERR_START, LOC, _proc_Update_LoadedList, NULL);
 #endif
@@ -2145,7 +2145,7 @@ int Update_LoadedList(	Tcl_Interp	*interp,
     argv[1] = "LOADEDMODULES";
     argv[2] = modulename;
     argv[3] = NULL;
-    
+
     if(g_flags & M_REMOVE) {
 	argv[0] = "remove-path";
 	cmdRemovePath( 0, interp, 3, (CONST84 char **) argv);
@@ -2153,7 +2153,7 @@ int Update_LoadedList(	Tcl_Interp	*interp,
 	argv[0] = "append-path";
 	cmdSetPath( 0, interp, 3, (CONST84 char **) argv);
     }
- 
+
     /**
      **  Apply changes to _LMFILES_ now
      **/
@@ -2246,7 +2246,7 @@ int check_magic( char	*filename,
 	    return( 0);			/** -------- EXIT (FAILURE) -------> **/
 
     read_len = read( fd, buf, magic_len);
-    
+
     if( 0 > close(fd))
 	if( OK != ErrorLogger( ERR_CLOSE, LOC, filename, NULL))
 	    return( 0);			/** -------- EXIT (FAILURE) -------> **/
@@ -2284,9 +2284,7 @@ int check_magic( char	*filename,
  ** ************************************************************************ **
  ++++*/
 
-void regex_quote( const char	*path,
-		         char	*newpath,
-			 int	 len)
+void regex_quote(const char *path, char *newpath, int len)
 {
     unsigned int path_len = strlen( path);	/** Length of the orig. path **/
     int 	 i,				/** Read index		     **/
@@ -2474,7 +2472,7 @@ void tryxstrtok (char *string, char *delim) {
 	start = str = strdup(string);
 	printf("string: %s\n", str);
 	printf("delim : %s\n", delim);
-	
+
 	token = xstrtok(str,delim);
 	printf("\t%d = %s\n", n, token);
 	while (token = xstrtok(NULL, delim)) {
@@ -2735,7 +2733,7 @@ char *xgetenv(char const * var) {
 
 void EscapeCshString(const char* in,
 		     char* out) {
-  
+
   for(;*in;in++) {
     if (*in == ' ' ||
 	*in == '\t'||
@@ -2765,7 +2763,7 @@ void EscapeCshString(const char* in,
 
 void EscapeShString(const char* in,
 		     char* out) {
-  
+
   for(;*in;in++) {
     if (*in == ' ' ||
 	*in == '\t'||
@@ -2795,7 +2793,7 @@ void EscapeShString(const char* in,
 
 void EscapePerlString(const char* in,
 		     char* out) {
-  
+
   for(;*in;in++) {
     if (*in == '\\'||
 	*in == ';' ||
@@ -2850,7 +2848,7 @@ int tmpfile_mod(char** filename, FILE** file) {
 	 stringer(NULL, strlen(TMP_DIR)+strlen("modulesource")+20, NULL)))
      if( OK != ErrorLogger( ERR_STRING, LOC, NULL))
 	 return 1;
-  
+
   do {
     int fildes;
 
@@ -2870,7 +2868,7 @@ int tmpfile_mod(char** filename, FILE** file) {
   null_free((void *) &filename2);
   fprintf(stderr,
 	"FATAL: could not get a temp file! at %s(%d)",__FILE__,__LINE__);
-  
+
   return 1;
 }
 
@@ -3181,7 +3179,7 @@ void OutputExit() {
  ** 									     **
  ** ************************************************************************ **
  ++++*/
-char * EMGetEnv(	Tcl_Interp	 *interp, 
+char * EMGetEnv(	Tcl_Interp	 *interp,
 			char const	 *var) {
 
 	char *value, *string;
@@ -3217,7 +3215,7 @@ char * EMGetEnv(	Tcl_Interp	 *interp,
  ** 									     **
  ** ************************************************************************ **
  ++++*/
-char * EMSetEnv(	Tcl_Interp	 *interp, 
+char * EMSetEnv(	Tcl_Interp	 *interp,
 			char const	 *var,
 			char const	 *val) {
 

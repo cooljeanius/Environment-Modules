@@ -25,7 +25,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: bccace37c117a489342da308cf4e11111b9175b4 $";
@@ -98,9 +98,7 @@ static	char	_proc_ModuleCmd_Refresh[] = "ModuleCmd_Refresh";
  ** ************************************************************************ **
  ++++*/
 
-int ModuleCmd_Refresh(	Tcl_Interp	*interp,
-			int		 argc,
-                  	char		*argv[])
+int ModuleCmd_Refresh(Tcl_Interp *interp, int argc, char *argv[])
 {
     Tcl_Interp	*refr_interp;
     Tcl_DString	 cmdbuf;
@@ -111,7 +109,7 @@ int ModuleCmd_Refresh(	Tcl_Interp	*interp,
     char	*files[ MOD_BUFSIZE];
     char	*lmenv;
     char	*loaded;
-    
+
 #if WITH_DEBUGGING_MODULECMD
     ErrorLogger( NO_ERR_START, LOC, _proc_ModuleCmd_Refresh, NULL);
 #endif
@@ -158,7 +156,7 @@ int ModuleCmd_Refresh(	Tcl_Interp	*interp,
     g_flags |= M_NONPERSIST;
 
     /**
-     **  Handle each loaded module file. Create a Tcl interpreter for each 
+     **  Handle each loaded module file. Create a Tcl interpreter for each
      **  module file to be handled and initialize it with custom module commands
      **/
 
@@ -176,12 +174,12 @@ int ModuleCmd_Refresh(	Tcl_Interp	*interp,
 	}
 
 	/**
-	 **  Execute the module 
+	 **  Execute the module
 	 **/
 
         g_current_module = list[i];
 
-	result = CallModuleProcedure( refr_interp, &cmdbuf, files[i], 
+	result = CallModuleProcedure( refr_interp, &cmdbuf, files[i],
 	    "ModulesNonPersist", 0);
 
 	/**

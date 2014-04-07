@@ -3690,19 +3690,19 @@ if test "x${prefix}" != "xNONE" ; then
   PREFIX=${prefix}
 else
   if test "${WANTS_VERSIONING}" -eq 1 ; then
-    DEFAULTPATH=$ac_default_prefix/Modules/default
-    NODEFAULTPATH=$ac_default_prefix/Modules/$VERSION
-    BASEPREFIX=$ac_default_prefix
-    ac_default_prefix=$BASEPREFIX/Modules/$VERSION
+    DEFAULTPATH=${ac_default_prefix}/Modules/default
+    NODEFAULTPATH=${ac_default_prefix}/Modules/${VERSION}
+    BASEPREFIX=${ac_default_prefix}
+    ac_default_prefix=${BASEPREFIX}/Modules/${VERSION}
     export ac_default_prefix
   else
-    DEFAULTPATH=$ac_default_prefix/Modules
-    NODEFAULTPATH=$ac_default_prefix/Modules
-    BASEPREFIX=$ac_default_prefix
-    ac_default_prefix=$BASEPREFIX/Modules
+    DEFAULTPATH=${ac_default_prefix}/Modules
+    NODEFAULTPATH=${ac_default_prefix}/Modules
+    BASEPREFIX=${ac_default_prefix}
+    ac_default_prefix=${BASEPREFIX}/Modules
     export ac_default_prefix
   fi
-  PREFIX=$ac_default_prefix
+  PREFIX=${ac_default_prefix}
 fi
 if test "x${exec_prefix}" != "xNONE" ; then
   EXECPREFIX=${exec_prefix}
@@ -19664,7 +19664,7 @@ fi
 
 for ac_header in assert.h ctype.h dejagnu.h fcntl.h libintl.h \
 	locale.h modules_def.h stdarg.h stdio.h sysconf.h syslog.h \
-	sys/mode.h sys/termios.h termio.h varargs.h
+	sys/ioctl.h sys/mode.h sys/termios.h termio.h varargs.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -27055,25 +27055,29 @@ $as_echo_n "checking for 64-bit integer type... " >&6; }
 else
 
 	tcl_cv_type_64bit=none
-	# See if the compiler knows natively about __int64
+	# See if the compiler knows natively about __int64:
 	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
 int
 main ()
 {
+
 __int64 value = (__int64) 0;
+
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
-  tcl_type_64bit=__int64, tcl_type_64bit="long long"
+  tcl_type_64bit=__int64
+else
+  tcl_type_64bit="long long"
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-	# See if we should use long anyway  Note that we substitute in the
-	# type that is our current guess for a 64-bit type inside this check
-	# program, so it should be modified only carefully...
+	# See if we should use long anyway. Note that we substitute in the
+	# type that is our current guess for a 64-bit type inside this
+	# check program, so it should be modified only carefully...
 	if test "$cross_compiling" = yes; then :
   :
 else
@@ -27094,11 +27098,11 @@ fi
 
 fi
 
-    if test "${tcl_cv_type_64bit}" = none ; then
+    if test "x${tcl_cv_type_64bit}" = "xnone"; then
 
 $as_echo "#define TCL_WIDE_INT_IS_LONG 1" >>confdefs.h
 
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: using long" >&5
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: using long" >&5
 $as_echo "using long" >&6; }
     else
 
@@ -27118,12 +27122,16 @@ else
 
 	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
 #include <sys/types.h>
 #include <sys/dirent.h>
+
 int
 main ()
 {
+
 struct dirent64 p;
+
   ;
   return 0;
 }
@@ -27134,6 +27142,7 @@ else
   tcl_cv_struct_dirent64=no
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
 fi
 
 	if test "x${tcl_cv_struct_dirent64}" = "xyes" ; then
@@ -27152,10 +27161,13 @@ else
 
 	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
 #include <sys/stat.h>
+
 int
 main ()
 {
+
 struct stat64 p;
 
   ;
@@ -27168,9 +27180,10 @@ else
   tcl_cv_struct_stat64=no
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
 fi
 
-	if test "x${tcl_cv_struct_stat64}" = "xyes" ; then
+	if test "x${tcl_cv_struct_stat64}" = "xyes"; then
 
 $as_echo "#define HAVE_STRUCT_STAT64 1" >>confdefs.h
 
@@ -27186,10 +27199,13 @@ else
 
 	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
 #include <sys/types.h>
+
 int
 main ()
 {
+
 off64_t offset;
 
   ;
@@ -27202,9 +27218,10 @@ else
   tcl_cv_type_off64_t=no
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
 fi
 
-	if test "x${tcl_cv_type_off64_t}" = "xyes" ; then
+	if test "x${tcl_cv_type_off64_t}" = "xyes"; then
 
 $as_echo "#define HAVE_TYPE_OFF64_T 1" >>confdefs.h
 
@@ -27212,6 +27229,7 @@ $as_echo "#define HAVE_TYPE_OFF64_T 1" >>confdefs.h
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${tcl_cv_type_off64_t}" >&5
 $as_echo "${tcl_cv_type_off64_t}" >&6; }
     fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for function prototypes" >&5
 $as_echo_n "checking for function prototypes... " >&6; }
 if test "$ac_cv_prog_cc_c89" != no; then
@@ -29937,7 +29955,7 @@ if test "${with_log_facility_debug+set}" = set; then :
   withval=$with_log_facility_debug; if test "x${withval}" != "xno"; then
 		test "x${withval}" = "xyes" && withval="local7.notice"
 		cat >>confdefs.h <<_ACEOF
-#define WITH_LOG_FACILITY_DEBUG "$withval"
+#define WITH_LOG_FACILITY_DEBUG "${withval}"
 _ACEOF
 
 	fi
@@ -29949,7 +29967,7 @@ if test "${with_log_facility_trace+set}" = set; then :
   withval=$with_log_facility_trace; if test "x${withval}" != "xno"; then
 		test "x${withval}" = "xyes" && withval="local7.notice"
 		cat >>confdefs.h <<_ACEOF
-#define WITH_LOG_FACILITY_TRACE "$withval"
+#define WITH_LOG_FACILITY_TRACE "${withval}"
 _ACEOF
 
 	fi
@@ -29961,7 +29979,7 @@ if test "${with_log_facility_warn+set}" = set; then :
   withval=$with_log_facility_warn; if test "x${withval}" != "xno"; then
 		test "x${withval}" = "xyes" && withval="local7.warning"
 		cat >>confdefs.h <<_ACEOF
-#define WITH_LOG_FACILITY_WARN "$withval"
+#define WITH_LOG_FACILITY_WARN "${withval}"
 _ACEOF
 
 	fi
@@ -29973,7 +29991,7 @@ if test "${with_log_facility_problem+set}" = set; then :
   withval=$with_log_facility_problem; if test "x${withval}" != "xno"; then
 		test "x${withval}" = "xyes" && withval="local7.error"
 		cat >>confdefs.h <<_ACEOF
-#define WITH_LOG_FACILITY_PROB "$withval"
+#define WITH_LOG_FACILITY_PROB "${withval}"
 _ACEOF
 
 	fi
@@ -29985,7 +30003,7 @@ if test "${with_log_facility_error+set}" = set; then :
   withval=$with_log_facility_error; if test "x${withval}" != "xno"; then
 		test "x${withval}" = "xyes" && withval="local7.error"
 		cat >>confdefs.h <<_ACEOF
-#define WITH_LOG_FACILITY_ERROR "$withval"
+#define WITH_LOG_FACILITY_ERROR "${withval}"
 _ACEOF
 
 	fi
@@ -29997,7 +30015,7 @@ if test "${with_log_facility_fatal+set}" = set; then :
   withval=$with_log_facility_fatal; if test "x${withval}" != "xno"; then
 		test "x${withval}" = "xyes" && withval="local7.error"
 		cat >>confdefs.h <<_ACEOF
-#define WITH_LOG_FACILITY_FATAL "$withval"
+#define WITH_LOG_FACILITY_FATAL "${withval}"
 _ACEOF
 
 	fi
@@ -30009,7 +30027,7 @@ if test "${with_log_facility_panic+set}" = set; then :
   withval=$with_log_facility_panic; if test "x${withval}" != "xno"; then
 		test "x${withval}" = "xyes" && withval="local7.error"
 		cat >>confdefs.h <<_ACEOF
-#define WITH_LOG_FACILITY_PANIC "$withval"
+#define WITH_LOG_FACILITY_PANIC "${withval}"
 _ACEOF
 
 	fi
@@ -30028,7 +30046,7 @@ _ACEOF
 
 		else
 			cat >>confdefs.h <<_ACEOF
-#define WITH_TRACE_LOAD "$withval"
+#define WITH_TRACE_LOAD "${withval}"
 _ACEOF
 
 		fi
@@ -30046,7 +30064,7 @@ _ACEOF
 
 		else
 			cat >>confdefs.h <<_ACEOF
-#define WITH_TRACE_UNLOAD "$withval"
+#define WITH_TRACE_UNLOAD "${withval}"
 _ACEOF
 
 		fi
@@ -30064,7 +30082,7 @@ _ACEOF
 
 		else
 			cat >>confdefs.h <<_ACEOF
-#define WITH_TRACE_SWITCH "$withval"
+#define WITH_TRACE_SWITCH "${withval}"
 _ACEOF
 
 		fi
@@ -30082,7 +30100,7 @@ _ACEOF
 
 		else
 			cat >>confdefs.h <<_ACEOF
-#define WITH_TRACE_DISP "$withval"
+#define WITH_TRACE_DISP "${withval}"
 _ACEOF
 
 		fi
@@ -30100,7 +30118,7 @@ _ACEOF
 
 		else
 			cat >>confdefs.h <<_ACEOF
-#define WITH_TRACE_LIST "$withval"
+#define WITH_TRACE_LIST "${withval}"
 _ACEOF
 
 		fi
@@ -30118,7 +30136,7 @@ _ACEOF
 
 		else
 			cat >>confdefs.h <<_ACEOF
-#define WITH_TRACE_AVAIL "$withval"
+#define WITH_TRACE_AVAIL "${withval}"
 _ACEOF
 
 		fi
@@ -30136,7 +30154,7 @@ _ACEOF
 
 		else
 			cat >>confdefs.h <<_ACEOF
-#define WITH_TRACE_HELP "$withval"
+#define WITH_TRACE_HELP "${withval}"
 _ACEOF
 
 		fi
@@ -30154,7 +30172,7 @@ _ACEOF
 
 		else
 			cat >>confdefs.h <<_ACEOF
-#define WITH_TRACE_INIT "$withval"
+#define WITH_TRACE_INIT "${withval}"
 _ACEOF
 
 		fi
@@ -30172,7 +30190,7 @@ _ACEOF
 
 		else
 			cat >>confdefs.h <<_ACEOF
-#define WITH_TRACE_USE "$withval"
+#define WITH_TRACE_USE "${withval}"
 _ACEOF
 
 		fi
@@ -30190,7 +30208,7 @@ _ACEOF
 
 		else
 			cat >>confdefs.h <<_ACEOF
-#define WITH_TRACE_UNUSE "$withval"
+#define WITH_TRACE_UNUSE "${withval}"
 _ACEOF
 
 		fi
@@ -30208,7 +30226,7 @@ _ACEOF
 
 		else
 			cat >>confdefs.h <<_ACEOF
-#define WITH_TRACE_UPDATE "$withval"
+#define WITH_TRACE_UPDATE "${withval}"
 _ACEOF
 
 		fi
@@ -30226,7 +30244,7 @@ _ACEOF
 
 		else
 			cat >>confdefs.h <<_ACEOF
-#define WITH_TRACE_PURGE "$withval"
+#define WITH_TRACE_PURGE "${withval}"
 _ACEOF
 
 		fi
@@ -30244,7 +30262,7 @@ _ACEOF
 
 		else
 			cat >>confdefs.h <<_ACEOF
-#define WITH_TRACE_CLEAR "$withval"
+#define WITH_TRACE_CLEAR "${withval}"
 _ACEOF
 
 		fi
@@ -30262,7 +30280,7 @@ _ACEOF
 
 		else
 			cat >>confdefs.h <<_ACEOF
-#define WITH_TRACE_WHATIS "$withval"
+#define WITH_TRACE_WHATIS "${withval}"
 _ACEOF
 
 		fi
@@ -30280,7 +30298,7 @@ _ACEOF
 
 		else
 			cat >>confdefs.h <<_ACEOF
-#define WITH_TRACE_APROPOS "$withval"
+#define WITH_TRACE_APROPOS "${withval}"
 _ACEOF
 
 		fi
@@ -30464,7 +30482,7 @@ _ACEOF
   LIBS="-lm $LIBS"
 
 fi
-if test "${STATIC-foobar}" = "foobar"; then
+if test "x${STATIC-foobar}" = "xfoobar"; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dlsym in -ldl" >&5
 $as_echo_n "checking for dlsym in -ldl... " >&6; }
 if ${ac_cv_lib_dl_dlsym+:} false; then :
@@ -31177,7 +31195,7 @@ else
   if test -n "$gl_use_threads_default"; then
        gl_use_threads="$gl_use_threads_default"
      else
-       case "$host_os" in
+       case "${host_os}" in
                                                                osf*) gl_use_threads=no ;;
          cygwin*)
                case `uname -r` in
@@ -32236,8 +32254,8 @@ fi
 	if test "$tcl_ok" = "no"; then
 	    # Check a little harder for __pthread_mutex_init in the same
 	    # library, as some systems hide it there until pthread.h is
-	    # defined.  We could alternatively do an AC_TRY_COMPILE with
-	    # pthread.h, but that will work with libpthread really doesn't
+	    # defined. We could alternatively do AC\_COMPILE\_IFELSE with
+	    # pthread.h, but that will work with libpthread really does NOT
 	    # exist, like AIX 4.2.  [Bug: 4359]
 	    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for __pthread_mutex_init in -lpthread" >&5
 $as_echo_n "checking for __pthread_mutex_init in -lpthread... " >&6; }
@@ -32894,7 +32912,9 @@ else
 int
 main ()
 {
+
 struct tm tm; tm.tm_tzadj;
+
   ;
   return 0;
 }
@@ -32905,11 +32925,12 @@ else
   tcl_cv_member_tm_tzadj=no
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
 fi
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${tcl_cv_member_tm_tzadj}" >&5
 $as_echo "${tcl_cv_member_tm_tzadj}" >&6; }
-    if test $tcl_cv_member_tm_tzadj = yes ; then
+    if test "x${tcl_cv_member_tm_tzadj}" = "xyes"; then
 
 $as_echo "#define HAVE_TM_TZADJ 1" >>confdefs.h
 
@@ -32926,7 +32947,9 @@ else
 int
 main ()
 {
+
 struct tm tm; tm.tm_gmtoff;
+
   ;
   return 0;
 }
@@ -32937,18 +32960,19 @@ else
   tcl_cv_member_tm_gmtoff=no
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
 fi
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${tcl_cv_member_tm_gmtoff}" >&5
 $as_echo "${tcl_cv_member_tm_gmtoff}" >&6; }
-    if test $tcl_cv_member_tm_gmtoff = yes ; then
+    if test "x${tcl_cv_member_tm_gmtoff}" = "xyes"; then
 
 $as_echo "#define HAVE_TM_GMTOFF 1" >>confdefs.h
 
     fi
 
     #
-    # Its important to include time.h in this check, as some systems
+    # It is important to include time.h in this check, as some systems
     # (like convex) have timezone functions, etc.
     #
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking long timezone variable" >&5
@@ -32962,9 +32986,11 @@ else
 int
 main ()
 {
-extern long timezone;
+
+            extern long timezone;
 	    timezone += 1;
 	    exit (0);
+
   ;
   return 0;
 }
@@ -32975,17 +33001,18 @@ else
   tcl_cv_timezone_long=no
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
 fi
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${tcl_cv_timezone_long}" >&5
 $as_echo "${tcl_cv_timezone_long}" >&6; }
-    if test $tcl_cv_timezone_long = yes ; then
+    if test "x${tcl_cv_timezone_long}" = "xyes"; then
 
 $as_echo "#define HAVE_TIMEZONE_VAR 1" >>confdefs.h
 
     else
 	#
-	# On some systems (e.g. IRIX 6.2), timezone is a time_t and not a long.
+	# On some systems (eg IRIX 6.2), timezone is a time_t & NOT a long.
 	#
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking time_t timezone variable" >&5
 $as_echo_n "checking time_t timezone variable... " >&6; }
@@ -32994,13 +33021,17 @@ $as_echo_n "checking time_t timezone variable... " >&6; }
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
 #include <time.h>
+
 int
 main ()
 {
-extern time_t timezone;
-		timezone += 1;
-		exit (0);
+
+                extern time_t timezone;
+                timezone += 1;
+                exit (0);
+
   ;
   return 0;
 }
@@ -33011,11 +33042,12 @@ else
   tcl_cv_timezone_time=no
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
 fi
 
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_timezone_time" >&5
-$as_echo "$tcl_cv_timezone_time" >&6; }
-	if test $tcl_cv_timezone_time = yes ; then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${tcl_cv_timezone_time}" >&5
+$as_echo "${tcl_cv_timezone_time}" >&6; }
+	if test "x${tcl_cv_timezone_time}" = "xyes"; then
 
 $as_echo "#define HAVE_TIMEZONE_VAR 1" >>confdefs.h
 
@@ -33030,7 +33062,7 @@ else
   tcl_strtod=0
 fi
 
-    if test "$tcl_strtod" = 1; then
+    if test "${tcl_strtod}" = 1; then
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Solaris2.4/Tru64 strtod bugs" >&5
 $as_echo_n "checking for Solaris2.4/Tru64 strtod bugs... " >&6; }
 	if ${tcl_cv_strtod_buggy+:} false; then :
@@ -33045,7 +33077,9 @@ else
 
 		extern double strtod();
 		int main() {
-		    char *infString="Inf", *nanString="NaN", *spaceString=" ";
+		    char *infString="Inf";
+		    char *nanString="NaN";
+		    char *spaceString=" ";
 		    char *term;
 		    double value;
 		    value = strtod(infString, &term);
@@ -33062,6 +33096,7 @@ else
 		    }
 		    exit(0);
 		}
+
 _ACEOF
 if ac_fn_c_try_run "$LINENO"; then :
   tcl_cv_strtod_buggy=1
@@ -33072,15 +33107,16 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
+
 fi
 
-	if test "$tcl_cv_strtod_buggy" = 1; then
+	if test "${tcl_cv_strtod_buggy}" = 1; then
 	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ok" >&5
 $as_echo "ok" >&6; }
 	else
 	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: buggy" >&5
 $as_echo "buggy" >&6; }
-	    LIBOBJS="$LIBOBJS fixstrtod.o"
+	    LIBOBJS="${LIBOBJS} fixstrtod.o"
 
 $as_echo "#define strtod fixstrtod" >>confdefs.h
 
@@ -33379,7 +33415,7 @@ fi
 
 # Check whether --with-module-path was given.
 if test "${with_module_path+set}" = set; then :
-  withval=$with_module_path; MODULEPATH="$withval"
+  withval=$with_module_path; MODULEPATH="${withval}"
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: MODULEPATH = ${with_module_path}" >&5
 $as_echo "MODULEPATH = ${with_module_path}" >&6; }
 	cat >>confdefs.h <<_ACEOF
@@ -33388,11 +33424,11 @@ _ACEOF
 
 else
 
-	if test ! -z "$withval"; then
+	if test ! -z "${withval}"; then
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: if using '--with-module-path': need to specify a path!" >&5
 $as_echo "$as_me: WARNING: if using '--with-module-path': need to specify a path!" >&2;}
 	fi
-	withval="$BASEPREFIX/Modules/modulefiles"
+	withval="${BASEPREFIX}/Modules/modulefiles"
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: will use MODULEPATH=${withval} : rerun configure using --with-module-path to override default" >&5
 $as_echo "$as_me: WARNING: will use MODULEPATH=${withval} : rerun configure using --with-module-path to override default" >&2;}
 	MODULEPATH="${withval}"
@@ -33462,10 +33498,10 @@ fi
 # Check whether --with-man-path was given.
 if test "${with_man_path+set}" = set; then :
   withval=$with_man_path; cat >>confdefs.h <<_ACEOF
-#define DEFAULTMANPATH "$withval"
+#define DEFAULTMANPATH "${withval}"
 _ACEOF
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: DEFAULTMANPATH = $withval" >&5
-$as_echo "DEFAULTMANPATH = $withval" >&6; }
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: DEFAULTMANPATH = ${withval}" >&5
+$as_echo "DEFAULTMANPATH = ${withval}" >&6; }
 else
   if test -d "/usr/man" ; then
            withval="/usr/man"
@@ -33524,7 +33560,7 @@ if test "${with_autoload_path+set}" = set; then :
 	fi
 	AUTOLOADPATH="${withval}"
 	cat >>confdefs.h <<_ACEOF
-#define AUTOLOADPATH "$withval"
+#define AUTOLOADPATH "${withval}"
 _ACEOF
 
 fi

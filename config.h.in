@@ -718,7 +718,7 @@
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
 
-/* Defined to fixstrtod if the original strtod was buggy */
+/* Defined to fixstrtod if the orig. strtod was buggy */
 #undef strtod
 
 /* Define to `int' if <sys/types.h> doesn't define. */

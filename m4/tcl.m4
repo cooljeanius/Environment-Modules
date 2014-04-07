@@ -75,8 +75,7 @@ AC_DEFUN([SC_PATH_TCLCONFIG], [
 	# we reset no_tcl in case something fails here
 	no_tcl=true
 	AC_ARG_WITH(tcl,
-	[AC_HELP_STRING([--with-tcl=<dir>],
-	[directory containing tcl configuration (tclConfig.sh) [[searches]]])],
+	[AS_HELP_STRING([--with-tcl=<dir>],[directory containing tcl configuration (tclConfig.sh) [[searches]]])],
 	[with_tclconfig=${withval}],
 	[with_tclconfig=search]
 	)
@@ -266,8 +265,7 @@ AC_DEFUN([EM_PATH_TCLXCONFIG], [
 	# we reset no_tclx in case something fails here
 	no_tclx=true
 	AC_ARG_WITH(tclx,
-	AC_HELP_STRING([--with-tclx=<dir>],
-	[directory containing TclX configuration (tclxConfig.sh) [[searches]]]),
+	AS_HELP_STRING([--with-tclx=<dir>],[directory containing TclX configuration (tclxConfig.sh) [[searches]]]),
 	[with_tclxconfig=${withval}],
 	[with_tclxconfig=search]
 	)

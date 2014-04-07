@@ -13,7 +13,8 @@
 ##
 
 ACLOCAL_AMFLAGS = -I m4 --install
-AM_WARNFLAGS = -Wall
+AM_WARNFLAGS = -Wall -Wimplicit
+AM_CFLAGS = $(AM_WARNFLAGS)
 
 man_MANS = doc/module.1 doc/modulefile.4
 SUBDIRS = . init modulefiles @EXTDIR@ doc po

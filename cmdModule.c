@@ -28,7 +28,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 429749ba5233f5a38a54992c6039d1d74feed204 $";
@@ -88,9 +88,9 @@ char	 *module_command;
 /**				    PROTOTYPES				     **/
 /** ************************************************************************ **/
 
-/** not applicable **/
+/* from ModuleCmd_Refresh.c (no applicable header): */
+int ModuleCmd_Refresh(Tcl_Interp *interp, int argc, char *argv[]);
 
-
 /*++++
  ** ** Function-Header ***************************************************** **
  ** 									     **
@@ -172,7 +172,7 @@ int	cmdModule(	ClientData	 client_data,
     /**
      **  Non-persist mode?
      **/
-    
+
     if (g_flags & M_NONPERSIST) {
 	return (TCL_OK);
     }
@@ -188,7 +188,7 @@ int	cmdModule(	ClientData	 client_data,
 	fprintf( stderr, "\n");
 	return( TCL_OK);
     }
-    
+
     /**
      **  For recursion.  This can be called multiple times.
      **/
@@ -198,13 +198,13 @@ int	cmdModule(	ClientData	 client_data,
 
     if( g_current_module)
 	store_curmodule = g_current_module;
-    
+
     /**
-     **  If the command is '-', we want to just start 
+     **  If the command is '-', we want to just start
      **    interpreting Tcl from stdin.
      **/
 
-    if(_XD !strcmp( module_command, "-")) { 
+    if(_XD !strcmp( module_command, "-")) {
 	return_val = Execute_TclFile( interp, _fil_stdin);
 
     /**
@@ -318,42 +318,42 @@ int	cmdModule(	ClientData	 client_data,
 
     } else if(_MTCH Tcl_RegExpMatch(interp,module_command,initRE)) {
 	_TCLCHK(interp);
-	
+
         if( Tcl_RegExpMatch(interp,module_command, "^inita|^ia")){/* initadd */
 	    _TCLCHK(interp);
 	    g_flags |= M_LOAD;
 	    return_val = ModuleCmd_Init(interp,num_modulefiles,modulefile_list);
 	    g_flags &= ~M_LOAD;
 	}
-	
+
         if( Tcl_RegExpMatch(interp,module_command, "^initr|^iw")){ /* initrm */
 	    _TCLCHK(interp);
 	    g_flags |= M_REMOVE;
 	    return_val = ModuleCmd_Init(interp,num_modulefiles,modulefile_list);
 	    g_flags &= ~M_REMOVE;
 	}
-	
+
         if( Tcl_RegExpMatch(interp,module_command, "^initl|^il")){/* initlist*/
 	    _TCLCHK(interp);
 	    g_flags |= M_DISPLAY;
 	    return_val = ModuleCmd_Init(interp,num_modulefiles,modulefile_list);
 	    g_flags &= ~M_DISPLAY;
 	}
-	
+
         if(Tcl_RegExpMatch(interp,module_command, "^inits|^is")){/* initswitch*/
 	    _TCLCHK(interp);
 	    g_flags |= M_SWITCH;
 	    return_val = ModuleCmd_Init(interp,num_modulefiles,modulefile_list);
 	    g_flags &= ~M_SWITCH;
 	}
-	
+
         if(Tcl_RegExpMatch(interp,module_command, "^initc|^ic")){/* initclear*/
 	    _TCLCHK(interp);
 	    g_flags |= M_CLEAR;
 	    return_val = ModuleCmd_Init(interp,num_modulefiles,modulefile_list);
 	    g_flags &= ~M_CLEAR;
 	}
-	
+
         if(Tcl_RegExpMatch(interp,module_command,"^initp|^ip")){/*initprepend*/
 	    _TCLCHK(interp);
 	    g_flags |= (M_PREPEND | M_LOAD);
@@ -378,7 +378,7 @@ int	cmdModule(	ClientData	 client_data,
 	return_val = ModuleCmd_UnUse( interp, num_modulefiles, modulefile_list);
 
     /**
-     **  --- module REFRESH 
+     **  --- module REFRESH
      **/
 
     } else if(_MTCH Tcl_RegExpMatch(interp,module_command, refreshRE)) {
@@ -393,7 +393,7 @@ int	cmdModule(	ClientData	 client_data,
 	_TCLCHK(interp);
 	return_val = ModuleCmd_Help( interp, num_modulefiles, modulefile_list);
     }
-    
+
     /**
      **  Tracing
      **/
@@ -405,12 +405,12 @@ int	cmdModule(	ClientData	 client_data,
     /**
      **  Evaluate the subcommands return value in order to get rid of unrecog-
      **  nized commands
-     **/   
+     **/
 
     if( return_val < 0)
 	if( OK != ErrorLogger( ERR_COMMAND, LOC, module_command, NULL))
           return (TCL_ERROR);
-    
+
     /**
      **  Clean up from recursion
      **/
@@ -420,7 +420,7 @@ int	cmdModule(	ClientData	 client_data,
 	g_current_module = store_curmodule;
 
     module_command = save_module_command;
- 
+
     /**
      **  Return on success
      **/
@@ -455,7 +455,7 @@ int	cmdModule(	ClientData	 client_data,
  ** ************************************************************************ **
  ++++*/
 
-int   Read_Modulefile( Tcl_Interp	*interp, 
+int   Read_Modulefile( Tcl_Interp	*interp,
 		       char		*filename)
 {
     int    result;
@@ -478,7 +478,7 @@ int   Read_Modulefile( Tcl_Interp	*interp,
      **  Check for the module 'magic cookie'
      **  Trust stdin as a valid module file ...
      **/
-    
+
     if( !strcmp( filename, _fil_stdin) && !check_magic( filename,
     	MODULES_MAGIC_COOKIE, MODULES_MAGIC_COOKIE_LENGTH)) {
 	if( OK != ErrorLogger( ERR_MAGIC, LOC, filename, NULL))
@@ -556,7 +556,7 @@ int	 Execute_TclFile(	Tcl_Interp	*interp,
     }
 
     /**
-     **  If we're supposed to be interpreting from stdin, set infile 
+     **  If we're supposed to be interpreting from stdin, set infile
      **  equal to stdin, otherwise, open the file and interpret
      **/
 
@@ -568,7 +568,7 @@ int	 Execute_TclFile(	Tcl_Interp	*interp,
 		return( TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
 	}
     }
-    
+
     /**
      **  Allow access to which file is being loaded.
      **/
@@ -576,7 +576,7 @@ int	 Execute_TclFile(	Tcl_Interp	*interp,
     linenum = 0;
     Tcl_SetVar( interp, "ModulesCurrentModulefile", filename, 0);
     Tcl_DStringInit( &cmdbuf);
-    
+
     while( 1) {
 
         linenum++;
@@ -586,18 +586,18 @@ int	 Execute_TclFile(	Tcl_Interp	*interp,
 	    }
 	    line[0] = '\0';
 	}
-	
+
 	/**
 	 **  Put the whole command on the command buffer
 	 **/
 
 	cmd = Tcl_DStringAppend( &cmdbuf, line, (-1));
-	
+
 	if( line[0] != 0  && !Tcl_CommandComplete(cmd)) {
 	    gotPartial++;
 	    continue;
 	}
-	
+
 	/**
 	 **  Now evaluate the command and react on its result
 	 **  Reinitialize the command buffer
@@ -622,7 +622,7 @@ int	 Execute_TclFile(	Tcl_Interp	*interp,
 	    switch( result) {
 		case TCL_OK:	    strcpy( buffer, "TCL_OK");
 				    break;
-		
+
 		case TCL_ERROR:	    strcpy( buffer, "TCL_ERROR");
 				    break;
 
@@ -639,7 +639,7 @@ int	 Execute_TclFile(	Tcl_Interp	*interp,
 
             case TCL_OK:	gotPartial = 0;
 			        continue;	/** while **/
-	    
+
             case TCL_ERROR:	interp->errorLine = ((linenum-1)-gotPartial) +
 				    interp->errorLine;
 	    			/* FALLTHROUGH */
@@ -718,7 +718,7 @@ int  CallModuleProcedure(	Tcl_Interp	*interp,
 #endif
 
     /**
-     **  Must send stdout and stderr to /dev/null until the 
+     **  Must send stdout and stderr to /dev/null until the
      **  ModulesHelp procedure is called.
      **/
 
@@ -727,7 +727,7 @@ int  CallModuleProcedure(	Tcl_Interp	*interp,
 	    if( OK != ErrorLogger( ERR_OPEN, LOC, _fil_devnull, "changing", NULL))
 		return( TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
 	}
-	
+
 	/**
 	 **  Close STDOUT and reopen it as /dev/null
 	 **/
@@ -735,7 +735,7 @@ int  CallModuleProcedure(	Tcl_Interp	*interp,
 	if( -1 == ( saved_stdout = dup( 1)))
 	    if( OK != ErrorLogger( ERR_DUP, LOC, _fil_stdout, NULL))
 		return( TCL_ERROR);	/** ------- EXIT (FAILURE) --------> **/
-	
+
 	if( -1 == close( 1))
 	    if( OK != ErrorLogger( ERR_CLOSE, LOC, _fil_stdout, NULL))
 		return( TCL_ERROR);	/** ------- EXIT (FAILURE) --------> **/
@@ -743,7 +743,7 @@ int  CallModuleProcedure(	Tcl_Interp	*interp,
 	if( -1 == dup( devnull))
 	    if( OK != ErrorLogger( ERR_DUP, LOC, _fil_devnull, NULL))
 		return( TCL_ERROR);	/** ------- EXIT (FAILURE) --------> **/
-	
+
 	/**
 	 **  Close STDERR and reopen it as /dev/null
 	 **/
@@ -751,7 +751,7 @@ int  CallModuleProcedure(	Tcl_Interp	*interp,
 	if( -1 == ( saved_stdout = dup( 2)))
 	    if( OK != ErrorLogger( ERR_DUP, LOC, _fil_stderr, NULL))
 		return( TCL_ERROR);	/** ------- EXIT (FAILURE) --------> **/
-	
+
 	if( -1 == close( 2))
 	    if( OK != ErrorLogger( ERR_CLOSE, LOC, _fil_stderr, NULL))
 		return( TCL_ERROR);	/** ------- EXIT (FAILURE) --------> **/
@@ -784,7 +784,7 @@ int  CallModuleProcedure(	Tcl_Interp	*interp,
 	if( EOF == fflush( stderr))
 	    if( OK != ErrorLogger( ERR_FLUSH, LOC, _fil_stderr, NULL))
 		return( TCL_ERROR);	/** ------- EXIT (FAILURE) --------> **/
-	
+
 	if( -1 == close( 1))
 	    if( OK != ErrorLogger( ERR_CLOSE, LOC, _fil_stdout, NULL))
 		return( TCL_ERROR);	/** ------- EXIT (FAILURE) --------> **/
@@ -796,15 +796,15 @@ int  CallModuleProcedure(	Tcl_Interp	*interp,
 	if( -1 == dup( saved_stdout))
 	    if( OK != ErrorLogger( ERR_DUP, LOC, _fil_stdout, NULL))
 		return( TCL_ERROR);	/** ------- EXIT (FAILURE) --------> **/
-	
+
 	if( -1 == close( 2))
 	    if( OK != ErrorLogger( ERR_CLOSE, LOC, _fil_stderr, NULL))
 		return( TCL_ERROR);	/** ------- EXIT (FAILURE) --------> **/
-	
+
 	if( -1 == dup( saved_stderr))
 	    if( OK != ErrorLogger( ERR_DUP, LOC, _fil_stderr, NULL))
 		return( TCL_ERROR);	/** ------- EXIT (FAILURE) --------> **/
-    }	
+    }
 
     /**
      **  Now evaluate the Tcl Procedure
@@ -825,3 +825,5 @@ int  CallModuleProcedure(	Tcl_Interp	*interp,
     return( result);
 
 } /** End of 'CallModuleProcedure' **/
+
+/* EOF */
