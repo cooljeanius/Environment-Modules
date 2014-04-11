@@ -26,7 +26,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 938a2d20aaa98af116c70f9d7fc4b5708e417231 $";
@@ -62,21 +62,21 @@ static void *UseId[] = { &UseId, Id };
 /** ************************************************************************ **/
 
 char	 *g_current_module = NULL,	/** The module which is handled by   **/
-					/** the current command		     **/
-	 *g_specified_module = NULL,	/** The module that was specified    **/
-					/** on the command line		     **/
-	 *g_module_path = NULL,		/** The path to the module	     **/
-	 *shell_name,			/** Name of the shell		     **/
-					/** (first parameter to modulcmd)    **/
-	 *shell_derelict,		/** Shell family (sh, csh, etc)	     **/
-	 *shell_init,			/** Shell init script name	     **/
-	 *shell_cmd_separator;		/** Shell command separator char     **/
+/** the current command		     **/
+*g_specified_module = NULL,	/** The module that was specified    **/
+/** on the command line		     **/
+*g_module_path = NULL,		/** The path to the module	     **/
+*shell_name,			/** Name of the shell		     **/
+/** (first parameter to modulcmd)    **/
+*shell_derelict,		/** Shell family (sh, csh, etc)	     **/
+*shell_init,			/** Shell init script name	     **/
+*shell_cmd_separator;		/** Shell command separator char     **/
 int	  g_flags = 0,			/** Control what to do at the moment **/
-					/** The posible values are defined in**/
-					/** module_def.h		     **/
-	  g_retval = 0,			/** exit return value		     **/
-	  g_output = 0,			/** Has output been generated	     **/
-	  append_flag = 0;		/** only used by the 'use' command   **/
+/** The posible values are defined in**/
+/** module_def.h		     **/
+g_retval = 0,			/** exit return value		     **/
+g_output = 0,			/** Has output been generated	     **/
+append_flag = 0;		/** only used by the 'use' command   **/
 
 char	  _default[] = "default";	/** id string for default versions   **/
 char	  _colon[]   = ":";		/** directory separator		     **/
@@ -88,33 +88,30 @@ char	  _colon[]   = ":";		/** directory separator		     **/
  **/
 
 char	*instpath = PREFIX,
-	*rc_file = RCFILE,
-	*modulerc_file = MODULERCFILE,
-	*version_file = VERSIONFILE;
+*rc_file = RCFILE,
+*modulerc_file = MODULERCFILE,
+*version_file = VERSIONFILE;
 
 /**
  **  pointers for regular expression evaluations
  **/
 char
-    *addRE      = "^(add|load)", 		/** 'module add <file>'	     **/
-    *rmRE       = "^(rm|del|era|remov|unload)",	/** 'module unload <file>'   **/
-    *swRE       = "^sw",			/** 'module switch <file>'   **/
-    *dispRE     = "^(disp|show)", 		/** 'module display <file>'  **/
-    *listRE     = "^li", 			/** 'module list <file>'     **/
-    *availRE    = "^av",			/** 'module avail <file>'    **/
-    *helpRE     = "^(help|\\?)",		/** 'module help <file>'     **/
-    *initRE     = "^init",			/** 'module init'	     **/
-    *useRE      = "^use",			/** 'module use <file>'	     **/
-    *unuseRE    = "^unuse",			/** 'module unuse <file>'    **/
-    *updateRE   = "^update",			/** 'module update'	     **/
-    *purgeRE    = "^purge",			/** 'module purge'	     **/
-    *clearRE    = "^clear",			/** 'module clear'	     **/
-    *whatisRE   = "^wh",			/** 'module whatis'	     **/
-    *aproposRE  = "^(apr|key)",			/** 'module apropos'	     **/
-    *refreshRE  = "^refr";			/** 'module refresh'	     **/
-  
-  /**
-   **  Hash-Tables for all changes to the environment.
+*addRE      = "^(add|load)", 		/** 'module add <file>'	     **/
+*rmRE       = "^(rm|del|era|remov|unload)",	/** 'module unload <file>'   **/
+*swRE       = "^sw",			/** 'module switch <file>'   **/
+*dispRE     = "^(disp|show)", 		/** 'module display <file>'  **/
+*listRE     = "^li", 			/** 'module list <file>'     **/
+*availRE    = "^av",			/** 'module avail <file>'    **/
+*helpRE     = "^(help|\\?)",		/** 'module help <file>'     **/
+*initRE     = "^init",			/** 'module init'	     **/
+*useRE      = "^use",			/** 'module use <file>'	     **/
+*unuseRE    = "^unuse",			/** 'module unuse <file>'    **/
+*updateRE   = "^update",			/** 'module update'	     **/
+*purgeRE    = "^purge",			/** 'module purge'	     **/
+*clearRE    = "^clear",			/** 'module clear'	     **/
+*whatisRE   = "^wh",			/** 'module whatis'	     **/
+*aproposRE  = "^(apr|key)",			/** 'module apropos'	     **/
+*refreshRE  = "^refr";			/** 'module refresh'	     **/
 
 /**
  **  Hash-Tables for all changes to the environment.
@@ -122,11 +119,11 @@ char
  **/
 
 Tcl_HashTable	*setenvHashTable,
-		*unsetenvHashTable,
-		*aliasSetHashTable,
-		*aliasUnsetHashTable,
-		*markVariableHashTable,
-		*markAliasHashTable;
+*unsetenvHashTable,
+*aliasSetHashTable,
+*aliasUnsetHashTable,
+*markVariableHashTable,
+*markAliasHashTable;
 
 /**
  **  A buffer for reading a single line
@@ -139,12 +136,12 @@ char	*line = NULL;
  **/
 
 int	sw_force = 0,
-	sw_detach = 0,
-	sw_format = 0,
-	sw_verbose = 0,
-	sw_create = 0,
-	sw_userlvl = UL_ADVANCED,
-	sw_icase = 0;
+sw_detach = 0,
+sw_format = 0,
+sw_verbose = 0,
+sw_create = 0,
+sw_userlvl = UL_ADVANCED,
+sw_icase = 0;
 
 /** ************************************************************************ **/
 /** 				    LOCAL DATA				     **/
@@ -169,7 +166,7 @@ static	char	_proc_Tcl_AppInit[] = "Tcl_AppInit";
 
 static int	Check_Switches( int *argc, char *argv[]);
 static void	version (FILE *output);
-
+
 /*++++
  ** ** Function-Header ***************************************************** **
  ** 									     **
@@ -211,28 +208,28 @@ int	main( int argc, char *argv[], char *environ[]) {
      **/
     if (argc > 1 && *argv[1] == '-') {
         if (!strcmp("-V", argv[1]) || !strcmp("--version", argv[1])) {
-	    version(stdout);
-	    return 0;
+			version(stdout);
+			return 0;
         }
     }
     /**
-     **  Initialization. 
+     **  Initialization.
      **  Check the command line syntax. There will be no return from the
      **  initialization function in case of invalid command line arguments.
      **/
 
     if( TCL_OK != Initialize_Tcl( &interp, argc, argv, environ))
-	goto unwind0;
+		goto unwind0;
 
     if( TCL_OK != Setup_Environment( interp))
-	goto unwind0;
+		goto unwind0;
 
     /**
      **  Check for command line switches
      **/
 
     if( TCL_OK != Check_Switches( &argc, argv))
-	goto unwind0;
+		goto unwind0;
 
     /**
      **  Figure out, which global RC file to use. This depends on the environ-
@@ -245,27 +242,27 @@ int	main( int argc, char *argv[], char *environ[]) {
      **/
 
     if((rc_name = xgetenv( "MODULERCFILE"))) {
-	/* found something in MODULERCFILE */
-	if((char *) NULL == (rc_path = stringer(NULL,0,rc_name,NULL))) {
-	    if( OK != ErrorLogger( ERR_STRING, LOC, NULL))
-		goto unwind1;
-	    else
-		null_free((void *) &rc_name);
-	} else {
-	    null_free((void *) &rc_name);
-	    if((char *) NULL == (rc_name = strrchr( rc_path, '/'))) {
-		rc_name = rc_path;
-		rc_path = instpath;
-	    } else
-		*rc_name++ = '\0';
-	    if( !*rc_name) {
-		rc_name = rc_file;
-	    }
-	}
+		/* found something in MODULERCFILE */
+		if((char *) NULL == (rc_path = stringer(NULL,0,rc_name,NULL))) {
+			if( OK != ErrorLogger( ERR_STRING, LOC, NULL))
+				goto unwind1;
+			else
+				null_free((void *) &rc_name);
+		} else {
+			null_free((void *) &rc_name);
+			if((char *) NULL == (rc_name = strrchr( rc_path, '/'))) {
+				rc_name = rc_path;
+				rc_path = instpath;
+			} else
+				*rc_name++ = '\0';
+			if( !*rc_name) {
+				rc_name = rc_file;
+			}
+		}
     } else {
-	rc_path = instpath;
-	null_free((void *) &rc_name);
-	rc_name = rc_file;
+		rc_path = instpath;
+		null_free((void *) &rc_name);
+		rc_name = rc_file;
     }
 
     /**
@@ -273,13 +270,13 @@ int	main( int argc, char *argv[], char *environ[]) {
      **/
 
     if( rc_path == instpath) {
-	if((char *) NULL == (rc_path = stringer(NULL,0, instpath,"/etc",NULL))){
-	    if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
-		goto unwind1;
-	    else
-		rc_path = NULL;
-	
-	}
+		if((char *) NULL == (rc_path = stringer(NULL,0, instpath,"/etc",NULL))){
+			if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
+				goto unwind1;
+			else
+				rc_path = NULL;
+
+		}
     }
 
     /**
@@ -289,11 +286,11 @@ int	main( int argc, char *argv[], char *environ[]) {
     g_current_module = (char *) NULL;
 
     if( TCL_ERROR == SourceRC( interp, rc_path, rc_name) ||
-	TCL_ERROR == SourceRC( interp, getenv( "HOME"), modulerc_file))
-	exit( 1);
+	   TCL_ERROR == SourceRC( interp, getenv( "HOME"), modulerc_file))
+		exit( 1);
 
     if( rc_path)
-	null_free((void *) &rc_path);
+		null_free((void *) &rc_path);
 
     /**
      **  Invocation of the module command as specified in the command line
@@ -301,7 +298,7 @@ int	main( int argc, char *argv[], char *environ[]) {
 
     g_flags = 0;
     return_val = cmdModule((ClientData) 0,interp,(argc-1),
-	(CONST84 char **) (argv + 1));
+						   (CONST84 char **) (argv + 1));
 
     /**
      **  If we were doing some operation that has already flushed its output,
@@ -314,14 +311,14 @@ int	main( int argc, char *argv[], char *environ[]) {
      **/
 
     if( TCL_OK == return_val) {
-	Output_Modulefile_Changes( interp);
+		Output_Modulefile_Changes( interp);
 #ifdef HAS_X11LIBS
-	xresourceFinish( 1);
+		xresourceFinish( 1);
 #endif
     } else {
-	Unwind_Modulefile_Changes( interp, NULL);
+		Unwind_Modulefile_Changes( interp, NULL);
 #ifdef HAS_X11LIBS
-	xresourceFinish( 0);
+		xresourceFinish( 0);
 #endif
     }
 
@@ -333,9 +330,9 @@ int	main( int argc, char *argv[], char *environ[]) {
     Delete_Global_Hash_Tables();
 
     if( line)
-	null_free((void *) &line);
+		null_free((void *) &line);
     if( error_line)
-	null_free((void *) &error_line);
+		null_free((void *) &error_line);
 
     /**
      **  This return value may be evaluated by the calling shell
@@ -359,7 +356,7 @@ unwind0:
     return (g_retval);
 
 } /** End of 'main' **/
-
+
 /*++++
  ** ** Function-Header ***************************************************** **
  ** 									     **
@@ -392,50 +389,50 @@ void module_usage(FILE *output)
 #endif
 
 	fprintf(output,
-		"\n  Modules Release %s %s (Copyright GNU GPL v2 1991):\n\n",
-                version_string,date_string);
-	
+			"\n  Modules Release %s %s (Copyright GNU GPL v2 1991):\n\n",
+			version_string,date_string);
+
 	fprintf(output,
-"  Usage: module [ switches ] [ subcommand ] [subcommand-args ]\n\n"
-"Switches:\n"
-"	-H|--help		this usage info\n"
-"	-V|--version		modules version & configuration options\n"
-"	-f|--force		force active dependency resolution\n"
-"	-t|--terse		terse    format avail and list format\n"
-"	-l|--long		long     format avail and list format\n"
-"	-h|--human		readable format avail and list format\n"
-"	-v|--verbose		enable  verbose messages\n"
-"	-s|--silent		disable verbose messages\n"
-"	-c|--create		create caches for avail and apropos\n"
-"	-i|--icase		case insensitive\n"
-"	-u|--userlvl <lvl>	set user level to (nov[ice],exp[ert],adv[anced])\n"
-"  Available SubCommands and Args:\n"
-"	+ add|load		modulefile [modulefile ...]\n"
-"	+ rm|unload		modulefile [modulefile ...]\n"
-"	+ switch|swap		[modulefile1] modulefile2\n"
-"	+ display|show		modulefile [modulefile ...]\n"
-"	+ avail			[modulefile [modulefile ...]]\n"
-"	+ use [-a|--append]	dir [dir ...]\n"
-"	+ unuse			dir [dir ...]\n"
+			"  Usage: module [ switches ] [ subcommand ] [subcommand-args ]\n\n"
+			"Switches:\n"
+			"	-H|--help		this usage info\n"
+			"	-V|--version		modules version & configuration options\n"
+			"	-f|--force		force active dependency resolution\n"
+			"	-t|--terse		terse    format avail and list format\n"
+			"	-l|--long		long     format avail and list format\n"
+			"	-h|--human		readable format avail and list format\n"
+			"	-v|--verbose		enable  verbose messages\n"
+			"	-s|--silent		disable verbose messages\n"
+			"	-c|--create		create caches for avail and apropos\n"
+			"	-i|--icase		case insensitive\n"
+			"	-u|--userlvl <lvl>	set user level to (nov[ice],exp[ert],adv[anced])\n"
+			"  Available SubCommands and Args:\n"
+			"	+ add|load		modulefile [modulefile ...]\n"
+			"	+ rm|unload		modulefile [modulefile ...]\n"
+			"	+ switch|swap		[modulefile1] modulefile2\n"
+			"	+ display|show		modulefile [modulefile ...]\n"
+			"	+ avail			[modulefile [modulefile ...]]\n"
+			"	+ use [-a|--append]	dir [dir ...]\n"
+			"	+ unuse			dir [dir ...]\n"
 #ifdef BEGINENV
-"	+ update\n"
+			"	+ update\n"
 #endif
-"	+ refresh\n"
-"	+ purge\n"
-"	+ list\n"
-"	+ clear\n"
-"	+ help			[modulefile [modulefile ...]]\n"
-"	+ whatis		[modulefile [modulefile ...]]\n"
-"	+ apropos|keyword	string\n"
-"	+ initadd		modulefile [modulefile ...]\n"
-"	+ initprepend		modulefile [modulefile ...]\n"
-"	+ initrm		modulefile [modulefile ...]\n"
-"	+ initswitch		modulefile1 modulefile2\n"
-"	+ initlist\n"
-"	+ initclear\n\n");
+			"	+ refresh\n"
+			"	+ purge\n"
+			"	+ list\n"
+			"	+ clear\n"
+			"	+ help			[modulefile [modulefile ...]]\n"
+			"	+ whatis		[modulefile [modulefile ...]]\n"
+			"	+ apropos|keyword	string\n"
+			"	+ initadd		modulefile [modulefile ...]\n"
+			"	+ initprepend		modulefile [modulefile ...]\n"
+			"	+ initrm		modulefile [modulefile ...]\n"
+			"	+ initswitch		modulefile1 modulefile2\n"
+			"	+ initlist\n"
+			"	+ initclear\n\n");
 
 } /** End of 'module_usage' **/
-
+
 /*++++
  ** ** Function-Header ***************************************************** **
  ** 									     **
@@ -465,7 +462,7 @@ int Tcl_AppInit(Tcl_Interp *interp)
     return( TCL_OK);
 
 } /** End of 'Tcl_AppInit' **/
-
+
 /*++++
  ** ** Function-Header ***************************************************** **
  ** 									     **
@@ -523,21 +520,21 @@ static int	Check_Switches( int *argc, char *argv[])
      **/
 
     const struct option longopts[] = {
-	{ "force", no_argument, NULL, 'f' },
-	{ "terse", no_argument, NULL, 't' },
-	{ "long", no_argument, NULL, 'l' },
-	{ "human", no_argument, NULL, 'h' },
-	{ "parseable", no_argument, NULL, 'p' },
-	{ "parse", no_argument, NULL, 'p' },
-	{ "verbose", no_argument, NULL, 'v' },
-	{ "silent", no_argument, NULL, 's' },
-	{ "create", no_argument, NULL, 'c' },
-	{ "icase", no_argument, NULL, 'i' },
-	{ "userlvl", required_argument, NULL, 'u'},
-	{ "append", no_argument, NULL, 'a' },
-	{ "help", no_argument, NULL, 'H' },
-	{ "version", no_argument, NULL, 'V' },
-	{ NULL, no_argument, NULL, 0 }
+		{ "force", no_argument, NULL, 'f' },
+		{ "terse", no_argument, NULL, 't' },
+		{ "long", no_argument, NULL, 'l' },
+		{ "human", no_argument, NULL, 'h' },
+		{ "parseable", no_argument, NULL, 'p' },
+		{ "parse", no_argument, NULL, 'p' },
+		{ "verbose", no_argument, NULL, 'v' },
+		{ "silent", no_argument, NULL, 's' },
+		{ "create", no_argument, NULL, 'c' },
+		{ "icase", no_argument, NULL, 'i' },
+		{ "userlvl", required_argument, NULL, 'u'},
+		{ "append", no_argument, NULL, 'a' },
+		{ "help", no_argument, NULL, 'H' },
+		{ "version", no_argument, NULL, 'V' },
+		{ NULL, no_argument, NULL, 0 }
     };
 
 #if WITH_DEBUGGING_INIT
@@ -551,121 +548,121 @@ static int	Check_Switches( int *argc, char *argv[])
 
     if( *argc > 1) {
 
-	while( EOF != (c = getopt_long( *argc-1, &argv[1], "hpftlvsciu:aHV",
-	    longopts, NULL))) {
+		while( EOF != (c = getopt_long( *argc-1, &argv[1], "hpftlvsciu:aHV",
+									   longopts, NULL))) {
 
-	    switch( c) {
+			switch( c) {
 
-		/**
-		 **  Force
-		 **/
+					/**
+					 **  Force
+					 **/
 
-		case 'f':			/* force */
-		    sw_force = 1;
-		    break;
+				case 'f':			/* force */
+					sw_force = 1;
+					break;
 
-		/**
-		 **  Format of the messages
-		 **/
+					/**
+					 **  Format of the messages
+					 **/
 
-		case 't':			/* terse */
-		    sw_format |= (SW_SET | SW_TERSE);
-		    sw_format &= ~ SW_LONG;
-		    break;
+				case 't':			/* terse */
+					sw_format |= (SW_SET | SW_TERSE);
+					sw_format &= ~ SW_LONG;
+					break;
 
-		case 'l':			/* long */
-		    sw_format |= (SW_SET | SW_LONG);
-		    sw_format &= ~ SW_TERSE;
-		    break;
+				case 'l':			/* long */
+					sw_format |= (SW_SET | SW_LONG);
+					sw_format &= ~ SW_TERSE;
+					break;
 
-		case 'h':			/* human */
-		    sw_format |= (SW_SET | SW_HUMAN);
-		    sw_format &= ~ SW_PARSE;
-		    break;
+				case 'h':			/* human */
+					sw_format |= (SW_SET | SW_HUMAN);
+					sw_format &= ~ SW_PARSE;
+					break;
 
-		case 'p':			/* parseable */
-		    sw_format |= (SW_SET | SW_PARSE);
-		    sw_format &= ~ SW_HUMAN;
-		    break;
+				case 'p':			/* parseable */
+					sw_format |= (SW_SET | SW_PARSE);
+					sw_format &= ~ SW_HUMAN;
+					break;
 
-		/**
-		 **  Verbosity
-		 **/
+					/**
+					 **  Verbosity
+					 **/
 
-		case 'v':			/* verbose */
-		    sw_verbose = 1;
-		    break;
+				case 'v':			/* verbose */
+					sw_verbose = 1;
+					break;
 
-		case 's':			/* silent */
-		    sw_detach = 1;
-		    break;
+				case 's':			/* silent */
+					sw_detach = 1;
+					break;
 
-		/**
-		 **  Caching control
-		 **/
+					/**
+					 **  Caching control
+					 **/
 
-		case 'c':			/* create */
-		    sw_create = 1;
-		    break;
+				case 'c':			/* create */
+					sw_create = 1;
+					break;
 
-		/**
-		 **  Locating
-		 **/
+					/**
+					 **  Locating
+					 **/
 
-		case 'i':			/* icase */
-		    sw_icase = 1;
-		    break;
+				case 'i':			/* icase */
+					sw_icase = 1;
+					break;
 
-		/**
-		 **  The user level comes as a string argument to the -u option
-		 **/
+					/**
+					 **  The user level comes as a string argument to the -u option
+					 **/
 
-		case 'u':			/* userlvl */
-		    cmdModuleUser_sub( optarg);
-		    break;
+				case 'u':			/* userlvl */
+					cmdModuleUser_sub( optarg);
+					break;
 
-		/**
-		 **  a special purpose flag for 'use' only
-		 **/
-		case 'a':			/* --append */
-		    append_flag = 1;
-		    break;
+					/**
+					 **  a special purpose flag for 'use' only
+					 **/
+				case 'a':			/* --append */
+					append_flag = 1;
+					break;
 
-		case 'H':			/* helpful info */
-		    module_usage(stderr);
-		    return ~TCL_OK;
+				case 'H':			/* helpful info */
+					module_usage(stderr);
+					return ~TCL_OK;
 
-		case 'V':			/* version */
-		    version(stderr);
-		    return ~TCL_OK;
+				case 'V':			/* version */
+					version(stderr);
+					return ~TCL_OK;
 
-		/**
-		 **  All remaining options will influence their flags as defined
-		 **  in the optlong table above.
-		 **/
+					/**
+					 **  All remaining options will influence their flags as defined
+					 **  in the optlong table above.
+					 **/
 
-		case 0:
-		    break;
+				case 0:
+					break;
 
-		/**
-		 **  Error messages for unknown options will be printed by
-		 **  getopt ...
-		 **/
+					/**
+					 **  Error messages for unknown options will be printed by
+					 **  getopt ...
+					 **/
 
-		case '?':
-		    break;
+				case '?':
+					break;
 
-		/**
-		 **  Well, this seems to be an internal error
-		 **/
+					/**
+					 **  Well, this seems to be an internal error
+					 **/
 
-		default:
-		    if( OK != ErrorLogger( ERR_GETOPT, LOC, NULL))
-			return( TCL_ERROR);	/** --- EXIT (FAILURE) ----> **/
-		    break;
+				default:
+					if( OK != ErrorLogger( ERR_GETOPT, LOC, NULL))
+						return( TCL_ERROR);	/** --- EXIT (FAILURE) ----> **/
+					break;
 
-	    }  /** switch() **/
-	}  /** while() **/
+			}  /** switch() **/
+		}  /** while() **/
     } /** if( argc) **/
 
     /**
@@ -674,13 +671,13 @@ static int	Check_Switches( int *argc, char *argv[])
      **/
 
     if( sw_detach) {
-	sw_verbose = 0;
-	if (!ttyname(2)) {
-	    int temp_fd = open("/dev/null", O_RDWR);
+		sw_verbose = 0;
+		if (!ttyname(2)) {
+			int temp_fd = open("/dev/null", O_RDWR);
 
-	    close(2);
-	    dup2(temp_fd, 2);
-	}
+			close(2);
+			dup2(temp_fd, 2);
+		}
     }
 
     /**
@@ -689,11 +686,11 @@ static int	Check_Switches( int *argc, char *argv[])
 
     c = optind - 1;
     if( optind < *argc && c > 0) {
-	while( optind < *argc) {
-	    argv[ optind-c] = argv[ optind];
-	    optind++;
-	}
-	*argc -= c;
+		while( optind < *argc) {
+			argv[ optind-c] = argv[ optind];
+			optind++;
+		}
+		*argc -= c;
     }
 
     /**
@@ -707,7 +704,7 @@ static int	Check_Switches( int *argc, char *argv[])
     return( TCL_OK);
 
 } /** End of 'Check_Switches' **/
-
+
 /*++++
  ** ** Function-Header ***************************************************** **
  ** 									     **
@@ -734,15 +731,15 @@ int dup2( int old, int new)
     close(new);
     fd = dup(old);
     if (fd != new) {
-	close( fd);
-	errno = EMFILE;
-	fd = -1;
+		close( fd);
+		errno = EMFILE;
+		fd = -1;
     }
 
     return( fd);
 }
 #endif
-
+
 /*++++
  ** ** Function-Header ***************************************************** **
  ** 									     **
@@ -766,11 +763,11 @@ int dup2( int old, int new)
 
 #define str(a) #a
 #define isdefined(a,b)	{if (strcmp(str(a),b)) x=str(a); else x="undef"; \
-			fprintf(output,format,b,x);}
+fprintf(output,format,b,x);}
 
 static void version (FILE *output) {
 	char	*x,
-		*format = "%s=%s\n";
+	*format = "%s=%s\n";
 
 	fprintf(output, format, "VERSION", version_string);
 	fprintf(output, format, "DATE", date_string);
