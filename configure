@@ -27864,9 +27864,10 @@ $as_echo "#define HAVE_STRCOLL 1" >>confdefs.h
 
 fi
 
-for ac_func in dup2 gethostname getdomainname ioctl memset \
-	mktemp setlocale strchr strcspn strdup strlen strrchr strstr \
-	syslog tmpnam tempnam uname
+for ac_func in dup2 exit fread gethostname getdomainname ioctl \
+        memset mktemp qsort setlocale strchr strcspn strdup strlen \
+        strncmp strncpy strrchr strstr strtok syslog tmpnam tempnam \
+        uname
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -27877,6 +27878,67 @@ _ACEOF
 
 fi
 done
+ac_fn_c_check_decl "$LINENO" "buffer" "ac_cv_have_decl_buffer" "$ac_includes_default"
+if test "x$ac_cv_have_decl_buffer" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_BUFFER $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "environ" "ac_cv_have_decl_environ" "$ac_includes_default"
+if test "x$ac_cv_have_decl_environ" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_ENVIRON $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "index" "ac_cv_have_decl_index" "$ac_includes_default"
+if test "x$ac_cv_have_decl_index" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_INDEX $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "remove" "ac_cv_have_decl_remove" "$ac_includes_default"
+if test "x$ac_cv_have_decl_remove" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_REMOVE $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "shell_name" "ac_cv_have_decl_shell_name" "$ac_includes_default"
+if test "x$ac_cv_have_decl_shell_name" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_SHELL_NAME $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "strtok" "ac_cv_have_decl_strtok" "$ac_includes_default"
+if test "x$ac_cv_have_decl_strtok" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_STRTOK $ac_have_decl
+_ACEOF
+
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for socket in -lsocket" >&5

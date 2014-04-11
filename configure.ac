@@ -280,9 +280,11 @@ AC_FUNC_MALLOC
 XORG_CHECK_MALLOC_ZERO
 AC_FUNC_REALLOC
 AC_FUNC_STRCOLL
-AC_CHECK_FUNCS([dup2 gethostname getdomainname ioctl memset \
-	mktemp setlocale strchr strcspn strdup strlen strrchr strstr \
-	syslog tmpnam tempnam uname])dnl
+AC_CHECK_FUNCS([dup2 exit fread gethostname getdomainname ioctl \
+        memset mktemp qsort setlocale strchr strcspn strdup strlen \
+        strncmp strncpy strrchr strstr strtok syslog tmpnam tempnam \
+        uname])dnl
+AC_CHECK_DECLS([buffer, environ, index, remove, shell_name, strtok])
 
 dnl#
 dnl#-----------------------------------------------------------------------

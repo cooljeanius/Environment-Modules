@@ -27,7 +27,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 9f494464b6c815a95b0566b7d69c09cab7aee19f $";
@@ -103,7 +103,7 @@ typedef	struct	{
  **  Error code translation table
  **/
 
-typedef struct  { 
+typedef struct  {
     ErrType	  error_type;		/** The error type as specified by   **/
 					/** the caller			     **/
     ErrWeights    error_weight;		/** The weight of this error         **/
@@ -224,7 +224,7 @@ static	FacilityNames	level_names[] = {
 #define	MEAS_VERB_NDX	1	/** Index of the 'VERBOSE' entry	    **/
 
 static	ErrMeasr	Measurements[] = {
-    { WGHT_NONE,   ""	  , OK,      OK,      OK },	
+    { WGHT_NONE,   ""	  , OK,      OK,      OK },
     { WGHT_VERBOSE,"VERB" , OK,      OK,      OK },
     { WGHT_INFO,   "INFO" , OK,      OK,      OK },
     { WGHT_DEBUG,  "DEBUG", OK,      OK,      OK },
@@ -578,15 +578,11 @@ void Restore_Error(void) {
  ** ************************************************************************ **
  ++++*/
 
-int Module_Error(	ErrType		  error_type,
-		   	char		 *module,
-		   	int		  lineno,
-		   	... )
+int Module_Error(ErrType error_type, char *module, int lineno, ...)
 {
-    int		  listsize = ARGLIST_SIZE,	/** Initial size of the argu-**/
-						/** ment list		     **/
+    int listsize = ARGLIST_SIZE, /** Initial size of the argument list **/
 		  argc = 0;			/** Actual number of args    **/
-    char	**argv,				/** Argument array	     **/
+    char **argv,				/** Argument array	     **/
 		 *arg;				/** A single argument	     **/
     va_list	  parptr;			/** Varargs scan pointer     **/
     ErrTransTab	 *TransPtr;			/** Error transtab entry     **/
@@ -594,16 +590,20 @@ int Module_Error(	ErrType		  error_type,
     ErrCode	  ret_code;
     int		  NoArgs = (error_type == ERR_ALLOC);
 
-    if( quiet_on_error ) return OK;		/* do nothing - just OK */
+    if (quiet_on_error) {
+		return OK;		/* do nothing - just OK */
+	}
 
     /**
      **  Argument check
      **/
-    if( NO_ERR_VERBOSE == error_type && !sw_verbose)
-	return( OK);
+    if (NO_ERR_VERBOSE == error_type && !sw_verbose) {
+		return(OK);
+	}
 
-    if( !module)
-	module = unknown;
+    if (!module) {
+		module = unknown;
+	}
 
     /**
      **  Build the argument array at first
@@ -635,12 +635,12 @@ int Module_Error(	ErrType		  error_type,
 	argv[ argc++] = arg;
 
     } /** while **/
-    
+
     if( NO_ERR_VERBOSE == error_type && !argc)
 	return( OK);
 
     /**
-     **  Locate the error translation table entry according to the 
+     **  Locate the error translation table entry according to the
      **  passed error type
      **/
     if( NULL == (TransPtr = ErrorLookup( error_type))) {
@@ -649,7 +649,7 @@ int Module_Error(	ErrType		  error_type,
 	return( ErrorLogger( ERR_INVAL, LOC, (sprintf( buffer, "%d",
 	    error_type), buffer), NULL));
     }
-    
+
     /**
      **  Now locate the assigned error weight ...
      **/
@@ -946,8 +946,8 @@ static	int	FlushError(	ErrType		  Type,
 
 	else if( !strcmp( fac, _stderr))
 	    fprintf( stderr, "%s", errmsg_buffer);
-	
-	else if( !strcmp( fac, _stdout)) 
+
+	else if( !strcmp( fac, _stdout))
 	    fprintf( stdout, "%s", errmsg_buffer);
 
 	/**
@@ -969,11 +969,11 @@ static	int	FlushError(	ErrType		  Type,
 		closelog();
 
 	    /**
-	     **  Invalid facilities ... take care not to end up in 
+	     **  Invalid facilities ... take care not to end up in
 	     **  infinite loops
 	     **/
 	    } else if( Type == ERR_INVFAC ||
-	               OK == ErrorLogger( ERR_INVFAC, LOC, fac, NULL)) 
+	               OK == ErrorLogger( ERR_INVFAC, LOC, fac, NULL))
 		continue;
 
 #else
@@ -996,7 +996,7 @@ static	int	FlushError(	ErrType		  Type,
 		    goto unwind2;
 
 		/**
-		 **  Invalid facilities ... take care not to end up in 
+		 **  Invalid facilities ... take care not to end up in
 		 **  infinite loops
 		 **/
 		if( Type == ERR_INVFAC ||
@@ -1092,7 +1092,7 @@ static	ErrFacilities	*GetFacility_sub(	ErrWeights	  Weight)
 	if( save == mid)
 	    low = mid = high;			/** Just to be sure ...	     **/
 
-	if( mid->Weight > Weight) 
+	if( mid->Weight > Weight)
 	    high = mid;
 	else if( mid->Weight < Weight)
 	    low = mid;
@@ -1146,7 +1146,7 @@ int	CheckFacility(	char *string, int *facility, int *level)
 	if( OK == ErrorLogger( ERR_STRING, LOC, NULL))
 	    goto unwind0;
 
-    /** 
+    /**
      **  We cannot use strtok here, because there's one initialized in an
      **  outer loop!
      **/
@@ -1154,7 +1154,7 @@ int	CheckFacility(	char *string, int *facility, int *level)
     if( !s || !*s)
 	goto unwind1;
     *s = '\0';
-	
+
     /**
      **  This should be the facility
      **/
@@ -1166,7 +1166,7 @@ int	CheckFacility(	char *string, int *facility, int *level)
     /**
      **  This should be the level
      **/
-    if( -1 == (x = scan_facility( ++s, level_names, 
+    if( -1 == (x = scan_facility( ++s, level_names,
 	    (sizeof( level_names) / sizeof( level_names[0])) )))
 	goto unwind1;
     *level = x;
@@ -1257,7 +1257,7 @@ static	int	scan_facility( char *s, FacilityNames *table, int size)
  ** ************************************************************************ **
  ++++*/
 
-char	**GetFacilityPtr( char *facility)
+char **GetFacilityPtr(char *facility)
 {
     int		 	 i, len;
     ErrMeasr		*measptr;
@@ -1275,7 +1275,7 @@ char	**GetFacilityPtr( char *facility)
 	    goto unwind0;
 
     for( t = buf; *t; ++t) *t = toupper(*t);
-    
+
     /**
      **  Now look up the measurements table for the uppercase weight
      **/
@@ -1292,14 +1292,14 @@ char	**GetFacilityPtr( char *facility)
 
     if( !i) 					/** not found		     **/
 	goto unwind0;
-    
+
     /**
      **  Now get the facility table entry
      **/
 
     if((ErrFacilities *) NULL == (facptr = GetFacility_sub(
 	measptr->error_weight))) {
-	ErrorLogger( ERR_INVWGHT_WARN, LOC, facility, NULL); 
+	ErrorLogger( ERR_INVWGHT_WARN, LOC, facility, NULL);
 	goto unwind0;
     }
 
@@ -1361,7 +1361,7 @@ static	int	PrintError(	char 		 *errbuffer,
      **  Build the error string at first. Note - we cannot alloc memory any
      **  more!
      **/
-    if( ERR_ALLOC == Type) 
+    if( ERR_ALLOC == Type)
 	error_string = ErrMsgs;
     else
 	if( NULL == (error_string = ErrorString( ErrMsgs, argc, argv)))
@@ -1473,7 +1473,7 @@ static	char	*ErrorString(	char		 *ErrMsgs,
 
 	*s++ = *ErrMsgs++;
 	backslash = 0;
-				
+
     } /** while( *ErrMsgs) **/
 
     /**

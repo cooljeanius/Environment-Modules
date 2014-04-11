@@ -99,18 +99,18 @@ typedef struct _subdir_node {
 
 #ifdef CACHE_AVAIL
 static	char	*namebuf = NULL;
-#endif
+#endif /* CACHE_AVAIL */
 static	char	 buffer[MOD_BUFSIZE];
 static	char	 buf[ LINELENGTH];
 static	char	 module_name[] = "ModuleCmd_Avail.c";	/** File name of this module **/
 
 #if WITH_DEBUGGING_MODULECMD
 static	char	_proc_ModuleCmd_Avail[] = "ModuleCmd_Avail";
-#endif
+#endif /* WITH_DEBUGGING_MODULECMD */
 #if WITH_DEBUGGING_UTIL_1
 static	char	_proc_print_dir[] = "print_dir";
 static	char	_proc_print_aligned_files[] = "print_aligned_files";
-#endif
+#endif /* WITH_DEBUGGING_UTIL_1 */
 #if WITH_DEBUGGING_UTIL_2
 static	char	_proc_check_dir[] = "check_dir";
 static	char	_proc_get_dir[] = "get_dir";
@@ -695,8 +695,9 @@ static	int	check_cache( char *dir)
 #endif
 
 
-static int	test_version_dir(	struct dirent	*dp)
+static int	test_version_dir(struct dirent	*dp)
 {
+	return 0;
 }
 /*++++
  ** ** Function-Header ***************************************************** **

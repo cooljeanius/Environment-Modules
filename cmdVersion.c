@@ -44,7 +44,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 438a5547e46b20965c44e72390007b5e9ad8e996 $";
@@ -164,29 +164,26 @@ static	ModName		*aliaslist = (ModName *) NULL;
 /**				    PROTOTYPES				     **/
 /** ************************************************************************ **/
 
-static	void		 CleanupVersionSub(	ModModule	 *ptr);
+static void CleanupVersionSub(ModModule *ptr);
 
-static	void		 CleanupName(		ModName		 *ptr);
+static void CleanupName(ModName *ptr);
 
-static	ModModule	*AddModule(		char		 *name);
+static ModModule *AddModule(char *name);
 
-static	ModModule	*FindModule(		char		 *name,
-						ModModule	**prev);
+static ModModule *FindModule(char *name, ModModule **prev);
 
-static	ModName		*AddName(		char		 *name,
-						ModName		**start,
-						ModModule	 *module);
+static ModName *AddName(char *name, ModName **start, ModModule *module);
 
-static	ModName		*FindName(		char		 *name,
-						ModName		 *start,
-						ModName		**prev);
+static ModName *FindName(char *name, ModName *start, ModName **prev);
 
-static	char		*CheckModuleVersion(	char 		 *name);
+static char *CheckModuleVersion(char *name);
 
-static	char		*scan_versions(		char 		 *buffer,
-						char		 *base,
-						ModName 	 *ptr,
-						ModModule 	 *modptr);
+static char *scan_versions(char *buffer, char *base, ModName *ptr,
+						   ModModule *modptr);
+
+/* cannot go in the header because it needs the ModModule type, and putting
+ * that type in the header leads to errors: */
+extern	void  CleanupVersion(ModModule *ptr);
 
 /*++++
  ** ** Function-Header ***************************************************** **
@@ -231,9 +228,9 @@ int	cmdModuleVersion(	ClientData	 client_data,
      **  Whatis mode?
      **/
 
-    if( g_flags & M_WHATIS) 
+    if( g_flags & M_WHATIS)
         return( TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
-	
+
     /**
      **  Parameter check
      **/
@@ -282,7 +279,7 @@ int	cmdModuleVersion(	ClientData	 client_data,
     }
 
     if((ModName *) NULL == (ptr = FindName( version, modptr->version, &tmp))) {
-	if((ModName *) NULL == (ptr = FindName( version, modptr->name, &tmp))) 
+	if((ModName *) NULL == (ptr = FindName( version, modptr->name, &tmp)))
 	    versptr = AddName( version, &modptr->version, modptr);
 	else
 	    versptr = ptr->version;
@@ -292,7 +289,7 @@ int	cmdModuleVersion(	ClientData	 client_data,
     /**
      **  Check all symbolic names now and allocate a name record for them
      **/
-    
+
     for( i=2; i<argc; i++) {
 
 	if( strcmp(argv[i], _default)
@@ -360,7 +357,7 @@ char	*ExpandVersions( char	*name)
      **  Parameter check
      **/
 
-    if((char *) NULL == (module = CheckModuleVersion( name))) 
+    if((char *) NULL == (module = CheckModuleVersion( name)))
 	return((char *) NULL );		/** -------- EXIT (FAILURE) -------> **/
 
     if((char *) NULL == (version = strrchr( module, '/'))) {
@@ -379,7 +376,7 @@ char	*ExpandVersions( char	*name)
 	return((char *) NULL );		/** -------- EXIT (FAILURE) -------> **/
 
     if((ModName *) NULL == (ptr = FindName( version, modptr->version, &tmp2))) {
-	if((ModName *) NULL == (ptr = FindName( version, modptr->name, &tmp2))) 
+	if((ModName *) NULL == (ptr = FindName( version, modptr->name, &tmp2)))
 	    return((char *) NULL );	/** -------- EXIT (FAILURE) -------> **/
 	ptr = ptr->version;
     }
@@ -390,9 +387,9 @@ char	*ExpandVersions( char	*name)
     /**
      **  Now scan in all the symbolic version names
      **/
- 
+
     *buffer = '\0';
-    if( s = scan_versions( buffer, buffer, ptr->ptr, modptr)) 
+    if( s = scan_versions( buffer, buffer, ptr->ptr, modptr))
 	*--s = '\0';			/** remove trailing ':'		     **/
 
 #if WITH_DEBUGGING_CALLBACK
@@ -451,7 +448,7 @@ static	char	*scan_versions( char		 *buffer,
 	/**
 	 **  Prevent endless loops
 	 **  To allow for version names that are substrings of other
-	 **  version names, match against "(^|:)name:" not just "name"... 
+	 **  version names, match against "(^|:)name:" not just "name"...
 	 **/
 	mayloop = strstr( base, ptr->name);
 	if( mayloop != NULL ) {
@@ -649,13 +646,13 @@ int	cmdModuleAlias(	ClientData	 client_data,
      **  Whatis mode?
      **/
 
-    if( g_flags & M_WHATIS) 
+    if( g_flags & M_WHATIS)
         return( TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
 
     if( g_flags & M_DISPLAY) {
 	fprintf( stderr, "%s\t %s %s\n", argv[ 0], argv[ 1], argv[ 2]);
     }
-	
+
     /**
      **  Check if the target is an alias ...
      **  Conditionally split up the passed <module>/<version> pair.
@@ -798,7 +795,7 @@ int	AliasLookup(	char	*alias,
 	    if( !ptr->version || !ptr->version->name) {
 		if( OK != ErrorLogger( ERR_INTERAL, LOC, NULL))
 		    return( 0);
-	    } else 
+	    } else
 		*version = ptr->version->name;
 	}
 
@@ -854,7 +851,7 @@ int	VersionLookup(	char *name, char **module, char **version)
 	    *s = '\0';
 	*module = buffer;
 	*version = name + 1;
-    
+
     } else {
 
 	strcpy( buffer, name);
@@ -868,7 +865,7 @@ int	VersionLookup(	char *name, char **module, char **version)
 	    } else
 		*version = _default;
 
-	} else 
+	} else
 	    *(*version)++ = '\0';
     }
 
@@ -887,7 +884,7 @@ int	VersionLookup(	char *name, char **module, char **version)
     histsize = HISTTAB;
     histndx = 0;
 
-    if((ModName **) NULL == (history = (ModName **) module_malloc( histsize * 
+    if((ModName **) NULL == (history = (ModName **) module_malloc( histsize *
 	sizeof( ModName *)))) {
 	ErrorLogger( ERR_ALLOC, LOC, NULL);
 	return( 0);			/** -------- EXIT (FAILURE) -------> **/
@@ -905,7 +902,7 @@ int	VersionLookup(	char *name, char **module, char **version)
 	 **/
 	if((ModName *) NULL != (vptr = FindName( *version, mptr->name, &vtmp))){
 	    if( !vptr->version || !vptr->version->name) {
-		if( OK != ErrorLogger( ERR_INTERAL, LOC, NULL)) 
+		if( OK != ErrorLogger( ERR_INTERAL, LOC, NULL))
 		    *version = (char *) NULL;
 		break;
 	    }
@@ -972,17 +969,17 @@ int	VersionLookup(	char *name, char **module, char **version)
  ** ************************************************************************ **
  ++++*/
 
-void	CleanupVersion(ModModule *ptr)
+void CleanupVersion(ModModule *ptr)
 {
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_START, LOC, _proc_CleanupVersion, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_CleanupVersion, NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
-    CleanupVersionSub( modlist);
-    modlist = (ModModule *) NULL;
+    CleanupVersionSub(modlist);
+    modlist = (ModModule *)NULL;
 
-    CleanupName( aliaslist);
-    aliaslist = (ModName *) NULL;
+    CleanupName(aliaslist);
+    aliaslist = (ModName *)NULL;
 
 } /** End of 'CleanupVersion' **/
 

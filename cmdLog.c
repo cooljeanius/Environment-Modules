@@ -23,7 +23,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 30369a28334e1cf4bf987bcc20b352b8755a3af8 $";
@@ -118,7 +118,7 @@ int	cmdModuleLog(	ClientData	 client_data,
      **/
     if( g_flags & (M_WHATIS | M_HELP))
         return( TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
-	
+
     /**
      **  Parameter check
      **/
@@ -127,7 +127,7 @@ int	cmdModuleLog(	ClientData	 client_data,
 	    " facility", NULL))
 	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
     }
-  
+
     /**
      **  Display mode?
      **/
@@ -138,93 +138,98 @@ int	cmdModuleLog(	ClientData	 client_data,
 	fprintf( stderr, "\n");
         return( TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
     }
-	
+
     /**
      **  Get the current facility pointer.
      **/
-    if((char **) NULL == (facptr = GetFacilityPtr( (char *) argv[1]))) 
+    if((char **) NULL == (facptr = GetFacilityPtr( (char *) argv[1])))
 	return(( OK == ErrorLogger(ERR_INVWGHT_WARN,LOC, argv[1],NULL))
 	    ? TCL_OK : TCL_ERROR);
 
     /**
      **  Allocate memory for the facility list
      **/
-    if((char *) NULL == (faclist = (char *) module_malloc( alc_len)))
-	return(( OK == ErrorLogger( ERR_ALLOC, LOC, NULL)) ?
-	    TCL_OK : TCL_ERROR);
+    if ((char *)NULL == (faclist = (char *)module_malloc((size_t)alc_len))) {
+		return ((OK == ErrorLogger(ERR_ALLOC, LOC, NULL)) ?
+				TCL_OK : TCL_ERROR);
+	}
 
     /**
      **  Scan all given facilities and add them to the list
      **/
-    for( i=2; i<argc; i++) {
-	save_len = len;
-	len += strlen( argv[ i]) + 1;
+    for ((i = 2); (i < argc); i++) {
+		save_len = len;
+		len += (strlen(argv[i]) + 1);
 
-	while( len + 1 > alc_len) {
-	    alc_len += PART_LEN;
-	    if(!(faclist = (char *) module_realloc( faclist, alc_len)))
-		return(( OK == ErrorLogger( ERR_ALLOC, LOC, NULL)) ?
-		    TCL_OK : TCL_ERROR);
-	}
+		while ((len + 1) > alc_len) {
+			alc_len += PART_LEN;
+			if (!(faclist = (char *)module_realloc(faclist, (size_t)alc_len))) {
+				return ((OK == ErrorLogger(ERR_ALLOC, LOC, NULL)) ?
+						TCL_OK : TCL_ERROR);
+			}
+		}
 
-	faclist[save_len] = ':';
-	strcpy( &faclist[save_len + 1], argv[ i]);
+		faclist[save_len] = ':';
+		strcpy(&faclist[(save_len + 1)], argv[i]);
     }
 
     /**
      **  Now scan the whole list and copy all valid parts into a new buffer
      **/
-    if((char *) NULL == (tmp = stringer(NULL, strlen( faclist), NULL))) {
-	null_free((void *) &faclist);
-	return(( OK == ErrorLogger( ERR_ALLOC, LOC, NULL)) ?
-	    TCL_OK : TCL_ERROR);
+    if ((char *)NULL == (tmp = stringer(NULL, (int)strlen(faclist), NULL))) {
+		null_free((void *)&faclist);
+		return ((OK == ErrorLogger(ERR_ALLOC, LOC, NULL)) ?
+				TCL_OK : TCL_ERROR);
     }
 
-    for( t = tmp, s = xstrtok( faclist, ":, \t");
-	 s;
-	 s = xstrtok( NULL, ":, \t") ) {
+    for ((t = tmp), (s = xstrtok(faclist, ":, \t")); s;
+		 (s = xstrtok(NULL, ":, \t"))) {
 
-	if (s && !*s) continue;		/* skip empty ones */
-	if( '.' == *s || '/' == *s ||			       /** filename  **/
-	    !strcmp( _stderr, s) || !strcmp( _stdout, s) ||    /** special   **/
-	    !strcmp( _null, s) || !strcmp( _none, s) ||        /** null	     **/
-	    CheckFacility( s, &i, &i) ) {		       /** syslog    **/
+		if (s && !*s) {
+			continue;		/* skip empty ones */
+		}
+		if (('.' == *s) || ('/' == *s) ||			       /** filename  **/
+			!strcmp(_stderr, s) || !strcmp(_stdout, s) ||    /** special   **/
+			!strcmp(_null, s) || !strcmp(_none, s) ||        /** null	   **/
+			CheckFacility(s, &i, &i)) {		       /** syslog    **/
 
-	    if( t != tmp) 
-		*t++ = ':';
-	    strcpy( t, s);
+			if (t != tmp) {
+				*t++ = ':';
+			}
+			strcpy(t, s);
 
-	    t += strlen( s);
+			t += strlen(s);
+		} else {
+			/**
+			 **  bad facility found
+			 **/
 
-	} else {
-
-	    /**
-	     **  bad facility found
-	     **/
-
-	    if( OK != ErrorLogger( ERR_INVFAC_WARN, LOC, s, NULL))
-		break;  /** for **/
-	}
-    } /** for **/
+			if (OK != ErrorLogger(ERR_INVFAC_WARN, LOC, s, NULL)) {
+				break;  /** (out of for-loop) **/
+			}
+		}
+    } /** end of for-loop **/
 
     /**
-     **  Now, 'tmp' should contain the new list of facilities. Check wheter
+     **  Now, 'tmp' should contain the new list of facilities. Check whether
      **  there has been one allocated so far ...
      **  We do not need the orginal faclist any more.
      **/
 
-    null_free((void *) &faclist);
+    null_free((void *)&faclist);
 
-    if((char *) NULL != *facptr)
-	null_free((void *) facptr);
+    if ((char *)NULL != *facptr) {
+		null_free((void *)facptr);
+	}
 
     *facptr = tmp;
 
 #if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_END, LOC, _proc_cmdModuleLog, NULL);
-#endif
+    ErrorLogger(NO_ERR_END, LOC, _proc_cmdModuleLog, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
 
-    return( TCL_OK);
+    return (TCL_OK);
 
 } /** End of 'cmdModuleLog' **/
-    
+
+/* EOF */

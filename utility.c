@@ -2291,8 +2291,8 @@ void regex_quote(const char *path, char *newpath, int len)
     		 j;				/** Write index		     **/
 
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_START, LOC, _proc_cleanse_path, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_cleanse_path, NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
     /**
      **  Stopping at (len - 1) ensures that the newpath string can be
@@ -2425,17 +2425,20 @@ char	*strdup( char *str)
 
 char *xstrtok_r(char *s, const char *delim, char **ptrptr) {
 	register char	*ptr, *lptr;
-	register int	 c,sc;
+	register int	 c = 0, sc = 0;
 	const char	*tok;
 
 	/* return NULL if NULL string and at end of the line */
-	if (s == NULL && *ptrptr == NULL)
+	if (s == NULL && *ptrptr == NULL) {
 		return (NULL);
+	}
 
 	/* do not skip leading (or trailing) delimiters ... */
 
 	/* if non-NULL string then at beginning of token parsing */
-	if (s != NULL)	*ptrptr = s;
+	if (s != NULL)	{
+		*ptrptr = s;
+	}
 
 	ptr = *ptrptr;
 	while (ptr && *ptr) {
@@ -2791,10 +2794,9 @@ void EscapeShString(const char* in,
   *out = 0;
 }
 
-void EscapePerlString(const char* in,
-		     char* out) {
-
-  for(;*in;in++) {
+void EscapePerlString(const char* in, char* out)
+{
+  for(; *in; in++) {
     if (*in == '\\'||
 	*in == ';' ||
 	*in == '\'') {
@@ -2806,8 +2808,8 @@ void EscapePerlString(const char* in,
 }
 
 /* I think this needs a bunch of work --NJW */
-void EscapeCmakeString(const char* in,
-		     char* out) {
+void EscapeCmakeString(const char* in, char* out)
+{
   for(;*in;in++) {
     if (*in == '\\'||
 	*in == '"') {
@@ -2908,20 +2910,18 @@ int tmpfile_mod(char** filename, FILE** file) {
  ** ************************************************************************ **
  ++++*/
 
-char *stringer(	char *		buffer,
-		int		len,
-		... )
+char *stringer(char *buffer, int len, ...)
 {
 	va_list	 argptr;	/** stdarg argument ptr			**/
 	char	*ptr;		/** argument string ptr			**/
 	char	*tbuf = buffer;	/** tempory buffer  ptr			**/
 	int	 sumlen = 0;	/** length of all the concat strings	**/
-	char	*(*strfn)(char*,const char*) = strcpy;
+	char	*(*strfn)(char*, const char*) = strcpy;
 				/** ptr to 1st string function		**/
 
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_START, LOC, _proc_stringer, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_stringer, NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
 	/* get start of optional arguments and sum string lengths */
 	va_start(argptr, len);

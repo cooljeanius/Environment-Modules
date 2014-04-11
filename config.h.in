@@ -110,6 +110,30 @@
    */
 #undef HAVE_DCGETTEXT
 
+/* Define to 1 if you have the declaration of `buffer', and to 0 if you don't.
+   */
+#undef HAVE_DECL_BUFFER
+
+/* Define to 1 if you have the declaration of `environ', and to 0 if you
+   don't. */
+#undef HAVE_DECL_ENVIRON
+
+/* Define to 1 if you have the declaration of `index', and to 0 if you don't.
+   */
+#undef HAVE_DECL_INDEX
+
+/* Define to 1 if you have the declaration of `remove', and to 0 if you don't.
+   */
+#undef HAVE_DECL_REMOVE
+
+/* Define to 1 if you have the declaration of `shell_name', and to 0 if you
+   don't. */
+#undef HAVE_DECL_SHELL_NAME
+
+/* Define to 1 if you have the declaration of `strtok', and to 0 if you don't.
+   */
+#undef HAVE_DECL_STRTOK
+
 /* Define to 1 if you have the declaration of `tzname', and to 0 if you don't.
    */
 #undef HAVE_DECL_TZNAME
@@ -127,8 +151,14 @@
 /* Define to 1 if you have the `dup2' function. */
 #undef HAVE_DUP2
 
+/* Define to 1 if you have the `exit' function. */
+#undef HAVE_EXIT
+
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
+
+/* Define to 1 if you have the `fread' function. */
+#undef HAVE_FREAD
 
 /* Define to 1 if you have the `getdomainname' function. */
 #undef HAVE_GETDOMAINNAME
@@ -219,6 +249,9 @@
 /* Define if the POSIX multithreading library has read/write locks. */
 #undef HAVE_PTHREAD_RWLOCK
 
+/* Define to 1 if you have the `qsort' function. */
+#undef HAVE_QSORT
+
 /* Define to 1 if you have the `readdir_r' function. */
 #undef HAVE_READDIR_R
 
@@ -267,11 +300,20 @@
 /* Define to 1 if you have the `strlen' function. */
 #undef HAVE_STRLEN
 
+/* Define to 1 if you have the `strncmp' function. */
+#undef HAVE_STRNCMP
+
+/* Define to 1 if you have the `strncpy' function. */
+#undef HAVE_STRNCPY
+
 /* Define to 1 if you have the `strrchr' function. */
 #undef HAVE_STRRCHR
 
 /* Define to 1 if you have the `strstr' function. */
 #undef HAVE_STRSTR
+
+/* Define to 1 if you have the `strtok' function. */
+#undef HAVE_STRTOK
 
 /* Defined to 1 if the dirent64 struct is available */
 #undef HAVE_STRUCT_DIRENT64

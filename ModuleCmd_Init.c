@@ -25,7 +25,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 4047b93248847ae931450d53cd915bd5cb6d5313 $";
@@ -115,15 +115,13 @@ static int out_substr(FILE *stream, char *start, char *end) {
  ** ************************************************************************ **
  ++++*/
 
-int	ModuleCmd_Init(	Tcl_Interp	*interp,
-	       		int            	 argc,
-	       		char		*argv[])
+int	ModuleCmd_Init(Tcl_Interp *interp, int argc, char *argv[])
 {
     char	 *home_pathname,
 		 *home_pathname2,
 		 **shell_startups;	/** A list of all startup files our **/
 					/** invoking shell will source       **/
-    int		  max_home_path = MOD_BUFSIZE + 40;
+    int		  max_home_path = (MOD_BUFSIZE + 40);
     char	**modlist,
 		 *home,
 		 *buffer,
@@ -344,7 +342,7 @@ int	ModuleCmd_Init(	Tcl_Interp	*interp,
 			} /** for(j) **/
 		    } /** for(i) **/
 		/**
-		 **  Ok, if we're removing it, prepending it, or switching it, 
+		 **  Ok, if we're removing it, prepending it, or switching it,
 		 **  the modlist contains what needs to be put where...
 		 **/
 		    if ((new_file) && (g_flags & M_PREPEND)) {

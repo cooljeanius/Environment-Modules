@@ -26,7 +26,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 986c78c90605e7e69e905b4bdd447fe724954a3d $";
@@ -122,89 +122,87 @@ static	int	namestruct_init = 0;
  ** ************************************************************************ **
  ++++*/
 
-int	cmdUname(	ClientData	 client_data,
-	  		Tcl_Interp	*interp,
-	  		int		 argc,
-	  		CONST84 char	*argv[])
+int	cmdUname(ClientData client_data, Tcl_Interp *interp, int argc,
+			 CONST84 char *argv[])
 {
     int  length;
 #ifdef PHOSTNAME
-#ifndef HAVE_GETHOSTNAME
+# ifndef HAVE_GETHOSTNAME
     FILE* hname;
-#endif
-#endif
+# endif /* !HAVE_GETHOSTNAME */
+#endif /* PHOSTNAME */
 
 #if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_START, LOC, _proc_cmdUname, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_cmdUname, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
 
     /**
      **  Parameter check. One parameter should be given providing a selector
      **  do differ between:
      **/
 
-    if( argc != 2) {
-	if( OK != ErrorLogger( ERR_USAGE, LOC, argv[0], "member", NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+    if (argc != 2) {
+		if (OK != ErrorLogger(ERR_USAGE, LOC, argv[0], "member", NULL)) {
+			return (TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+		}
     }
 
 #ifdef HAVE_UNAME
-
     /**
      **  Proceed the system call
      **/
 
-    if( !namestruct_init && uname( &namestruct) < 0) {
-	if( OK != ErrorLogger( ERR_UNAME, LOC, NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+    if (!namestruct_init && (uname(&namestruct) < 0)) {
+		if (OK != ErrorLogger(ERR_UNAME, LOC, NULL)) {
+			return (TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+		}
     }
-
-#else /* not HAVE_UNAME */
-
+#else /* not HAVE_UNAME: */
     /**
-     **  If we do not have the uname system call, fixed values defined 
+     **  If we do not have the uname system call, fixed values defined
      **  at compile time will be returned. The only differenc is the
      **  nodename, which may be seeked for using 'gethostname' or the
      **  PHOSTNAME file.
      **/
-
-#ifdef HAVE_GETHOSTNAME
-
-    if( -1 == gethostname( namestruct.nodename, NAMELEN)) 
-	if( OK != ErrorLogger( ERR_GETHOSTNAME, LOC, NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
-
-#else /* not HAVE_GETHOSTNAME */
-
-#ifdef PHOSTNAME
-
-    if( NULL == (hname = popen( PHOSTNAME, "r"))) {
-	if( OK != ErrorLogger( ERR_POPEN, LOC, PHOSTNAME, "reading", NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+# ifdef HAVE_GETHOSTNAME
+    if (-1 == gethostname(namestruct.nodename, NAMELEN)) {
+		if (OK != ErrorLogger(ERR_GETHOSTNAME, LOC, NULL)) {
+			return (TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+		}
+	}
+# else /* not HAVE_GETHOSTNAME: */
+#  ifdef PHOSTNAME
+    if (NULL == (hname = popen(PHOSTNAME, "r"))) {
+		if (OK != ErrorLogger(ERR_POPEN, LOC, PHOSTNAME, "reading", NULL)) {
+			return (TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+		}
     }
 
-    fgets( namestruct.nodename, NAMELEN, hname);
-    namestruct.nodename[ strlen( namestruct.nodename)-1] = '\0';
+    fgets(namestruct.nodename, NAMELEN, hname);
+    namestruct.nodename[(strlen( namestruct.nodename) - 1)] = '\0';
 
-    if( -1 == pclose( hname))
-	if( OK != ErrorLogger( ERR_PCLOSE, LOC, PHOSTNAME, NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
-
-#endif /* not PHOSTNAME */
-#endif /* not HAVE_GETHOSTNAME */
-
+    if (-1 == pclose(hname)) {
+		if (OK != ErrorLogger(ERR_PCLOSE, LOC, PHOSTNAME, NULL)) {
+			return (TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+		}
+	}
+#  endif /* not PHOSTNAME */
+# endif /* not HAVE_GETHOSTNAME */
 #endif /* not HAVE_UNAME */
- 
+
     /**
      **  Set up the domain name
      **/
 
 #ifdef HAVE_GETDOMAINNAME
-    if( !namestruct_init)
-        if( -1 == getdomainname( domain, DOMAINLEN))
-	    if( OK != ErrorLogger( ERR_GETDOMAINNAME, LOC, NULL))
-		return( TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
-#endif
+    if (!namestruct_init) {
+        if (-1 == getdomainname(domain, DOMAINLEN)) {
+			if (OK != ErrorLogger(ERR_GETDOMAINNAME, LOC, NULL)) {
+				return (TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
+			}
+		}
+	}
+#endif /* HAVE_GETDOMAINNAME */
 
     /**
      **  Now the name structure surely IS initialized
@@ -216,30 +214,33 @@ int	cmdUname(	ClientData	 client_data,
      **  Return the selected value
      **/
 
-    length = strlen( argv[1]);
+    length = (int)strlen(argv[1]);
 
-    if( !strncmp( argv[1], "sysname", length)) {
-        Tcl_SetResult( interp, namestruct.sysname, TCL_VOLATILE);
-    } else if( !strncmp( argv[1], "nodename", length)) {
-        Tcl_SetResult( interp, namestruct.nodename, TCL_VOLATILE);
-    } else if( !strncmp( argv[1], "release", length)) {
-        Tcl_SetResult( interp, namestruct.release, TCL_VOLATILE);
-    } else if( !strncmp( argv[1], "version", length)) {
-        Tcl_SetResult( interp, namestruct.version, TCL_VOLATILE);
-    } else if( !strncmp( argv[1], "machine", length)) {
-        Tcl_SetResult( interp, namestruct.machine, TCL_VOLATILE);
-    } else if( !strncmp( argv[1], "domain", length)) {
-        Tcl_SetResult( interp, domain, TCL_VOLATILE);
+    if (!strncmp(argv[1], "sysname", (size_t)length)) {
+        Tcl_SetResult(interp, namestruct.sysname, TCL_VOLATILE);
+    } else if (!strncmp(argv[1], "nodename", (size_t)length)) {
+        Tcl_SetResult(interp, namestruct.nodename, TCL_VOLATILE);
+    } else if (!strncmp(argv[1], "release", (size_t)length)) {
+        Tcl_SetResult(interp, namestruct.release, TCL_VOLATILE);
+    } else if (!strncmp(argv[1], "version", (size_t)length)) {
+        Tcl_SetResult(interp, namestruct.version, TCL_VOLATILE);
+    } else if (!strncmp(argv[1], "machine", (size_t)length)) {
+        Tcl_SetResult(interp, namestruct.machine, TCL_VOLATILE);
+    } else if (!strncmp(argv[1], "domain", (size_t)length)) {
+        Tcl_SetResult(interp, domain, TCL_VOLATILE);
     } else {
-	if( OK != ErrorLogger( ERR_USAGE, LOC, argv[0], "{sysname|nodename|"
-	    "release|version|machine|domain}", NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+		if (OK != ErrorLogger(ERR_USAGE, LOC, argv[0], "{sysname|nodename|"
+							  "release|version|machine|domain}", NULL)) {
+			return (TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+		}
     }
 
 #if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_END, LOC, _proc_cmdUname, NULL);
-#endif
+    ErrorLogger(NO_ERR_END, LOC, _proc_cmdUname, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
 
-    return( TCL_OK);			/** -------- EXIT (SUCCESS) -------> **/
+    return (TCL_OK);			/** -------- EXIT (SUCCESS) -------> **/
 
 } /** End of 'cmdUname' **/
+
+/* EOF */

@@ -30,3 +30,7 @@ site.bak
 aminclude_static.am
 .spec
 modules.lsm
+*.build
+*.pbxuser
+*.perspectivev3
+build/*

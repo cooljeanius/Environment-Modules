@@ -23,7 +23,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 592c3a52c48dbf5c0dfe7d60e8ee1dd6b10b98c4 $";
@@ -93,23 +93,22 @@ static	char	_proc_cmdSetAlias[] = "cmdSetAlias";
  ** ************************************************************************ **
  ++++*/
 
-int cmdSetAlias( ClientData	 client_data,
-	  	 Tcl_Interp	*interp,
-	  	 int 		 argc,
-	  	 CONST84 char	*argv[])
+int cmdSetAlias(ClientData client_data, Tcl_Interp *interp, int argc,
+				CONST84 char *argv[])
 {
 
 #if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_START, LOC, _proc_cmdSetAlias, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_cmdSetAlias, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
 
     /**
      **  Whatis mode?
      **/
 
-    if( g_flags & (M_WHATIS | M_HELP)) 
-        return( TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
-	
+    if (g_flags & (M_WHATIS | M_HELP)) {
+        return (TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
+	}
+
     /**
      **  Parameter check. Valid commands are:
      **
@@ -117,58 +116,64 @@ int cmdSetAlias( ClientData	 client_data,
      **     set-alias <alias> <value>
      **/
 
-    if( (!strncmp( argv[0], "un", 2) && (argc != 2)) ||
-        (!strncmp( argv[0], "set", 3) && (argc != 3))) {
-	if( OK != ErrorLogger( ERR_USAGE, LOC, argv[0], "variable", NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+    if ((!strncmp(argv[0], "un", 2) && (argc != 2)) ||
+        (!strncmp(argv[0], "set", 3) && (argc != 3))) {
+		if (OK != ErrorLogger(ERR_USAGE, LOC, argv[0], "variable", NULL)) {
+			return (TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+		}
     }
 
     /**
      **  Display only mode?
      **/
 
-    if( g_flags & M_DISPLAY) {
-	fprintf( stderr, "%s\t ", argv[ 0]);
-	while( --argc)
-	    fprintf( stderr, "%s ", *++argv);
-	fprintf( stderr, "\n");
-        return( TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
+    if (g_flags & M_DISPLAY) {
+		fprintf(stderr, "%s\t ", argv[ 0]);
+		while (--argc) {
+			fprintf(stderr, "%s ", *++argv);
+		}
+		fprintf(stderr, "\n");
+        return (TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
     }
 
     /**
      **  Switch command
      **/
 
-    if( g_flags & M_SWSTATE1) {
+    if (g_flags & M_SWSTATE1) {
         set_marked_entry(markAliasHashTable, (char *) argv[1], M_SWSTATE1);
-        return( TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
-    } else if( g_flags & M_SWSTATE2) {
+        return(TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
+    } else if (g_flags & M_SWSTATE2) {
         set_marked_entry(markAliasHashTable, (char *) argv[1], M_SWSTATE2);
-    } else if( g_flags & M_SWSTATE3) {
+    } else if (g_flags & M_SWSTATE3) {
         int marked_val;
-        if(marked_val = chk_marked_entry(markAliasHashTable,(char *) argv[1])) {
-            if( marked_val == M_SWSTATE1)
+        if (marked_val = chk_marked_entry(markAliasHashTable, (char *)argv[1])) {
+            if (marked_val == M_SWSTATE1) {
                 store_hash_value(aliasUnsetHashTable, argv[1], argv[2]);
-            else
-		return( TCL_OK);	/** ------- EXIT PROCEDURE -------> **/
+			} else {
+				return (TCL_OK);	/** ------- EXIT PROCEDURE -------> **/
+			}
       }
-    } else if( g_flags & M_REMOVE) {
-        store_hash_value( aliasUnsetHashTable, argv[1], argv[2]);
+    } else if (g_flags & M_REMOVE) {
+        store_hash_value(aliasUnsetHashTable, argv[1], argv[2]);
     }
 
     /**
      **  Finally remove or set the alias
      **/
 
-    if( *argv[0] == 'u' || (g_flags & M_REMOVE))
-        store_hash_value( aliasUnsetHashTable, argv[1], argv[2]);
-    else
-        store_hash_value( aliasSetHashTable, argv[1], argv[2]);
-  
-#if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_END, LOC, _proc_cmdSetAlias, NULL);
-#endif
+    if ((*argv[0] == 'u') || (g_flags & M_REMOVE)) {
+        store_hash_value(aliasUnsetHashTable, argv[1], argv[2]);
+    } else {
+        store_hash_value(aliasSetHashTable, argv[1], argv[2]);
+	}
 
-    return( TCL_OK);
+#if WITH_DEBUGGING_CALLBACK
+    ErrorLogger(NO_ERR_END, LOC, _proc_cmdSetAlias, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
+
+    return (TCL_OK);
 
 } /** End of 'cmdSetAlias' **/
+
+/* EOF */

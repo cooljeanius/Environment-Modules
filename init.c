@@ -35,7 +35,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 11ddb35d2d209f617c8dc81f80af2de8935e44e2 $";
@@ -171,7 +171,7 @@ static char *shellprops [][4] = {
 /**				    PROTOTYPES				     **/
 /** ************************************************************************ **/
 
-static char	*set_shell_properties(	const char	*name);
+static char	*set_shell_properties(const char *name);
 
 
 /*++++
@@ -197,17 +197,15 @@ static char	*set_shell_properties(	const char	*name);
  ** ************************************************************************ **
  ++++*/
 
-int Module_Tcl_ExitCmd(	ClientData	  client_data,
-		   	Tcl_Interp	 *interp,
-		   	int 		  argc,
-		   	CONST84 char 	 *argv[])
+int Module_Tcl_ExitCmd(ClientData client_data, Tcl_Interp *interp, int argc,
+					   CONST84 char *argv[])
 {
     char *buffer;			/** Buffer for sprintf		     **/
     int  value;				/** Return value from exit command   **/
 
 #if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_START, LOC, _proc_Module_Tcl_ExitCmd, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_Module_Tcl_ExitCmd, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
 
     /**
      **  Check the number of arguments. The exit command may take no or one
@@ -367,7 +365,7 @@ int Initialize_Tcl(	Tcl_Interp	**interp,
      **  Less than 3 parameters isn't valid. Invocation should be
      **   'modulecmd <shell> <command>'
      **/
-    if(argc < 2) 
+    if(argc < 2)
 	if( OK != ErrorLogger( ERR_USAGE, LOC, argv[0], " shellname", NULL))
 	    goto unwind0;
 
@@ -384,7 +382,7 @@ int Initialize_Tcl(	Tcl_Interp	**interp,
      **  this interpreter and set up pointers to all Tcl Module commands
      **  (InitializeModuleCommands)
      **/
- 
+
 #ifdef __CYGWIN__
     /* ABr, 12/10/01: from Cygwin stuff */
     Tcl_FindExecutable( argv[0] ) ;
@@ -401,17 +399,17 @@ int Initialize_Tcl(	Tcl_Interp	**interp,
      **  they're defined.  The tables have to be allocated and thereafter
      **  initialized. Exit from the whole program in case allocation fails.
      **/
-    if( ( ! ( setenvHashTable = 
+    if( ( ! ( setenvHashTable =
 	    (Tcl_HashTable*) module_malloc( sizeof(Tcl_HashTable))) ) ||
-        ( ! ( unsetenvHashTable = 
+        ( ! ( unsetenvHashTable =
 	    (Tcl_HashTable*) module_malloc( sizeof(Tcl_HashTable))) ) ||
-        ( ! ( aliasSetHashTable = 
+        ( ! ( aliasSetHashTable =
 	    (Tcl_HashTable*) module_malloc( sizeof(Tcl_HashTable))) ) ||
-        ( ! ( aliasUnsetHashTable = 
+        ( ! ( aliasUnsetHashTable =
 	    (Tcl_HashTable*) module_malloc( sizeof(Tcl_HashTable))) ) ||
-        ( ! ( markVariableHashTable = 
+        ( ! ( markVariableHashTable =
 	    (Tcl_HashTable*) module_malloc( sizeof(Tcl_HashTable))) ) ||
-        ( ! ( markAliasHashTable = 
+        ( ! ( markAliasHashTable =
 	    (Tcl_HashTable*) module_malloc( sizeof(Tcl_HashTable))) ) ) {
 
 	if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
@@ -479,7 +477,7 @@ int Initialize_Tcl(	Tcl_Interp	**interp,
 	/* use .modulesbeginenv */
 
         FILE*  file;
-	
+
         char savefile[] = "/.modulesbeginenv";
 	char *buffer;
 
@@ -597,57 +595,57 @@ int InitializeModuleCommands( Tcl_Interp* interp)
     Tcl_CreateCommand( interp, "exit", Module_Tcl_ExitCmd,
 		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
 
-    Tcl_CreateCommand( interp, "setenv", cmdSetEnv, 
+    Tcl_CreateCommand( interp, "setenv", cmdSetEnv,
 		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
-    Tcl_CreateCommand( interp, "unsetenv", cmdUnsetEnv, 
-		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
-  
-    Tcl_CreateCommand( interp, "prepend-path", cmdSetPath, 
-		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
-    Tcl_CreateCommand( interp, "append-path", cmdSetPath, 
-		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
-    Tcl_CreateCommand( interp, "remove-path", cmdRemovePath, 
+    Tcl_CreateCommand( interp, "unsetenv", cmdUnsetEnv,
 		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
 
-    Tcl_CreateCommand( interp, "module-info", cmdModuleInfo, 
+    Tcl_CreateCommand( interp, "prepend-path", cmdSetPath,
 		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
-    Tcl_CreateCommand( interp, "module", cmdModule, 
+    Tcl_CreateCommand( interp, "append-path", cmdSetPath,
 		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
-
-    Tcl_CreateCommand( interp, "module-whatis", cmdModuleWhatis, 
-		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
-    Tcl_CreateCommand( interp, "module-verbosity", cmdModuleVerbose, 
-		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
-    Tcl_CreateCommand( interp, "module-user", cmdModuleUser, 
-		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
-    Tcl_CreateCommand( interp, "module-log", cmdModuleLog, 
-		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
-    Tcl_CreateCommand( interp, "module-trace", cmdModuleTrace, 
+    Tcl_CreateCommand( interp, "remove-path", cmdRemovePath,
 		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
 
-    Tcl_CreateCommand( interp, "module-alias", cmdModuleAlias, 
+    Tcl_CreateCommand( interp, "module-info", cmdModuleInfo,
 		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
-    Tcl_CreateCommand( interp, "module-version", cmdModuleVersion, 
-		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
-  
-    Tcl_CreateCommand( interp, "set-alias", cmdSetAlias, 
-		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
-    Tcl_CreateCommand( interp, "unset-alias", cmdSetAlias, 
+    Tcl_CreateCommand( interp, "module", cmdModule,
 		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
 
-    Tcl_CreateCommand( interp, "conflict", cmdConflict, 
+    Tcl_CreateCommand( interp, "module-whatis", cmdModuleWhatis,
 		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
-    Tcl_CreateCommand( interp, "prereq", cmdPrereq, 
+    Tcl_CreateCommand( interp, "module-verbosity", cmdModuleVerbose,
+		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
+    Tcl_CreateCommand( interp, "module-user", cmdModuleUser,
+		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
+    Tcl_CreateCommand( interp, "module-log", cmdModuleLog,
+		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
+    Tcl_CreateCommand( interp, "module-trace", cmdModuleTrace,
 		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
 
-    Tcl_CreateCommand( interp, "is-loaded", cmdIsLoaded, 
+    Tcl_CreateCommand( interp, "module-alias", cmdModuleAlias,
+		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
+    Tcl_CreateCommand( interp, "module-version", cmdModuleVersion,
+		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
+
+    Tcl_CreateCommand( interp, "set-alias", cmdSetAlias,
+		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
+    Tcl_CreateCommand( interp, "unset-alias", cmdSetAlias,
+		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
+
+    Tcl_CreateCommand( interp, "conflict", cmdConflict,
+		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
+    Tcl_CreateCommand( interp, "prereq", cmdPrereq,
+		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
+
+    Tcl_CreateCommand( interp, "is-loaded", cmdIsLoaded,
 		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
 
     Tcl_CreateCommand( interp, "chdir", cmdChDir,
 		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
-    Tcl_CreateCommand( interp, "system", cmdSystem, 
+    Tcl_CreateCommand( interp, "system", cmdSystem,
 		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
-    Tcl_CreateCommand( interp, "uname", cmdUname, 
+    Tcl_CreateCommand( interp, "uname", cmdUname,
 		       (ClientData) shell_derelict,(void (*)(ClientData)) NULL);
 
     Tcl_CreateCommand( interp, "x-resource", cmdXResource,
@@ -690,12 +688,12 @@ int Setup_Environment( Tcl_Interp*	interp)
     char	*eq;			/** Temp. val. used for location the **/
 					/** Equal sign.			     **/
     char	*loaded;		/** The currently loaded modules     **/
- 
+
 #if WITH_DEBUGGING_INIT
     ErrorLogger( NO_ERR_START, LOC, _proc_Setup_Environment, NULL);
 #endif
 
-    /** 
+    /**
      **  Scan the whole environment value by value.
      **  Count its size
      **/
@@ -869,17 +867,17 @@ char **SetStartupFiles(char *shell_name)
      ** BASH
      ** ??? doesn't this guy use the SH startups, too ???
      **/
-    } else if((strcmp("bash", shell_name) == 0)) { 
+    } else if((strcmp("bash", shell_name) == 0)) {
 
        return bashStartUps;
 
     /**
      ** ZSH
      **/
-    } else if((strcmp("zsh", shell_name) == 0)) { 
+    } else if((strcmp("zsh", shell_name) == 0)) {
 
        return zshStartUps;
-       
+
     /**
      **  All of the remainig "shells" are not supposed to used startup
      **  files
@@ -911,7 +909,7 @@ char **SetStartupFiles(char *shell_name)
  ** ************************************************************************ **
  ++++*/
 
-static char	*set_shell_properties(	const char	*name) 
+static char	*set_shell_properties(	const char	*name)
 {
 
 #if WITH_DEBUGGING_UTIL_3

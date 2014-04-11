@@ -23,7 +23,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 258acbcbc68eded9ae20ffe9239be82e30c3e49f $";
@@ -120,7 +120,7 @@ int	cmdModuleUser(	ClientData	 client_data,
 
     if( g_flags & (M_WHATIS | M_HELP))
         return( TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
-	
+
     /**
      **  Parameter check
      **/
@@ -129,12 +129,12 @@ int	cmdModuleUser(	ClientData	 client_data,
 	if( OK != ErrorLogger( ERR_USAGE, LOC, argv[0], "level ", NULL))
 	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
     }
-  
-  
+
+
     /**
      **  Non-persist mode?
      **/
-    
+
     if (g_flags & M_NONPERSIST) {
 	return (TCL_OK);
     }
@@ -150,7 +150,7 @@ int	cmdModuleUser(	ClientData	 client_data,
 	fprintf( stderr, "\n");
         return( TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
     }
-	
+
     /**
      **  Change the user level
      **/
@@ -158,7 +158,7 @@ int	cmdModuleUser(	ClientData	 client_data,
     return( cmdModuleUser_sub( (char *) argv[ 1]));
 
 } /** End of 'cmdModuleUser' **/
-    
+
 
 /*++++
  ** ** Function-Header ***************************************************** **
@@ -180,31 +180,32 @@ int	cmdModuleUser(	ClientData	 client_data,
  ** ************************************************************************ **
  ++++*/
 
-int	cmdModuleUser_sub(	char	*user_level)
+int cmdModuleUser_sub(char *user_level)
 {
     char *s;
     int len_arg;
 
 #if WITH_DEBUGGING_CALLBACK_1
-    ErrorLogger( NO_ERR_START, LOC, _proc_cmdModuleUser_sub, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_cmdModuleUser_sub, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK_1 */
 
-    len_arg = strlen( user_level);
+    len_arg = (int)strlen(user_level);
     s = user_level;
-    while( s && *s) {
-	*s = tolower( *s);
-	s++;
+    while (s && *s) {
+		*s = (char)tolower(*s);
+		s++;
     }
 
-    if( !strncmp( user_level, _str_ul_novice, len_arg)) {
-	sw_userlvl = UL_NOVICE;
-    } else if( !strncmp( user_level, _str_ul_advanced, len_arg)) {
-	sw_userlvl = UL_ADVANCED;
-    } else if( !strncmp( user_level, _str_ul_expert, len_arg)) {
-	sw_userlvl = UL_EXPERT;
+    if (!strncmp(user_level, _str_ul_novice, (size_t)len_arg)) {
+		sw_userlvl = UL_NOVICE;
+    } else if (!strncmp( user_level, _str_ul_advanced, (size_t)len_arg)) {
+		sw_userlvl = UL_ADVANCED;
+    } else if (!strncmp( user_level, _str_ul_expert, (size_t)len_arg)) {
+		sw_userlvl = UL_EXPERT;
     } else {
-	if( OK != ErrorLogger( ERR_USERLVL, LOC, user_level, NULL))
-	    return( TCL_ERROR);			/** ---- EXIT (FAILURE) ---> **/
+		if (OK != ErrorLogger(ERR_USERLVL, LOC, user_level, NULL)) {
+			return (TCL_ERROR);			/** ---- EXIT (FAILURE) ---> **/
+		}
     }
 
     /**

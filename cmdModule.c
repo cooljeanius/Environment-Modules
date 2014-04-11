@@ -73,14 +73,14 @@ static	char	module_name[] = "cmdModule.c";	/** File name of this module **/
 
 #if WITH_DEBUGGING_CALLBACK
 static	char	_proc_cmdModule[] = "cmdModule";
-#endif
+#endif /* WITH_DEBUGGING_CALLBACK */
 #if WITH_DEBUGGING_UTIL
 static	char	_proc_Read_Modulefile[] = "Read_Modulefile";
-#endif
+#endif /* WITH_DEBUGGING_UTIL */
 #if WITH_DEBUGGING_UTIL_1
 static	char	_proc_Execute_TclFile[] = "Execute_TclFile";
 static	char	_proc_CallModuleProcedure[] = "CallModuleProcedure";
-#endif
+#endif /* WITH_DEBUGGING_UTIL_1 */
 
 char	 *module_command;
 
@@ -118,10 +118,8 @@ int ModuleCmd_Refresh(Tcl_Interp *interp, int argc, char *argv[]);
  ** ************************************************************************ **
  ++++*/
 
-int	cmdModule(	ClientData	 client_data,
-	       		Tcl_Interp	*interp,
-	       		int		 argc,
-	       		CONST84 char	*argv[])
+int	cmdModule(ClientData client_data, Tcl_Interp *interp, int argc,
+			  CONST84 char *argv[])
 {
     int		  return_val = -1, i;
     int		  store_flags = g_flags;
@@ -204,17 +202,16 @@ int	cmdModule(	ClientData	 client_data,
      **    interpreting Tcl from stdin.
      **/
 
-    if(_XD !strcmp( module_command, "-")) {
-	return_val = Execute_TclFile( interp, _fil_stdin);
+    if (_XD !strcmp( module_command, "-")) {
+		return_val = Execute_TclFile( interp, _fil_stdin);
 
-    /**
-     **  Evaluate the module command and call the according subroutine
-     **  --- module LOAD|ADD
-     **/
-
-    } else if(_MTCH Tcl_RegExpMatch(interp,module_command, addRE)) {
-	_TCLCHK(interp);
-	return_val = ModuleCmd_Load( interp, 1,num_modulefiles,modulefile_list);
+		/**
+		 **  Evaluate the module command and call the according subroutine
+		 **  --- module LOAD|ADD
+		 **/
+    } else if (_MTCH Tcl_RegExpMatch(interp, module_command, addRE)) {
+		_TCLCHK(interp);
+		return_val = ModuleCmd_Load(interp, 1, num_modulefiles, modulefile_list);
 
        /**
         **  We always say the load succeeded.  ModuleCmd_Load will
@@ -223,30 +220,27 @@ int	cmdModule(	ClientData	 client_data,
 
         return_val = TCL_OK;
 
-    /**
-     **  --- module UNLOAD
-     **/
+		/**
+		 **  --- module UNLOAD
+		 **/
+    } else if (_MTCH Tcl_RegExpMatch(interp, module_command, rmRE)) {
+		_TCLCHK(interp);
+        ModuleCmd_Load(interp, 0, num_modulefiles, modulefile_list);
+		return_val = TCL_OK;
 
-    } else if(_MTCH Tcl_RegExpMatch(interp,module_command, rmRE)) {
-	_TCLCHK(interp);
-        ModuleCmd_Load( interp, 0, num_modulefiles, modulefile_list);
-	return_val = TCL_OK;
-
-    /**
-     **  --- module SWITCH
-     **/
-
+		/**
+		 **  --- module SWITCH
+		 **/
     } else if(_MTCH Tcl_RegExpMatch(interp,module_command, swRE)) {
-	_TCLCHK(interp);
-	return_val = ModuleCmd_Switch( interp, num_modulefiles,modulefile_list);
+		_TCLCHK(interp);
+		return_val = ModuleCmd_Switch(interp, num_modulefiles,modulefile_list);
 
-    /**
-     **  --- module DISPLAY
-     **/
-
+		/**
+		 **  --- module DISPLAY
+		 **/
     } else if(_MTCH Tcl_RegExpMatch(interp,module_command, dispRE)) {
-	_TCLCHK(interp);
-	return_val = ModuleCmd_Display( interp,num_modulefiles,modulefile_list);
+		_TCLCHK(interp);
+		return_val = ModuleCmd_Display(interp,num_modulefiles,modulefile_list);
 
     /**
      **  --- module LIST
@@ -455,23 +449,23 @@ int	cmdModule(	ClientData	 client_data,
  ** ************************************************************************ **
  ++++*/
 
-int   Read_Modulefile( Tcl_Interp	*interp,
-		       char		*filename)
+int Read_Modulefile(Tcl_Interp *interp, char *filename)
 {
     int    result;
     char   *startp, *endp;
 
 #if WITH_DEBUGGING_UTIL
-    ErrorLogger( NO_ERR_START, LOC, _proc_Read_Modulefile, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_Read_Modulefile, NULL);
+#endif /* WITH_DEBUGGING_UTIL */
 
     /**
      **  Parameter check. A valid filename is to be given.
      **/
 
-    if( !filename) {
-	if( OK != ErrorLogger( ERR_PARAM, LOC, "filename", NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+    if (!filename) {
+		if (OK != ErrorLogger(ERR_PARAM, LOC, "filename", NULL)) {
+			return(TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+		}
     }
 
     /**
@@ -479,10 +473,12 @@ int   Read_Modulefile( Tcl_Interp	*interp,
      **  Trust stdin as a valid module file ...
      **/
 
-    if( !strcmp( filename, _fil_stdin) && !check_magic( filename,
-    	MODULES_MAGIC_COOKIE, MODULES_MAGIC_COOKIE_LENGTH)) {
-	if( OK != ErrorLogger( ERR_MAGIC, LOC, filename, NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+    if ((!strcmp(filename, _fil_stdin)) &&
+		(!check_magic(filename,
+					  MODULES_MAGIC_COOKIE, MODULES_MAGIC_COOKIE_LENGTH))) {
+		if (OK != ErrorLogger(ERR_MAGIC, LOC, filename, NULL)) {
+			return (TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+		}
     }
 
     /**
@@ -493,19 +489,20 @@ int   Read_Modulefile( Tcl_Interp	*interp,
     result = Execute_TclFile(interp, filename);
 
 #if WITH_DEBUGGING_UTIL
-    if(EM_ERROR == ReturnValue(interp, result))
-	ErrorLogger( NO_ERR_DEBUG, LOC, "Execution of '",
-		filename, "' failed", NULL);
-#endif
+    if(EM_ERROR == ReturnValue(interp, result)) {
+		ErrorLogger(NO_ERR_DEBUG, LOC, "Execution of '",
+					filename, "' failed", NULL);
+	}
+#endif /* WITH_DEBUGGING_UTIL */
 
     /**
      **  Return the result as derivered from the module file execution
      **/
 #if WITH_DEBUGGING_UTIL
-    ErrorLogger( NO_ERR_END, LOC, _proc_Read_Modulefile, NULL);
-#endif
+    ErrorLogger(NO_ERR_END, LOC, _proc_Read_Modulefile, NULL);
+#endif /* WITH_DEBUGGING_UTIL */
 
-    return( result);
+    return (result);
 
 } /** End of 'Read_Modulefile' **/
 

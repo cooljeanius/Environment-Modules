@@ -30,7 +30,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 9d3389f8f467842d06ba74d3b299007f7a7463a9 $";
@@ -173,10 +173,10 @@ int Locate_ModuleFile(	Tcl_Interp	*interp,
 	modulename, "'", NULL);
 #endif
 
-    if( !modulename) 
+    if( !modulename)
 	if( OK != ErrorLogger( ERR_PARAM, LOC, "modulename", NULL))
 	    goto unwind0;
-	
+
     if( modulename[0] == '/' || modulename[0] == '.') {
 
 	p = (char*) strrchr( modulename, '/');
@@ -187,7 +187,7 @@ int Locate_ModuleFile(	Tcl_Interp	*interp,
 	     **  the specified module ...
 	     **/
             if((char *) NULL ==
-		(result = GetModuleName(interp, modulename, NULL,(p+1)))) 
+		(result = GetModuleName(interp, modulename, NULL,(p+1))))
 		goto unwind0;
 	    /**
 	     **  Reinstall the 'modulefile' which has been corrupted by
@@ -221,7 +221,7 @@ int Locate_ModuleFile(	Tcl_Interp	*interp,
             if( NULL == (result = GetModuleName( interp, modulename, NULL,
 		modulename)))
 		goto unwind0;
-	
+
             if( !strcmp( modulename, result) ||
 		(strlen( modulename) + 1 + strlen( result) + 1 > MOD_BUFSIZE)) {
                 if ((char *) NULL == stringer( filename, MOD_BUFSIZE,
@@ -234,7 +234,7 @@ int Locate_ModuleFile(	Tcl_Interp	*interp,
             }
         }
     /**
-     **  So it is not a full path name what has been specified. Scan the 
+     **  So it is not a full path name what has been specified. Scan the
      **  MODULESPATH
      **/
     } else {
@@ -311,7 +311,7 @@ int Locate_ModuleFile(	Tcl_Interp	*interp,
 	    filename[0] = '\0';
 	    goto unwind0;
 	}
-    } /** not a full path name **/	
+    } /** not a full path name **/
     /**
      **  Free up what has been allocated and pass the result back to
      **  the caller and save the real module file name returned by
@@ -375,7 +375,7 @@ static	char	*GetModuleName(	Tcl_Interp	*interp,
     char	 *s, *t;		/** Private string buffer	     **/
     char	 *mod, *ver;		/** Pointer to module and version    **/
     char	 *mod1, *ver1;		/** Temp pointer		     **/
-    
+
 #if WITH_DEBUGGING_LOCATE_1
     ErrorLogger( NO_ERR_START, LOC, _proc_GetModuleName, NULL);
 #endif
@@ -535,7 +535,7 @@ unwindt:
 		    null_free((void *) &t);
 		    goto unwind2;
 		}
-	    } 
+	    }
 	} else {     /** if( $path/$prefix/$mod is a directory) **/
 	    /**
 	     **  Now 'mod' should be either a file or the word 'default'
@@ -574,8 +574,8 @@ unwindt:
 			/**
 			 **  Otherwise check the file for a magic cookie ...
 			 **/
-			if( check_magic( fullpath, MODULES_MAGIC_COOKIE, 
-			    MODULES_MAGIC_COOKIE_LENGTH)) 
+			if( check_magic( fullpath, MODULES_MAGIC_COOKIE,
+			    MODULES_MAGIC_COOKIE_LENGTH))
 			    Result = filelist[ i];
 		    } /** if( !stat) **/
 		} /** for **/
@@ -584,8 +584,8 @@ unwindt:
 		 **  If mod names a file, we have to check wheter it exists and
 		 **  is a valid module file
 		 **/
-		if( check_magic( fullpath, MODULES_MAGIC_COOKIE, 
-		    MODULES_MAGIC_COOKIE_LENGTH)) 
+		if( check_magic( fullpath, MODULES_MAGIC_COOKIE,
+		    MODULES_MAGIC_COOKIE_LENGTH))
 		    Result = mod;
 		else {
 		    ErrorLogger( ERR_MAGIC, LOC, fullpath, NULL);
@@ -619,7 +619,7 @@ unwindt2:
 		    null_free((void *) &t);
 		    goto unwind2;
 		}
-	    } 
+	    }
 	} /** mod is a file **/
     } /** mod exists **/
     /**
@@ -628,7 +628,7 @@ unwindt2:
     null_free((void*) &fullpath);
     null_free((void*) &s);
     FreeList( filelist, numlist);
-    
+
 #if WITH_DEBUGGING_LOCATE_1
     ErrorLogger( NO_ERR_END, LOC, _proc_GetModuleName, NULL);
 #endif
@@ -689,7 +689,7 @@ char	**SortedDirList(	Tcl_Interp	*interp,
 			 j,		/** Counts the number of list-entries**/
 			 n,		/** Size of the allocated array	     **/
 			 pathlen;	/** String length of 'fullpath'	     **/
- 
+
 #if WITH_DEBUGGING_UTIL_1
     ErrorLogger( NO_ERR_START, LOC, _proc_SortedDirList, NULL);
 #endif
@@ -701,7 +701,7 @@ char	**SortedDirList(	Tcl_Interp	*interp,
 	if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
 	    goto unwind0;
     /**
-     **  Form the suggested module file name out of the passed path and 
+     **  Form the suggested module file name out of the passed path and
      **  the name of the module. Alloc memory in order to do this.
      **/
     if((char *) NULL == (full_path = stringer(NULL, 0,
@@ -709,7 +709,7 @@ char	**SortedDirList(	Tcl_Interp	*interp,
 	if( OK != ErrorLogger( ERR_STRING, LOC, NULL))
 	    goto unwind0;
     pathlen = strlen(full_path);
-    
+
 #if WITH_DEBUGGING_UTIL_2
     ErrorLogger( NO_ERR_DEBUG, LOC, "full_path='", full_path, "'", NULL);
 #endif
@@ -784,8 +784,8 @@ char	**SortedDirList(	Tcl_Interp	*interp,
 	     **  finally is not a temporary file (which are defined to end
 	     **  on '~' ...
 	     **/
-	    if( file->d_name                && 
-                *file->d_name != '.'        && 
+	    if( file->d_name                &&
+                *file->d_name != '.'        &&
                 strcmp( file->d_name, "..")  &&
                 file->d_name[ NLENGTH( file) - 1] != '~') {
 		/**
@@ -827,8 +827,8 @@ char	**SortedDirList(	Tcl_Interp	*interp,
 	 **/
 	*listcnt = j;
 	return( filelist);		/** --- EXIT PROCEDURE (SUCCESS) --> **/
-	
-	if(0) {	
+
+	if(0) {
 unwindt:
 	    null_free((void*) &tbuf);
 	    goto unwind3;
@@ -886,9 +886,9 @@ unwind0:
  ++++*/
 
 char	**SplitIntoList(	Tcl_Interp	*interp,
-		     		char		*pathenv, 
+		     		char		*pathenv,
 		     		int		*numpaths,
-				const char	*delim) 
+				const char	*delim)
 {
     char	**pathlist = NULL;	/** Temporary base pointer for the   **/
 					/** array to be created		     **/
@@ -901,7 +901,7 @@ char	**SplitIntoList(	Tcl_Interp	*interp,
 #if WITH_DEBUGGING_UTIL_1
     ErrorLogger( NO_ERR_START, LOC, _proc_SplitIntoList, NULL);
 #endif
-    /** 
+    /**
      **  Paramter check
      **/
     if( !pathenv)
@@ -991,7 +991,7 @@ void FreeList(	char	**list,
 		int	  numelem)
 {
     register int j;
-    
+
 #if WITH_DEBUGGING_UTIL_2
     ErrorLogger( NO_ERR_START, LOC, _proc_FreeList, NULL);
 #endif
@@ -1038,10 +1038,10 @@ void FreeList(	char	**list,
  ** ************************************************************************ **
  ++++*/
 
-int SourceRC( Tcl_Interp *interp, char *path, char *name)
+int SourceRC(Tcl_Interp *interp, char *path, char *name)
 {
     struct stat	  stats;		/** Buffer for the stat() systemcall **/
-    int 	  save_flags, i;
+    int 	  save_flags, i = 0;
     char	 *buffer;
     int		  Result = TCL_OK;
     static char	**srclist = (char **) NULL;
@@ -1068,7 +1068,7 @@ int SourceRC( Tcl_Interp *interp, char *path, char *name)
      **  Check whether the RC file exists and has the magic cookie inside
      **/
     if( !stat( buffer, &stats)) {
-	if( check_magic( buffer, MODULES_MAGIC_COOKIE, 
+	if( check_magic( buffer, MODULES_MAGIC_COOKIE,
 	    MODULES_MAGIC_COOKIE_LENGTH)) {
 	    /**
 	     **  Set the flags to 'load only'. This prevents from accidently
@@ -1079,8 +1079,8 @@ int SourceRC( Tcl_Interp *interp, char *path, char *name)
 	    /**
 	     **  Source now
 	     **/
-	    if( TCL_ERROR == Execute_TclFile( interp, buffer)) 
-		if( OK != ErrorLogger( ERR_SOURCE, LOC, buffer, NULL)) 
+	    if( TCL_ERROR == Execute_TclFile( interp, buffer))
+		if( OK != ErrorLogger( ERR_SOURCE, LOC, buffer, NULL))
 		    Result = TCL_ERROR;
 	    g_flags = save_flags;
 	    /**
@@ -1097,7 +1097,7 @@ int SourceRC( Tcl_Interp *interp, char *path, char *name)
 		}
 	    } else if( listndx + 1 >= listsize) {
 		listsize += SRCFRAG;
-		if(!(srclist = (char **) module_realloc( srclist, 
+		if(!(srclist = (char **) module_realloc( srclist,
 		    listsize * sizeof( char **)))) {
 		    ErrorLogger( ERR_ALLOC, LOC, NULL);
 		    goto unwind1;
@@ -1179,7 +1179,7 @@ int SourceVers( Tcl_Interp *interp, char *path, char *name)
     if( !stat( buffer, &stats)) {
 	if(
 #if VERSION_MAGIC != 0
-	    check_magic( buffer, MODULES_MAGIC_COOKIE, 
+	    check_magic( buffer, MODULES_MAGIC_COOKIE,
 	    MODULES_MAGIC_COOKIE_LENGTH)
 #else
 	1
@@ -1188,7 +1188,7 @@ int SourceVers( Tcl_Interp *interp, char *path, char *name)
 	    save_flags = g_flags;
 	    g_flags = M_LOAD;
 
-	    if( TCL_ERROR != (Result = Execute_TclFile( interp, buffer)) && 
+	    if( TCL_ERROR != (Result = Execute_TclFile( interp, buffer)) &&
 		(version = (char *) Tcl_GetVar(interp, "ModulesVersion", 0))) {
 		/**
 		 **  The version has been specified in the

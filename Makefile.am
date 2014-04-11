@@ -13,7 +13,13 @@
 ##
 
 ACLOCAL_AMFLAGS = -I m4 --install
-AM_WARNFLAGS = -Wall -Wimplicit
+MY_WARNFLAGS = -Wall -Wimplicit -Wmissing-prototypes -Wreturn-type \
+-Wmissing-braces -Wparentheses -Wswitch -Wunused-parameter \
+-Wunused-variable -Wunused-value -Wunknown-pragmas -Wshadow \
+-Wfour-char-constants -Wsign-compare -Wnewline-eof -Wconversion \
+-Wshorten-64-to-32 -Wno-unused-label
+## CWARNFLAGS is subst-ed by the "XORG_CWARNFLAGS" macro in configure.ac:
+AM_WARNFLAGS = $(CWARNFLAGS)
 AM_CFLAGS = $(AM_WARNFLAGS)
 
 man_MANS = doc/module.1 doc/modulefile.4
@@ -28,7 +34,9 @@ EXTRA_DIST = config/config.rpath  [config]dnl/config.rpath  modules_def.h getopt
 	LICENSE.GPL ChangeLog
 
 bin_PROGRAMS = modulecmd
-modulecmd_CFLAGS=@TCLX_INCLUDE_SPEC@  @TCL_INCLUDE_SPEC@ @X_CFLAGS@
+## BASE_CFLAGS is subst-ed by the "XORG_COMPILER_FLAGS" macro called by the
+## "XORG_CWARNFLAGS" macro in configure.ac:
+modulecmd_CFLAGS=@TCLX_INCLUDE_SPEC@ @TCL_INCLUDE_SPEC@ @X_CFLAGS@ $(BASE_CFLAGS)
 modulecmd_LDADD= @TCLX_LIB_SPEC@ @TCL_LIB_SPEC@ @X_LIBS@ @X_EXTRA_LIBS@ @LIBS@
 modulecmd_SOURCES = \
 	ModuleCmd_Avail.c \

@@ -24,7 +24,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 #ifndef _MODULES_DEF_H
@@ -237,7 +237,7 @@ typedef	enum	{
 	ERR_INVAL,			/** Invalid parameter to the error   **/
 	ERR_INVWGHT,			/** logger			     **/
 	ERR_INVFAC,			/** Invalid error facility	     **/
-        ERR_ENVVAR,                     /** env. variables are inconsistent  **/
+        ERR_ENVVAR                     /** env. variables are inconsistent  **/
 } ErrType;
 
 /**
@@ -380,7 +380,7 @@ typedef enum	{
 #define      M_SUBCMD	0x8000
 
 /**
- **  markers for switching 
+ **  markers for switching
  **/
 
 #define      SWMARKER        "--VARMARKER--"  /**  for variables and aliases  **/
@@ -388,13 +388,13 @@ typedef enum	{
 #define      PRE_SW_MARKER   "--PREMARKER--"  /**  for prepending paths  **/
 
 /**
- **  return values 
+ **  return values
  **/
 
 #define TCL_LEVEL0_RETURN    11
 
 /**
- **  uname defaults when uname can't be found 
+ **  uname defaults when uname can't be found
  **/
 
 #ifndef UNAME_SYSNAME
@@ -465,11 +465,11 @@ typedef enum	{
  **/
 
 #ifndef USE_FREE
-#  define  free( x)  
-#  define  FreeList( x, y)  
+#  define  free( x)
+#  define  FreeList( x, y)
 #endif
 
-/** 
+/**
  **  Some systems don't define S_ISDIR and S_ISREG
  **/
 
@@ -596,46 +596,49 @@ extern	void	  delete_dirlst( fi_ent*, int);
 extern	void	  delete_cache_list( char**, int);
 
 /**  ModuleCmd_Clear.c  **/
-extern	int	  ModuleCmd_Clear( Tcl_Interp*, int, char*[]);
+extern	int	  ModuleCmd_Clear(Tcl_Interp*, int, char*[]);
 
 /**  ModuleCmd_Display.c  **/
-extern	int	  ModuleCmd_Display( Tcl_Interp*, int, char*[]);
+extern	int	  ModuleCmd_Display(Tcl_Interp*, int, char*[]);
 
 /**  ModuleCmd_Help.c  **/
-extern	int	  ModuleCmd_Help( Tcl_Interp*, int, char*[]);
+extern	int	  ModuleCmd_Help(Tcl_Interp*, int, char*[]);
 
 /**  ModuleCmd_Init.c  **/
-extern	int	  ModuleCmd_Init( Tcl_Interp*, int, char*[]);
+extern	int	  ModuleCmd_Init(Tcl_Interp*, int, char*[]);
 
 /**  ModuleCmd_List.c  **/
-extern	int	  ModuleCmd_List( Tcl_Interp*, int, char*[]);
+extern	int	  ModuleCmd_List(Tcl_Interp*, int, char*[]);
 
 /**  ModuleCmd_Load.c  **/
-extern	int	  ModuleCmd_Load( Tcl_Interp*, int, int, char*[]);
+extern	int	  ModuleCmd_Load(Tcl_Interp*, int, int, char*[]);
 
 /**  ModuleCmd_Purge.c  **/
-extern	int	  ModuleCmd_Purge( Tcl_Interp*, int, char*[]);
+extern	int	  ModuleCmd_Purge(Tcl_Interp*, int, char*[]);
+
+/**  ModuleCmd_Refresh.c  **/
+extern int ModuleCmd_Refresh(Tcl_Interp *interp, int argc, char *argv[]);
 
 /**  ModuleCmd_Switch.c  **/
-extern	int	  ModuleCmd_Switch( Tcl_Interp*, int, char*[]);
+extern	int	  ModuleCmd_Switch(Tcl_Interp*, int, char*[]);
 
 /**  ModuleCmd_Update.c  **/
-extern	int	  ModuleCmd_Update( Tcl_Interp*, int, char*[]);
+extern	int	  ModuleCmd_Update(Tcl_Interp*, int, char*[]);
 
 /**  ModuleCmd_Whatis.c  **/
-extern	int	  ModuleCmd_Whatis( Tcl_Interp*, int, char*[]);
-extern	int	  ModuleCmd_Apropos( Tcl_Interp*, int, char*[]);
+extern	int	  ModuleCmd_Whatis(Tcl_Interp*, int, char*[]);
+extern	int	  ModuleCmd_Apropos(Tcl_Interp*, int, char*[]);
 
 /**  ModuleCmd_Use.c  **/
-extern	int	  ModuleCmd_Use( Tcl_Interp*, int, char*[]);
-extern	int	  ModuleCmd_UnUse( Tcl_Interp*, int, char*[]);
+extern	int	  ModuleCmd_Use(Tcl_Interp*, int, char*[]);
+extern	int	  ModuleCmd_UnUse(Tcl_Interp*, int, char*[]);
 
 /**  cmdAlias.c  **/
-extern	int	  cmdSetAlias( ClientData, Tcl_Interp*, int, CONST84 char*[]);
+extern	int	  cmdSetAlias(ClientData, Tcl_Interp*, int, CONST84 char*[]);
 
 /**  cmdConflict.c  **/
-extern	int	  cmdConflict( ClientData, Tcl_Interp*, int, CONST84 char*[]);
-extern	int	  cmdPrereq( ClientData, Tcl_Interp*, int, CONST84 char*[]);
+extern	int	  cmdConflict(ClientData, Tcl_Interp*, int, CONST84 char*[]);
+extern	int	  cmdPrereq(ClientData, Tcl_Interp*, int, CONST84 char*[]);
 
 /**  cmdIsLoaded.c  **/
 extern	int	  cmdIsLoaded(ClientData, Tcl_Interp*, int, CONST84 char*[]);
@@ -654,14 +657,13 @@ extern	int	  cmdModuleInfo(ClientData, Tcl_Interp*, int, CONST84 char*[]);
 extern	char	 *module_command;
 
 /**  cmdMisc.c  **/
-extern	int	  cmdSystem( ClientData, Tcl_Interp*, int, CONST84 char*[]);
+extern	int	  cmdSystem(ClientData, Tcl_Interp*, int, CONST84 char*[]);
 
 /**  cmdModule.c  **/
-extern	int	  cmdModule( ClientData, Tcl_Interp*, int, CONST84 char*[]);
-extern	int	  Read_Modulefile( Tcl_Interp*, char*);
-extern	int	  Execute_TclFile( Tcl_Interp*, char*);
-extern	int	  CallModuleProcedure( Tcl_Interp*, Tcl_DString*, char*, char*,
-			int);
+extern	int	  cmdModule(ClientData, Tcl_Interp*, int, CONST84 char*[]);
+extern	int	  Read_Modulefile(Tcl_Interp*, char*);
+extern	int	  Execute_TclFile(Tcl_Interp*, char*);
+extern	int	  CallModuleProcedure(Tcl_Interp*, Tcl_DString*, char*, char*, int);
 
 /**  cmdPath.c  **/
 extern	int	  cmdSetPath( ClientData, Tcl_Interp*, int, CONST84 char*[]);
@@ -698,28 +700,29 @@ extern	int	  CheckTracing(Tcl_Interp*, char*, char*);
 extern	int	  CheckTracingList(Tcl_Interp*, char*, int, char**);
 
 /**  cmdVersion.c  **/
-extern	int	  cmdModuleVersion(ClientData,Tcl_Interp*,int,CONST84 char*[]);
-extern	int	  cmdModuleAlias(ClientData,Tcl_Interp*, int, CONST84 char*[]);
-extern	int	  AliasLookup( char*, char**, char**);
-extern	int	  VersionLookup( char*, char**, char**);
-extern	char	 *ExpandVersions( char*);
+extern	int	  cmdModuleVersion(ClientData, Tcl_Interp*, int, CONST84 char*[]);
+extern	int	  cmdModuleAlias(ClientData, Tcl_Interp*, int, CONST84 char*[]);
+extern	int	  AliasLookup(char*, char**, char**);
+extern	int	  VersionLookup(char*, char**, char**);
+extern	char	 *ExpandVersions(char*);
 
 /**  init.c  **/
+extern int Module_Tcl_ExitCmd(ClientData client_data, Tcl_Interp *interp,
+							  int argc, CONST84 char *argv[]);
 extern	Tcl_Interp	 *EM_CreateInterp(void);
 extern	void	  EM_DeleteInterp(Tcl_Interp*);
-extern	int	  Initialize_Tcl( Tcl_Interp**, int, char*[], char*[]);
-extern	int	  InitializeModuleCommands( Tcl_Interp*);
-extern	int	  Setup_Environment( Tcl_Interp*);
-extern	char	**SetStartupFiles( char *shell_name);
-extern	int	  TieStdout( void);
-extern	int	  UnTieStdout( int);
+extern	int	  Initialize_Tcl(Tcl_Interp**, int, char*[], char*[]);
+extern	int	  InitializeModuleCommands(Tcl_Interp*);
+extern	int	  Setup_Environment(Tcl_Interp*);
+extern	char	**SetStartupFiles(char *shell_name);
+extern	int	  TieStdout(void);
+extern	int	  UnTieStdout(int);
 
 /**  utility.c  **/
 extern	char	 *getLMFILES( Tcl_Interp *interp);
 extern	int	  store_hash_value( Tcl_HashTable*, const char*, const char*);
 extern	int	  clear_hash_value( Tcl_HashTable*, const char*);
-extern	int	  store_old_shell_variable( Tcl_HashTable*, const char*,
-			const char*);
+extern int store_old_shell_variable(Tcl_HashTable*, const char*, const char*);
 extern	int	  clear_old_shell_variable( Tcl_HashTable*, const char*);
 extern	void	  Delete_Global_Hash_Tables( void);
 extern	void	  Delete_Hash_Tables( Tcl_HashTable**);
@@ -736,6 +739,7 @@ extern	int	  IsLoaded( Tcl_Interp*, char*, char**, char*);
 extern	int	  IsLoaded_ExactMatch( Tcl_Interp*, char*, char	**, char*);
 extern	int	  Update_LoadedList( Tcl_Interp*, char*, char*);
 extern	int	  check_magic( char*, char*, int);
+extern void regex_quote(const char *path, char *newpath, int len);
 extern	char	 *xstrtok_r(char *, const char *, char **);
 extern	char	 *xstrtok(char *, const char *);
 extern	void	  chk4spch( char*);
@@ -744,12 +748,12 @@ extern	void	 *module_malloc(size_t);
 extern	void	 *module_realloc(void *,size_t);
 extern	char	 *xdup(char const *);
 extern	char	 *xgetenv(char const *);
-extern  int       tmpfile_mod( char**, FILE**);
+extern  int       tmpfile_mod(char**, FILE**);
 extern	char	 *stringer(char *, int, ...);
 extern	void	  null_free(void **);
 extern	size_t	  countTclHash(Tcl_HashTable *);
-extern	EM_RetVal	ReturnValue( Tcl_Interp*, int);
-extern	void	  OutputExit();
+extern	EM_RetVal	ReturnValue(Tcl_Interp*, int);
+extern	void	  OutputExit(void);
 extern	char 	 *EMGetEnv(Tcl_Interp *, char const *);
 extern	char 	 *EMSetEnv(Tcl_Interp *, char const *, char const *);
 extern	int	  is_interactive(void);
@@ -759,15 +763,20 @@ extern	int	  is_interactive(void);
 extern	char	 *strdup( char*);
 #endif
 
-#ifndef HAVE_STRTOK
+#if !defined(HAVE_STRTOK) && !defined(strtok)
 extern	char	 *strtok( char *, const char *);
-#endif
+#endif /* !HAVE_STRTOK && !strtok */
 
 /** error.c **/
-extern	char	**GetFacilityPtr( char *);
-extern	int 	  Module_Error(	ErrType, char*, int, ...);
-extern	int	  CheckFacility( char*, int*, int*);
-extern	void	  Module_Tracing( int, int, char**);
-extern	void	  Module_Verbosity( int, char**);
+extern	char	**GetFacilityPtr(char *);
+extern  void Enable_Error(void);
+extern  void Disable_Error(void);
+extern  void Restore_Error(void);
+extern	int 	  Module_Error(ErrType, char*, int, ...);
+extern	int	  CheckFacility(char*, int*, int*);
+extern	void	  Module_Tracing(int, int, char**);
+extern	void	  Module_Verbosity(int, char**);
 
 #endif  /**  _MODULES_DEF_H  **/
+
+/* EOF */

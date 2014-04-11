@@ -25,7 +25,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 2f8da08476e5cd6791b9f7dd4077b416a6d54f6f $";
@@ -95,9 +95,9 @@ static	char	_proc_cmdSystem[] = "cmdSystem";
  ** ************************************************************************ **
  ++++*/
 
-int	cmdSystem(	ClientData	 clientData, 
-	  		Tcl_Interp	*interp, 
-	  		int		 argc, 
+int	cmdSystem(	ClientData	 clientData,
+	  		Tcl_Interp	*interp,
+	  		int		 argc,
 	  		CONST84 char	*argv[])
 {
     int		 i;
@@ -135,22 +135,22 @@ int	cmdSystem(	ClientData	 clientData,
      **  Watch over the commands complete length while copying ...
      **/
 
-    for( i = 1; i<argc; i++) {
-
-        total_len += (1 + (arg_len = strlen(argv[i])));
+    for ((i = 1); (i < argc); i++) {
+        total_len += (1 + (arg_len = (int)strlen(argv[i])));
         if( total_len > MAX_ARGLIST) {
-	    if( OK != ErrorLogger( ERR_ARGSTOLONG, LOC, argv[0], (sprintf( buf,
-		"%d", total_len), buf), NULL))
-		return( TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
+			if (OK != ErrorLogger(ERR_ARGSTOLONG, LOC, argv[0],
+								  (sprintf(buf, "%d", total_len), buf), NULL)) {
+				return (TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
+			}
         }
 
 	/**
  	 **  Copy the argument ov the buffer and put a space at its end
 	 **/
 
-        memcpy( bufp, argv[i], arg_len);
+        memcpy(bufp, argv[i], (size_t)arg_len);
         bufp += arg_len;
-        memcpy( bufp, " ", 1);
+        memcpy(bufp, " ", 1);
         bufp += 1;
     }
 
@@ -178,7 +178,7 @@ int	cmdSystem(	ClientData	 clientData,
      */
 
     UnTieStdout( saved_stdout);
-    
+
 #if WITH_DEBUGGING_CALLBACK
     ErrorLogger( NO_ERR_END, LOC, _proc_cmdSystem, NULL);
 #endif
