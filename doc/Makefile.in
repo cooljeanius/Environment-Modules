@@ -80,7 +80,8 @@ host_triplet = @host@
 target_triplet = @target@
 subdir = doc
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
-	$(srcdir)/module.1.in $(srcdir)/modulefile.4.in
+	$(top_srcdir)/config/mkinstalldirs $(srcdir)/module.1.in \
+	$(srcdir)/modulefile.4.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/autobuild.m4 \
 	$(top_srcdir)/m4/ax_ac_append_to_file.m4 \
@@ -108,7 +109,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/autobuild.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-mkinstalldirs = $(install_sh) -d
+mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES = module.1 modulefile.4
 CONFIG_CLEAN_VPATH_FILES =

@@ -87,8 +87,9 @@ bin_PROGRAMS = modulecmd$(EXEEXT)
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.h.in $(srcdir)/modules.lsm.in \
-	$(srcdir)/.spec.in $(top_srcdir)/etc/skel/.cshrc.in \
+	$(srcdir)/config.h.in $(top_srcdir)/config/mkinstalldirs \
+	$(srcdir)/modules.lsm.in $(srcdir)/.spec.in \
+	$(top_srcdir)/etc/skel/.cshrc.in \
 	$(top_srcdir)/etc/skel/.login.in \
 	$(top_srcdir)/etc/skel/.kshenv.in \
 	$(top_srcdir)/etc/skel/.profile.in \
@@ -105,9 +106,9 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/config/depcomp ABOUT-NLS ChangeLog INSTALL NEWS \
 	README TODO config/ar-lib config/compile config/config.guess \
 	config/config.rpath config/config.sub config/depcomp \
-	config/install-sh config/missing config/ltmain.sh \
-	$(top_srcdir)/config/ar-lib $(top_srcdir)/config/compile \
-	$(top_srcdir)/config/config.guess \
+	config/install-sh config/missing config/mkinstalldirs \
+	config/ltmain.sh $(top_srcdir)/config/ar-lib \
+	$(top_srcdir)/config/compile $(top_srcdir)/config/config.guess \
 	$(top_srcdir)/config/config.rpath \
 	$(top_srcdir)/config/config.sub \
 	$(top_srcdir)/config/install-sh $(top_srcdir)/config/ltmain.sh \
@@ -141,7 +142,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
-mkinstalldirs = $(install_sh) -d
+mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = modules.lsm .spec etc/skel/.cshrc etc/skel/.login \
 	etc/skel/.kshenv etc/skel/.profile etc/global/csh.cshrc \

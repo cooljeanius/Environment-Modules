@@ -83,10 +83,11 @@ host_triplet = @host@
 target_triplet = @target@
 subdir = modulefiles
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
-	$(srcdir)/modules.in $(srcdir)/module-cvs.in \
-	$(srcdir)/module-git.in $(srcdir)/module-info.in \
-	$(srcdir)/null.in $(srcdir)/use.own.in $(srcdir)/dot.in \
-	$(srcdir)/version.in $(srcdir)/HOME.in $(srcdir)/notavail.in
+	$(top_srcdir)/config/mkinstalldirs $(srcdir)/modules.in \
+	$(srcdir)/module-cvs.in $(srcdir)/module-git.in \
+	$(srcdir)/module-info.in $(srcdir)/null.in \
+	$(srcdir)/use.own.in $(srcdir)/dot.in $(srcdir)/version.in \
+	$(srcdir)/HOME.in $(srcdir)/notavail.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/autobuild.m4 \
 	$(top_srcdir)/m4/ax_ac_append_to_file.m4 \
@@ -114,7 +115,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/autobuild.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-mkinstalldirs = $(install_sh) -d
+mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES = modules module-cvs module-git module-info null \
 	use.own dot version HOME notavail
@@ -405,6 +406,7 @@ LANGUAGES = \
 
 ALLMODULES = ${BASEMODULES} ${LANGUAGES} lang/.mklang
 EXTRA_SCRIPTS = ${BASEMODULES} version
+DISTCLEANFILES = .DS_Store
 all: all-am
 
 .SUFFIXES:
@@ -576,6 +578,7 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"

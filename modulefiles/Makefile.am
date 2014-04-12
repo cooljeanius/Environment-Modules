@@ -23,6 +23,8 @@ ALLMODULES=${BASEMODULES} ${LANGUAGES} lang/.mklang
 
 EXTRA_SCRIPTS = ${BASEMODULES} version
 
+DISTCLEANFILES = .DS_Store
+
 all:	${EXTRA_SCRIPTS}
 
 ${LANGUAGES} : lang/.mklang

@@ -34,3 +34,6 @@ modules.lsm
 *.pbxuser
 *.perspectivev3
 build/*
+*.tar.bz2
+*.tar.gz
+modules-*.*.*/*
