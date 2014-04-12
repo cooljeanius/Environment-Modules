@@ -76,6 +76,9 @@
    remove it. */
 #undef EVAL_ALIAS
 
+/* Define to 1 if `TIOCGWINSZ' requires <sys/ioctl.h>. */
+#undef GWINSZ_IN_SYS_IOCTL
+
 /* This symbol, if defined to 1, indicates that the Bourne shell can define
    aliases */
 #undef HAS_BOURNE_ALIAS
@@ -94,6 +97,9 @@
 
 /* Define to 1 if you have the <assert.h> header file. */
 #undef HAVE_ASSERT_H
+
+/* Define to 1 if you have the `atexit' function. */
+#undef HAVE_ATEXIT
 
 /* Define to 1 if you have the Mac OS X function CFLocaleCopyCurrent in the
    CoreFoundation framework. */
@@ -157,6 +163,9 @@
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
+/* Define to 1 if you have the `feof' function. */
+#undef HAVE_FEOF
+
 /* Define to 1 if you have the `fread' function. */
 #undef HAVE_FREAD
 
@@ -174,6 +183,9 @@
 
 /* Define if you have the iconv() function and it works. */
 #undef HAVE_ICONV
+
+/* Define to 1 if the system has the type `intptr_t'. */
+#undef HAVE_INTPTR_T
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
@@ -234,7 +246,7 @@
 /* Define to 1 if you have the <modules_def.h> header file. */
 #undef HAVE_MODULES_DEF_H
 
-/* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
+/* Define to 1 if you have the <ndir.h> header file. */
 #undef HAVE_NDIR_H
 
 /* Defined to 1 if net/errno.h is available */
@@ -262,6 +274,10 @@
 /* Define to 1 if you have the `setlocale' function. */
 #undef HAVE_SETLOCALE
 
+/* Define to 1 if `stat' has the bug that it succeeds when given the
+   zero-length file name argument. */
+#undef HAVE_STAT_EMPTY_STRING_BUG
+
 /* Define to 1 if you have the <stdarg.h> header file. */
 #undef HAVE_STDARG_H
 
@@ -284,6 +300,9 @@
 /* Define to 1 if you have the `strcoll' function and it is properly defined.
    */
 #undef HAVE_STRCOLL
+
+/* Define to 1 if you have the `strcpy' function. */
+#undef HAVE_STRCPY
 
 /* Define to 1 if you have the `strcspn' function. */
 #undef HAVE_STRCSPN
@@ -333,8 +352,7 @@
 /* Define to 1 if you have the <syslog.h> header file. */
 #undef HAVE_SYSLOG_H
 
-/* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
-   */
+/* Define to 1 if you have the <sys/dir.h> header file. */
 #undef HAVE_SYS_DIR_H
 
 /* Define to 1 if you have the <sys/filio.h> header file. */
@@ -349,8 +367,7 @@
 /* Define to 1 if you have the <sys/mode.h> header file. */
 #undef HAVE_SYS_MODE_H
 
-/* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
-   */
+/* Define to 1 if you have the <sys/ndir.h> header file. */
 #undef HAVE_SYS_NDIR_H
 
 /* Define to 1 if you have the <sys/param.h> header file. */
@@ -400,6 +417,9 @@
 /* Define if you have the 'uintmax_t' type in <stdint.h> or <inttypes.h>. */
 #undef HAVE_UINTMAX_T
 
+/* Define to 1 if you have the `umask' function. */
+#undef HAVE_UMASK
+
 /* Define to 1 if you have the `uname' function. */
 #undef HAVE_UNAME
 
@@ -415,6 +435,10 @@
 /* LMSPLIT_SIZE: This symbol, if defined, will force the environment variable
    _LM_FILES_ to be split into smaller "chunks". */
 #undef LMSPLIT_SIZE
+
+/* Define to 1 if `lstat' dereferences a symlink specified with a trailing
+   slash. */
+#undef LSTAT_FOLLOWS_SLASHED_SYMLINK
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
@@ -492,6 +516,9 @@
 
 /* Define to 1 if static build is requested */
 #undef STATIC_BUILD
+
+/* Define to 1 if the `S_IS*' macros in <sys/stat.h> do not work properly. */
+#undef STAT_MACROS_BROKEN
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
@@ -614,7 +641,8 @@
 /* Define to 1 if system wants Modules versions */
 #undef WANTS_VERSIONING
 
-/* WITH_DEBUG_INFO: Debug info level if defined */
+/* WITH_DEBUG_INFO: Debug info level if defined ("44" is the highest value
+   that changes anything) */
 #undef WITH_DEBUG_INFO
 
 /* WITH_LOGGING: Syslog logging & facilities */
@@ -747,6 +775,10 @@
 #ifndef __cplusplus
 #undef inline
 #endif
+
+/* Define to the type of a signed integer type wide enough to hold a pointer,
+   if such a type exists, and if the system does not define it. */
+#undef intptr_t
 
 /* Define to rpl_malloc if the replacement function should be used. */
 #undef malloc

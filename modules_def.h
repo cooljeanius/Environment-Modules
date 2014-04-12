@@ -41,22 +41,22 @@
 
 #ifndef CONST84
 #  define CONST84	/* const */
-#endif
+#endif /* !CONST84 */
 
 #if (TCL_MAJOR_VERSION < 8)
 #  define TCL_RESULT(interp) ((interp)->result)
 #else
 #  define TCL_RESULT(interp) Tcl_GetStringResult(interp)
-#endif
+#endif /* TCL_MAJOR_VERSION < 8 */
 
 #ifndef HAVE_STDINT_H
 /* assume 32 bit - hope for the best */
 typedef	int	intptr_h;
-#endif
+#endif /* !HAVE_STDINT_H */
 
 #ifdef HAVE_STDLIB_H
 #  include <stdlib.h>
-#endif
+#endif /* HAVE_STDLIB_H */
 
 #if STDC_HEADERS || HAVE_STRING_H
 #  include <string.h>
@@ -76,35 +76,36 @@ typedef	int	intptr_h;
 #ifdef HAVE_UNISTD_H
 #  include <unistd.h>
 #  include <sys/types.h>
-#endif
+#endif /* HAVE_UNISTD_H */
 
 #ifdef HAVE_CTYPE_H
 #  include <ctype.h>
-#endif
+#endif /* HAVE_CTYPE_H */
 
 #ifdef HAVE_SYS_MODE_H
-/* #include <sys/mode.h> */
-#endif
+/* this had been commented out: */
+# include <sys/mode.h>
+#endif /* HAVE_SYS_MODE_H */
 
 #ifdef HAVE_SYS_STAT_H
 #  include <sys/stat.h>
-#endif
+#endif /* HAVE_SYS_STAT_H */
 
 #ifdef HAVE_SYS_TERMIOS_H
 #  include <sys/termios.h>
 #else
 #  ifdef HAVE_TERMIO_H
 #    include <termio.h>
-#  endif
-#endif
+#  endif /* HAVE_TERMIO_H */
+#endif /* HAVE_SYS_TERMIOS_H */
 
 #ifdef HAVE_FCNTL_H
 #  include <fcntl.h>
-#endif
+#endif /* HAVE_FCNTL_H */
 
 #if !defined(TIOCGWINSZ) && defined(HAVE_SYS_IOCTL_H)
 #  include <sys/ioctl.h>
-#endif
+#endif /* !TIOCGWINSZ && HAVE_SYS_IOCTL_H */
 
 #if defined(DIRENT) || defined(_POSIX_VERSION)
 #  include <dirent.h>
@@ -127,14 +128,14 @@ typedef	int	intptr_h;
 #  include <errno.h>
 #else
 extern	int	  errno;
-#endif
+#endif /* HAVE_ERRNO_H */
 
 #ifdef HAVE_ASSERT_H
 #  include <assert.h>
 #else
 #  warning "not able to test code assertions"
 #  define assert(condition)
-#endif
+#endif /* HAVE_ASSERT_H */
 
 /** ************************************************************************ **/
 /** 				  LOCAL DATATYPES			     **/
@@ -247,14 +248,13 @@ typedef	enum	{
  **/
 
 typedef	enum	{
-	OK	= 0,			/** Everything's up and running	     **/
-	WARN	= 2,			/** A warning (mapped to OK by the   **/
-					/** Errorlogger			     **/
-	PROBLEM	= 5,			/** Problem ... program might cont.  **/
-	ERROR	= 7,			/** Error .. try gracefull aborting  **/
-	FATAL	= 10,			/** The following will lead to the   **/
-	PANIC	= 20			/** progrm being aborted by the er-  **/
-					/** ror logger immediatelly	     **/
+	OK	= 0,			/** Everything is up and running	     **/
+	WARN	= 2,			/** A warning (mapped to OK by the Errorlogger)	**/
+	PROBLEM	= 5,			/** Problem ... program might continue  **/
+	ERROR	= 7,			/** Error ... try gracefully aborting  **/
+	FATAL	= 10,			/** The following will lead to the **/
+	PANIC	= 20			/** program being aborted by the error logger
+							 ** immediately **/
 } ErrCode;
 
 /**
@@ -495,8 +495,12 @@ typedef enum	{
 
 extern	char	**environ;
 
+#ifndef version_string
 extern	char	 *version_string;
+#endif /* !version_string */
+#ifndef date_string
 extern	char	 *date_string;
+#endif /* !date_string */
 extern	char	 *g_current_module;
 extern	char	 *g_specified_module;
 extern	char	 *shell_name;
@@ -719,31 +723,31 @@ extern	int	  TieStdout(void);
 extern	int	  UnTieStdout(int);
 
 /**  utility.c  **/
-extern	char	 *getLMFILES( Tcl_Interp *interp);
-extern	int	  store_hash_value( Tcl_HashTable*, const char*, const char*);
-extern	int	  clear_hash_value( Tcl_HashTable*, const char*);
+extern	char	 *getLMFILES(Tcl_Interp *interp);
+extern	int	  store_hash_value(Tcl_HashTable*, const char*, const char*);
+extern	int	  clear_hash_value(Tcl_HashTable*, const char*);
 extern int store_old_shell_variable(Tcl_HashTable*, const char*, const char*);
-extern	int	  clear_old_shell_variable( Tcl_HashTable*, const char*);
-extern	void	  Delete_Global_Hash_Tables( void);
-extern	void	  Delete_Hash_Tables( Tcl_HashTable**);
-extern	Tcl_HashTable** Copy_Hash_Tables( void);
-extern	int	  Unwind_Modulefile_Changes( Tcl_Interp*, Tcl_HashTable**);
-extern	int	  Output_Modulefile_Changes( Tcl_Interp*);
-extern	int	  store_env( void);
-extern	int	  free_stored_env( void);
-extern	void	  set_marked_entry( Tcl_HashTable*, char*, intptr_t);
-extern	intptr_t  chk_marked_entry( Tcl_HashTable*, char*);
+extern	int	  clear_old_shell_variable(Tcl_HashTable*, const char*);
+extern	void	  Delete_Global_Hash_Tables(void);
+extern	void	  Delete_Hash_Tables(Tcl_HashTable**);
+extern	Tcl_HashTable** Copy_Hash_Tables(void);
+extern	int	  Unwind_Modulefile_Changes(Tcl_Interp*, Tcl_HashTable**);
+extern	int	  Output_Modulefile_Changes(Tcl_Interp*);
+extern	int	  store_env(void);
+extern	int	  free_stored_env(void);
+extern	void	  set_marked_entry(Tcl_HashTable*, char*, intptr_t);
+extern	intptr_t  chk_marked_entry(Tcl_HashTable*, char*);
 extern	Tcl_HashTable*  environ_changes;
 extern	Tcl_HashTable*  alias_changes;
-extern	int	  IsLoaded( Tcl_Interp*, char*, char**, char*);
-extern	int	  IsLoaded_ExactMatch( Tcl_Interp*, char*, char	**, char*);
-extern	int	  Update_LoadedList( Tcl_Interp*, char*, char*);
-extern	int	  check_magic( char*, char*, int);
+extern	int	  IsLoaded(Tcl_Interp*, char*, char**, char*);
+extern	int	  IsLoaded_ExactMatch(Tcl_Interp*, char*, char	**, char*);
+extern	int	  Update_LoadedList(Tcl_Interp*, char*, char*);
+extern	int	  check_magic(char*, char*, int);
 extern void regex_quote(const char *path, char *newpath, int len);
 extern	char	 *xstrtok_r(char *, const char *, char **);
 extern	char	 *xstrtok(char *, const char *);
-extern	void	  chk4spch( char*);
-extern	void	  cleanse_path( const char*, char*, int);
+extern	void	  chk4spch(char*);
+extern	void	  cleanse_path(const char*, char*, int);
 extern	void	 *module_malloc(size_t);
 extern	void	 *module_realloc(void *,size_t);
 extern	char	 *xdup(char const *);
@@ -761,10 +765,10 @@ extern	int	  is_interactive(void);
 #ifndef HAVE_STRDUP
 #  undef strdup
 extern	char	 *strdup( char*);
-#endif
+#endif /* !HAVE_STRDUP */
 
 #if !defined(HAVE_STRTOK) && !defined(strtok)
-extern	char	 *strtok( char *, const char *);
+extern	char	 *strtok(char *, const char *);
 #endif /* !HAVE_STRTOK && !strtok */
 
 /** error.c **/

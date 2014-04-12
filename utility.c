@@ -110,7 +110,8 @@ static	char	_proc_Update_LoadedList[] = "Update_LoadedList";
 static	char	_proc_check_magic[] = "check_magic";
 static	char	_proc_cleanse_path[] = "cleanse_path";
 static	char	_proc_chop[] = "chop";
-#endif
+static	char	_proc_stringer[] = "stringer";
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
 static	FILE *aliasfile;		/** Temporary file to write aliases  **/
 static	char *aliasfilename;		/** Temporary file name		     **/
@@ -120,48 +121,42 @@ static	const int   eval_alias = 	/** EVAL_ALIAS macro		     **/
 	1
 #else
 	0
-#endif
+#endif /* EVAL_ALIAS */
 ;
 static	const int   bourne_funcs = 	/** HAS_BOURNE_FUNCS macro	     **/
 #ifdef HAS_BOURNE_FUNCS
 	1
 #else
 	0
-#endif
+#endif /* HAS_BOURNE_FUNCS */
 ;
 static	const int   bourne_alias = 	/** HAS_BOURNE_FUNCS macro	     **/
 #ifdef HAS_BOURNE_ALIAS
 	1
 #else
 	0
-#endif
+#endif /* HAS_BOURNE_ALIAS */
 ;
 
 /** ************************************************************************ **/
 /**				    PROTOTYPES				     **/
 /** ************************************************************************ **/
 
-static	void	 Clear_Global_Hash_Tables( void);
-static	int	 Output_Modulefile_Aliases( Tcl_Interp *interp);
+static	void	 Clear_Global_Hash_Tables(void);
+static	int	 Output_Modulefile_Aliases(Tcl_Interp *interp);
 static	int	 Output_Directory_Change(Tcl_Interp *interp);
-static	int	 output_set_variable( Tcl_Interp *interp, const char*,
-				      const char*);
-static	int	 output_unset_variable( const char* var);
-static	void	 output_function( const char*, const char*);
-static	int	 output_set_alias( const char*, const char*);
-static	int	 output_unset_alias( const char*, const char*);
-static	int	 __IsLoaded( Tcl_Interp*, char*, char**, char*, int);
-static	char	*get_module_basename( char*);
-static	char	*chop( const char*);
-static  void     EscapeCshString(const char* in,
-				 char* out);
-static  void     EscapeShString(const char* in,
-				 char* out);
-static  void     EscapePerlString(const char* in,
-				 char* out);
-static  void     EscapeCmakeString(const char* in,
-				 char* out);
-
+static	int	 output_set_variable(Tcl_Interp *interp, const char*, const char*);
+static	int	 output_unset_variable(const char* var);
+static	void	 output_function(const char*, const char*);
+static	int	 output_set_alias(const char*, const char*);
+static	int	 output_unset_alias(const char*, const char*);
+static	int	 __IsLoaded(Tcl_Interp*, char*, char**, char*, int);
+static	char	*get_module_basename(char*);
+static	char	*chop(const char*);
+static  void     EscapeCshString(const char* in, char* out);
+static  void     EscapeShString(const char* in, char* out);
+static  void     EscapePerlString(const char* in, char* out);
+static  void     EscapeCmakeString(const char* in, char* out);
 
 /*++++
  ** ** Function-Header ***************************************************** **
@@ -462,19 +457,19 @@ void Delete_Hash_Tables( Tcl_HashTable	**table_ptr)
  ** ************************************************************************ **
  ++++*/
 
-Tcl_HashTable	**Copy_Hash_Tables( void)
+Tcl_HashTable **Copy_Hash_Tables(void)
 {
     Tcl_HashSearch	  searchPtr;	/** Tcl hash search handle	     **/
-    Tcl_HashEntry	 *oldHashEntry,	/** Hash entries to be copied	     **/
-			 *newHashEntry;
+    Tcl_HashEntry *oldHashEntry,	/** Hash entries to be copied	     **/
+				  *newHashEntry;
     char		 *val = NULL,	/** Stored value (is a pointer!)     **/
     			 *key = NULL;	/** Hash key			     **/
-    int			  new;		/** Tcl inidicator, if the new hash  **/
-					/** entry has been created or ref.   **/
+    int			  new;		/** Tcl inidicator, if the new hash entry has been
+							 ** created or ref.   **/
 
-    Tcl_HashTable	 *oldTable[5],
-			**o_ptr, **n_ptr,
-			**newTable;	/** Destination hash table	     **/
+    Tcl_HashTable *oldTable[5],
+				  **o_ptr, **n_ptr,
+				  **newTable;	/** Destination hash table	     **/
 
     oldTable[0] = setenvHashTable;
     oldTable[1] = unsetenvHashTable;
@@ -483,53 +478,80 @@ Tcl_HashTable	**Copy_Hash_Tables( void)
     oldTable[4] = NULL;
 
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_START, LOC, _proc_Copy_Hash_Tables, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_Copy_Hash_Tables, NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
     /**
      **  Allocate storage for the new list of hash tables
      **/
-    if( !(newTable = (Tcl_HashTable**) module_malloc( sizeof( oldTable))))
-	if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
-	    goto unwind0;
+    if (!(newTable = (Tcl_HashTable**)module_malloc(sizeof(oldTable)))) {
+		if (OK != ErrorLogger(ERR_ALLOC, LOC, NULL)) {
+			goto unwind0;
+		}
+	}
 
     /**
      **  Now copy each hashtable out of the list
      **/
-    for( o_ptr = oldTable, n_ptr = newTable; *o_ptr; o_ptr++, n_ptr++) {
+    for ((o_ptr = oldTable), (n_ptr = newTable); *o_ptr; o_ptr++, n_ptr++) {
+		/**
+		 **  Allocate memory for a single hash table:
+		 **/
+		if (!(*n_ptr = (Tcl_HashTable*)module_malloc(sizeof(Tcl_HashTable)))) {
+			if (OK != ErrorLogger(ERR_ALLOC, LOC, NULL)) {
+				goto unwind1;
+			}
+		}
 
-	/**
-	 **  Allocate memory for a single hash table
-	 **/
-	if( !(*n_ptr = (Tcl_HashTable*) module_malloc( sizeof( Tcl_HashTable))))
-	    if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
-		goto unwind1;
+		/**
+		 **  Initialize that guy and copy it from the old table:
+		 **/
+		Tcl_InitHashTable(*n_ptr, TCL_STRING_KEYS);
+		/* assuming that the first '=' is correct, so that oldHashEntry will
+		 * be initialized, and that the second '=' was supposed to be an '==',
+		 * so that the value assigned to 'oldHashEntry' here will be read from
+		 * it: */
+        if ((oldHashEntry = Tcl_FirstHashEntry(*o_ptr, &searchPtr))) {
+			/**
+			 **  Copy all entries if there are any:
+			 **/
+			do {
+				key = (char*)Tcl_GetHashKey(*o_ptr, oldHashEntry);
+				val = (char*)Tcl_GetHashValue(oldHashEntry);
 
-	/**
-	 **  Initialize that guy and copy it from the old table
-	 **/
-	Tcl_InitHashTable( *n_ptr, TCL_STRING_KEYS);
-        if( oldHashEntry = Tcl_FirstHashEntry( *o_ptr, &searchPtr)) {
+				if (*n_ptr != NULL) {
+#ifdef USE_TCLDEFS
+					newHashEntry = Tcl_CreateHashEntry(*n_ptr, key, &new);
+#else
+					newHashEntry = (*((*n_ptr)->createProc))(*n_ptr, key, &new);
+#endif /* USE_TCLDEFS */
+				} else if (*o_ptr != NULL) {
+					/* try old one as a backup: */
+#ifdef USE_TCLDEFS
+					newHashEntry = Tcl_CreateHashEntry(*o_ptr, key, &new);
+#else
+					newHashEntry = (*((*o_ptr)->createProc))(*o_ptr, key, &new);
+#endif /* USE_TCLDEFS */
+				} else {
+					/* *n_ptr and *o_ptr were both null, not sure what to do: */
+					if (oldHashEntry != NULL) {
+						newHashEntry = oldHashEntry;
+					} else {
+						/* really not sure what to do now: */
+						;
+					}
+				}
 
-	    /**
-	     **  Copy all entries if there are any
-	     **/
-	    do {
 
-		key = (char*) Tcl_GetHashKey( *o_ptr, oldHashEntry);
-		val = (char*) Tcl_GetHashValue( oldHashEntry);
-
-		newHashEntry = Tcl_CreateHashEntry( *n_ptr, key, &new);
-
-		if(val)
-		    Tcl_SetHashValue(newHashEntry, stringer(NULL,0, val, NULL));
-		else
-		    Tcl_SetHashValue(newHashEntry, (char *) NULL);
-
-	    } while( oldHashEntry = Tcl_NextHashEntry( &searchPtr));
-
-	} /** if **/
-    } /** for **/
+				if (val) {
+					Tcl_SetHashValue(newHashEntry,
+									 stringer(NULL, 0, val, NULL));
+				} else {
+					Tcl_SetHashValue(newHashEntry, (char *)NULL);
+				}
+			} while (oldHashEntry == Tcl_NextHashEntry(&searchPtr));
+		} /** end if **/
+    } /** end for-loop **/
 
     /**
      **  Put a terminator at the end of the new table
@@ -537,15 +559,15 @@ Tcl_HashTable	**Copy_Hash_Tables( void)
     *n_ptr = NULL;
 
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_END, LOC, _proc_Copy_Hash_Tables, NULL);
-#endif
+    ErrorLogger(NO_ERR_END, LOC, _proc_Copy_Hash_Tables, NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
-    return( newTable);
+    return (newTable);
 
 unwind1:
-    null_free((void *) &newTable);
+    null_free((void *)&newTable);
 unwind0:
-    return( NULL);			/** -------- EXIT (FAILURE) -------> **/
+    return (NULL);			/** -------- EXIT (FAILURE) -------> **/
 } /** End of 'Copy_Hash_Tables' **/
 
 /*++++
@@ -664,14 +686,14 @@ static int keycmp(const void *a, const void *b) {
  ** ************************************************************************ **
  ++++*/
 
-int Output_Modulefile_Changes(	Tcl_Interp	*interp)
+int Output_Modulefile_Changes(Tcl_Interp *interp)
 {
     Tcl_HashSearch	  searchPtr;	/** Tcl hash search handle	     **/
     Tcl_HashEntry	 *hashEntry;	/** Result from Tcl hash search      **/
     char		 *val = NULL,	/** Stored value (is a pointer!)     **/
 			 *key,		/** Tcl hash key		     **/
 			**list;		/** list of keys		     **/
-    int			  i,k;		/** Loop counter		     **/
+    int			  i, k;		/** Loop counter		     **/
     size_t		  hcnt;		/** count of hash entries	     **/
 
     /**
@@ -684,9 +706,12 @@ int Output_Modulefile_Changes(	Tcl_Interp	*interp)
     table[0] = setenvHashTable;
     table[1] = unsetenvHashTable;
 
+	/* initialize 'hashEntry': */
+	hashEntry = Tcl_FirstHashEntry(table[0], &searchPtr);
+
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_START, LOC, _proc_Output_Modulefile_Changes, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_Output_Modulefile_Changes, NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
     aliasfile = stdout;
 
@@ -694,56 +719,101 @@ int Output_Modulefile_Changes(	Tcl_Interp	*interp)
      **  Scan both tables that are of interest for shell variables
      **/
 
-    for(i = 0; i < 2; i++) {
-	/* count hash */
-	hcnt = countTclHash(table[i]);
+    for ((i = 0); (i < 2); i++) {
+		/* count hash: */
+		hcnt = countTclHash(table[i]);
 
-	/* allocate array for keys */
-	if( !(list = (char **) module_malloc(hcnt * sizeof(char *)))) {
-		if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
-	    		return(TCL_ERROR);/** ------- EXIT (FAILURE) ------> **/
+		/* always make sure we have at least one: */
+		if (hcnt == 0) {
+			hcnt = 1;
+		}
+
+		/* allocate array for keys: */
+		if (!(list = (char **)module_malloc(hcnt * sizeof(char *)))) {
+			if (OK != ErrorLogger(ERR_ALLOC, LOC, NULL)) {
+				return (TCL_ERROR); /** ------- EXIT (FAILURE) ------> **/
+			}
+		}
+
+		/* collect keys: */
+		k = 0;
+		/* assuming that the '='s were supposed to be '=='s, so that the value
+		 * stored to 'hashEntry' will get read its next time around the loop: */
+		if (hashEntry == Tcl_FirstHashEntry(table[i], &searchPtr)) {
+			do {
+				char *strung_key;
+				key = (char*)Tcl_GetHashKey(table[i], hashEntry);
+				strung_key = stringer(NULL, 0, key, NULL);
+				/* try to avoid null pointer dereferences: */
+				if (list != NULL) {
+					if (strung_key != NULL) {
+						list[k++] = strung_key;
+					} else if (key != NULL) {
+						list[k++] = key;
+					} else if (val != NULL) {
+						list[k++] = val;
+					} else {
+						/* cannot think of anything else to try assigning
+						 * to it: */
+						list[k++] = "";
+					}
+				} else {
+					/* 'list' is null, not sure what to do in this case
+					 * besides increment k... */
+					k++;
+				}
+			} while (hashEntry == Tcl_NextHashEntry(&searchPtr));
+		}
+		/* sort hash: */
+		if (hcnt > 1) {
+			if (list != NULL) {
+				qsort((void *)list, hcnt, sizeof(char *), keycmp);
+			} else {
+				/* 'list' is null, not sure what to do in this case... */
+				;
+			}
+		}
+
+		/* output key/values */
+		for ((k = 0); (k < (int)hcnt); ++k) {
+			if (list != NULL) {
+				key = list[k];
+			} else {
+				/* 'list' is null, not sure what to make 'key' in that case: */
+				key = "";
+			}
+    		hashEntry = Tcl_FindHashEntry(table[i], key);
+			/**
+			 **  The table list indicator is used in order to differ
+			 **  between the setenv and unsetenv operation
+			 **/
+			if (i == 1) {
+				output_unset_variable((char*)key);
+			} else {
+				val = EMGetEnv(interp, key);
+				if (val && *val) {
+					output_set_variable(interp, (char*)key, val);
+				}
+				null_free((void *)&val);
+			}
+		} /** end for-loop  **/
+		/* dealloc list: */
+		for ((k = 0); (k < (int)hcnt); ++k) {
+			free(list[k]);
+		}
+		if (list != NULL) {
+			free(list);
+		}
+    } /** end for-loop **/
+
+    if (EOF == fflush(stdout)) {
+		if (OK != ErrorLogger(ERR_FLUSH, LOC, _fil_stdout, NULL)) {
+			return (TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+		}
 	}
 
-	/* collect keys */
-	k = 0;
-	if( hashEntry = Tcl_FirstHashEntry( table[i], &searchPtr))
-		do {
-			key = (char*) Tcl_GetHashKey( table[i], hashEntry);
-			list[k++] = stringer(NULL,0, key, NULL);
-		} while( hashEntry = Tcl_NextHashEntry( &searchPtr));
-	/* sort hash */
-	if (hcnt > 1)
-		qsort((void *) list, hcnt, sizeof(char *), keycmp);
-
-	/* output key/values */
-	for (k = 0; k < hcnt; ++k) {
-		key = list[k];
-    		hashEntry = Tcl_FindHashEntry( table[i], key);
-		/**
-		 **  The table list indicator is used in order to differ
-		 **  between the setenv and unsetenv operation
-		 **/
-		if( i == 1) {
-			output_unset_variable( (char*) key);
-		} else {
-			val = EMGetEnv(interp, key);
-			if(val && *val)
-				output_set_variable(interp, (char*) key, val);
-			null_free((void *)&val);
-		}
-	} /** for **/
-	/* delloc list */
-	for (k = 0; k < hcnt; ++k)
-		free(list[k]);
-	free(list);
-    } /** for **/
-
-    if( EOF == fflush( stdout))
-	if( OK != ErrorLogger( ERR_FLUSH, LOC, _fil_stdout, NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
-
-    Output_Modulefile_Aliases( interp);
-    Output_Directory_Change( interp);
+    Output_Modulefile_Aliases(interp);
+    Output_Directory_Change(interp);
 
     /**
      **  Delete and reset the hash tables since the current contents have been
@@ -751,7 +821,7 @@ int Output_Modulefile_Changes(	Tcl_Interp	*interp)
      **/
 
     Clear_Global_Hash_Tables();
-    return( TCL_OK);
+    return (TCL_OK);
 
 } /* End of 'Output_Modulefile_Changes' */
 
@@ -777,22 +847,27 @@ int Output_Modulefile_Changes(	Tcl_Interp	*interp)
  ** ************************************************************************ **
  ++++*/
 
-static	int Open_Aliasfile(int action)
+static int Open_Aliasfile(int action)
 {
     if (action) {
-	/**
-	 **  Open the file ...
-	 **/
-	if( tmpfile_mod(&aliasfilename,&aliasfile))
-	    if(OK != ErrorLogger( ERR_OPEN, LOC, aliasfilename, "append", NULL))
-		return( TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
+		/**
+		 **  Open the file ...
+		 **/
+		if (tmpfile_mod(&aliasfilename,&aliasfile)) {
+			if (OK != ErrorLogger(ERR_OPEN, LOC, aliasfilename,
+								  "append", NULL)) {
+				return (TCL_ERROR); /** -------- EXIT (FAILURE) -------> **/
+			}
+		}
     } else {
-	if( EOF == fclose( aliasfile))
-	    if( OK != ErrorLogger( ERR_CLOSE, LOC, aliasfilename, NULL))
-		return( TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
+		if (EOF == fclose(aliasfile)) {
+			if (OK != ErrorLogger(ERR_CLOSE, LOC, aliasfilename, NULL)) {
+				return (TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
+			}
+		}
     }
 
-    return( TCL_OK);
+    return (TCL_OK);
 
 } /** End of 'Open_Aliasfile' **/
 /*++++
@@ -821,7 +896,7 @@ static	int Open_Aliasfile(int action)
  ** ************************************************************************ **
  ++++*/
 
-static	int Output_Modulefile_Aliases( Tcl_Interp *interp)
+static	int Output_Modulefile_Aliases(Tcl_Interp *interp)
 {
     Tcl_HashSearch	 searchPtr;	/** Tcl hash search handle	     **/
     Tcl_HashEntry	*hashEntry;	/** Result from Tcl hash search      **/
@@ -849,91 +924,96 @@ static	int Output_Modulefile_Aliases( Tcl_Interp *interp)
      **/
 
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_START, LOC, _proc_Output_Modulefile_Aliases, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_Output_Modulefile_Aliases, NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
     /**
-     **  We only need to output stuff into a temporary file if we're setting
+     **  We only need to output stuff into a temporary file if we are setting
      **  stuff.  We can unset variables and aliases by just using eval.
      **/
-    if( hashEntry = Tcl_FirstHashEntry( aliasSetHashTable, &searchPtr)) {
+	/* assuming that the '=' is correct to keep 'hashEntry' from being a
+	 * garbage value (will read new value assigned to it later): */
+    if ((hashEntry = Tcl_FirstHashEntry(aliasSetHashTable, &searchPtr))) {
+		/**
+		 **  We must use an aliasfile if EVAL_ALIAS is not defined
+		 **  or the sh shell does not do aliases (HAS_BOURNE_ALIAS)
+		 **  and that the sh shell does do functions (HAS_BOURNE_FUNCS)
+		 **/
+		if (!eval_alias
+			|| (!strcmp(shell_name, "sh") && !bourne_alias && bourne_funcs)) {
+			if (OK != Open_Aliasfile(1)) {
+				if (OK != ErrorLogger(ERR_OPEN, LOC, aliasfilename,
+									  "append", NULL)) {
+					return (TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
+				}
+			}
+			openfile = 1;
+		}
+		/**
+		 **  We only support sh and csh variants for aliases.  If not either
+		 **  sh or csh print warning message and return
+		 **/
+		assert(shell_derelict != NULL);
+		if (!strcmp(shell_derelict, "csh")) {
+			sourceCommand = "source %s%s";
+		} else if (!strcmp(shell_derelict, "sh")) {
+			sourceCommand = ". %s%s";
+		} else {
+			return (TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
+		}
 
-	/**
-	 **  We must use an aliasfile if EVAL_ALIAS is not defined
-	 **  or the sh shell does not do aliases (HAS_BOURNE_ALIAS)
-	 **  and that the sh shell does do functions (HAS_BOURNE_FUNCS)
-	 **/
-	if (!eval_alias
-	|| (!strcmp(shell_name,"sh") && !bourne_alias && bourne_funcs)) {
-	    if (OK != Open_Aliasfile(1))
-		if(OK != ErrorLogger(ERR_OPEN,LOC,aliasfilename,"append",NULL))
-		    return( TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
-	    openfile = 1;
-	}
-	/**
-	 **  We only support sh and csh variants for aliases.  If not either
-	 **  sh or csh print warning message and return
-	 **/
-	assert(shell_derelict != NULL);
-	if( !strcmp( shell_derelict, "csh")) {
-	    sourceCommand = "source %s%s";
-	} else if( !strcmp( shell_derelict, "sh")) {
-	    sourceCommand = ". %s%s";
-	} else {
-	    return( TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
-	}
+		if (openfile) {
+			/**
+			 **  Only the source command has to be flushed to stdout. After
+			 **  sourcing the alias definition (temporary) file, the source
+			 **  file is to be removed.
+			 **/
+			alias_separator = '\n';
 
-	if (openfile) {
-	    /**
-	     **  Only the source command has to be flushed to stdout. After
-	     **  sourcing the alias definition (temporary) file, the source
-	     **  file is to be removed.
-	     **/
-	    alias_separator = '\n';
-
-	    fprintf( stdout, sourceCommand, aliasfilename, shell_cmd_separator);
-	    fprintf( stdout, "/bin/rm -f %s%s",
-		aliasfilename, shell_cmd_separator);
-	} /** openfile **/
-    } /** if( alias to set) **/
+			fprintf(stdout, sourceCommand, aliasfilename, shell_cmd_separator);
+			fprintf(stdout, "/bin/rm -f %s%s",
+					aliasfilename, shell_cmd_separator);
+		} /** end "if (openfile)" **/
+    } /** end "if (alias to set)" **/
 
     /**
      **  Scan the hash tables involved in changing aliases
      **/
 
-    for( i=0; i<2; i++) {
+    for ((i = 0); (i < 2); i++) {
+		/* assuming that the '='s in here were supposed to be '=='s, so that
+		 * the previous value assigned to 'hashEntry' will be used: */
+		if ((hashEntry == Tcl_FirstHashEntry(table[i], &searchPtr)) &&
+			(hashEntry != NULL) && (table[i] != NULL)) {
+			do {
+				key = (char*)Tcl_GetHashKey(table[i], hashEntry);
+				val = (char*)Tcl_GetHashValue(hashEntry);
 
-	if( hashEntry = Tcl_FirstHashEntry( table[i], &searchPtr)) {
+				/**
+				 **  The hashtable list index is used to differ between aliases
+				 **  to be set and aliases to be reset
+				 **/
+				if (i == 1) {
+					output_unset_alias(key, val);
+				} else {
+					output_set_alias(key, val);
+				}
+			} while ((hashEntry == Tcl_NextHashEntry(&searchPtr)) &&
+					 (hashEntry != NULL));
+		} /** end if **/
+    } /** end for-loop **/
 
-	    do {
-		key = (char*) Tcl_GetHashKey( table[i], hashEntry);
-		val = (char*) Tcl_GetHashValue( hashEntry);
 
-		/**
-		 **  The hashtable list index is used to differ between aliases
-		 **  to be set and aliases to be reset
-		 **/
-		if(i == 1) {
-		    output_unset_alias( key, val);
-		} else {
-		    output_set_alias( key, val);
+    if (openfile) {
+		if (OK != Open_Aliasfile(0)) {
+			if (OK != ErrorLogger(ERR_CLOSE, LOC, aliasfilename, NULL)) {
+				return (TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
+			}
 		}
-
-	    } while( hashEntry = Tcl_NextHashEntry( &searchPtr));
-
-	} /** if **/
-    } /** for **/
-
-
-    if(openfile) {
-	if( OK != Open_Aliasfile(0))
-	    if( OK != ErrorLogger( ERR_CLOSE, LOC, aliasfilename, NULL))
-		return( TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
-
-	null_free((void *) &aliasfilename);
+		null_free((void *)&aliasfilename);
     }
 
-    return( TCL_OK);
+    return (TCL_OK);
 
 } /** End of 'Output_Modulefile_Aliases' **/
 
@@ -957,17 +1037,22 @@ static	int Output_Directory_Change(Tcl_Interp *interp)
 {
 	int rc = TCL_OK;
 
-	if (change_dir == NULL)
+#if WITH_DEBUGGING_UTIL_2
+    ErrorLogger(NO_ERR_START, LOC, _proc_Output_Directory_Change, NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
+
+	if (change_dir == NULL) {
 		return rc;
+	}
 
 	assert(shell_derelict != NULL);
-	if(!strcmp(shell_derelict, "csh") || !strcmp(shell_derelict, "sh")) {
+	if (!strcmp(shell_derelict, "csh") || !strcmp(shell_derelict, "sh")) {
 		fprintf(stdout, "cd '%s'%s", change_dir, shell_cmd_separator);
-	} else if(!strcmp( shell_derelict, "perl")) {
+	} else if (!strcmp(shell_derelict, "perl")) {
 		fprintf(stdout, "chdir '%s'%s", change_dir, shell_cmd_separator);
-	} else if( !strcmp( shell_derelict, "python")) {
+	} else if (!strcmp(shell_derelict, "python")) {
 		fprintf(stdout, "os.chdir('%s')\n", change_dir);
-	} else if( !strcmp( shell_derelict, "ruby")) {
+	} else if (!strcmp(shell_derelict, "ruby")) {
 		fprintf(stdout, "Dir.chdir('%s')\n", change_dir);
 	} else {
 		rc = TCL_ERROR;
@@ -1003,9 +1088,8 @@ static	int Output_Directory_Change(Tcl_Interp *interp)
  ** ************************************************************************ **
  ++++*/
 
-static	int	output_set_variable(	Tcl_Interp	*interp,
-					const char	*var,
-          	          		const char	*val)
+static	int	output_set_variable(Tcl_Interp *interp, const char *var,
+								const char *val)
 {
 
     /**
@@ -1013,180 +1097,175 @@ static	int	output_set_variable(	Tcl_Interp	*interp,
      **
      **  CSH
      **/
-    chop( val);
-    chop( var);
+    chop(val);
+    chop(var);
 
     assert(shell_derelict != NULL);
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_START, LOC, _proc_output_set_variable, " var='", var,
-	"' val= '", val, "'", NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_output_set_variable, " var='", var,
+				"' val= '", val, "'", NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
-    if( !strcmp((char*) shell_derelict, "csh")) {
-
+    if (!strcmp((char*)shell_derelict, "csh")) {
 #ifdef LMSPLIT_SIZE
+		/**
+		 **  Many C Shells (specifically the Sun one) has a hard limit on
+		 **  the size of the environment variables around 1k.  The
+		 **  _LMFILES_ variable can grow beyond 1000 characters.  So, I am
+		 **  going to break it up here since I can put it back together
+		 **  again when I use it.
+		 **
+		 **  You can set the split size using --with-split-size=<number>
+		 **  it should probably be < 1000.  I do NOT count the size of
+		 **  "setenv _LMFILES_xxx", so subtract this from your limit.
+		 **/
+		if (!strcmp(var, "_LMFILES_")) {
+			char formatted[MOD_BUFSIZE];
+			char *cptr = NULL;
+			int	lmfiles_len;
+			int	count = 0;
+			char* escaped = stringer(NULL, (int)((strlen(val) * 2) + 1), NULL);
+			EscapeCshString(val,escaped);
 
-	/**
-	 **  Many C Shells (specifically the Sun one) has a hard limit on
-	 **  the size of the environment variables around 1k.  The
-	 **  _LMFILES_ variable can grow beyond 1000 characters.  So, I'm
-	 **  going to break it up here since I can put it back together
-	 **  again when I use it.
-	 **
-	 **  You can set the split size using --with-split-size=<number>
-	 **  it should probably be <1000.  I don't count the size of
-	 **  "setenv _LMFILES_xxx" so subtract this from your limit.
-	 **/
-	if( !strcmp( var, "_LMFILES_")) {
-	    char formatted[ MOD_BUFSIZE];
-	    char *cptr = NULL;
-	    int	lmfiles_len;
-	    int	count = 0;
-	    char* escaped = stringer(NULL,strlen(val)*2+1,NULL);
-	    EscapeCshString(val,escaped);
+			if ((lmfiles_len = (int)strlen(escaped)) > LMSPLIT_SIZE) {
+				char buffer[(LMSPLIT_SIZE + 1)];
 
-	    if(( lmfiles_len = strlen(escaped)) > LMSPLIT_SIZE) {
+				/**
+				 **  Break up the _LMFILES_ variable...
+				 **/
+				while (lmfiles_len > LMSPLIT_SIZE) {
+					strncpy(buffer, (escaped + (count * LMSPLIT_SIZE)),
+							LMSPLIT_SIZE);
+					buffer[LMSPLIT_SIZE] = '\0';
 
-	    char buffer[ LMSPLIT_SIZE + 1];
+					fprintf(stdout, "setenv %s%03d %s %s", var, count, buffer,
+							shell_cmd_separator);
 
-	    /**
-	     **  Break up the _LMFILES_ variable...
-	     **/
-	    while( lmfiles_len > LMSPLIT_SIZE) {
+					lmfiles_len -= LMSPLIT_SIZE;
+					count++;
+				}
 
-		    strncpy( buffer, ( escaped + count*LMSPLIT_SIZE ),
-			     LMSPLIT_SIZE);
-		buffer[ LMSPLIT_SIZE] = '\0';
+				if (lmfiles_len) {
+					fprintf(stdout, "setenv %s%03d %s %s", var, count,
+							(escaped + (count * LMSPLIT_SIZE)),
+							shell_cmd_separator);
+					count++;
+				}
 
-		fprintf( stdout, "setenv %s%03d %s %s", var, count, buffer,
-		    shell_cmd_separator);
+				/**
+				 ** Unset _LMFILES_ as indicator to use the multi-variable
+				 ** _LMFILES_
+				 **/
+				fprintf(stdout, "unsetenv %s %s", var, shell_cmd_separator);
+			} else {	/** if ((lmfiles_len = strlen(val)) > LMSPLIT_SIZE) **/
+				fprintf(stdout, "setenv %s %s %s", var, escaped,
+						shell_cmd_separator);
+			}
 
-		lmfiles_len -= LMSPLIT_SIZE;
-		count++;
-	    }
+			/**
+			 ** Unset the extra _LMFILES_%03d variables that may be set
+			 **/
+			do {
+				if (cptr) {
+					null_free((void *)&cptr);
+				}
+				sprintf(formatted, "_LMFILES_%03d", count++);
+				cptr = EMGetEnv(interp, formatted);
+				if (cptr && *cptr) {
+					fprintf(stdout, "unsetenv %s %s", formatted,
+							shell_cmd_separator);
+				}
+			} while (cptr && *cptr);
 
-		if( lmfiles_len) {
-		fprintf( stdout, "setenv %s%03d %s %s", var, count,
-		    (escaped + count*LMSPLIT_SIZE), shell_cmd_separator);
-		    count++;
-		}
-
-	    /**
-		 ** Unset _LMFILES_ as indicator to use the multi-variable
-		 ** _LMFILES_
-	     **/
-	    fprintf(stdout, "unsetenv %s %s", var, shell_cmd_separator);
-
-	    } else {	/** if ( lmfiles_len = strlen(val)) > LMSPLIT_SIZE) **/
-
-		fprintf(stdout, "setenv %s %s %s", var, escaped, shell_cmd_separator);
-	    }
-
-	    /**
-	     ** Unset the extra _LMFILES_%03d variables that may be set
-	     **/
-	    do {
-		if (cptr) null_free((void *) &cptr);
-		sprintf( formatted, "_LMFILES_%03d", count++);
-		cptr = EMGetEnv( interp, formatted);
-		if(cptr && *cptr) {
-		    fprintf(stdout, "unsetenv %s %s", formatted,
-			shell_cmd_separator);
-		}
-	    } while( cptr && *cptr);
-
-	    null_free((void *) &cptr);
-	    null_free((void *) &escaped);
-
-	} else {	/** if( var == "_LMFILES_") **/
-
+			null_free((void *)&cptr);
+			null_free((void *)&escaped);
+		} else {	/** if (var == "_LMFILES_") **/
 #endif /* not LMSPLIT_SIZE */
-
-		char* escaped = stringer(NULL,strlen(val)*2+1,NULL);
-		EscapeCshString(val,escaped);
-		fprintf(stdout, "setenv %s %s %s", var, escaped,
-			shell_cmd_separator);
-		null_free((void *) &escaped);
+			char* escaped = stringer(NULL, (int)((strlen(val) * 2) + 1), NULL);
+			EscapeCshString(val, escaped);
+			fprintf(stdout, "setenv %s %s %s", var, escaped,
+					shell_cmd_separator);
+			null_free((void *) &escaped);
 #ifdef LMSPLIT_SIZE
-	}
+		}
 #endif /* not LMSPLIT_SIZE */
 
     /**
      **  SH
      **/
-    } else if( !strcmp((char*) shell_derelict, "sh")) {
+    } else if (!strcmp((char*)shell_derelict, "sh")) {
 
-      char* escaped = (char*)module_malloc(strlen(val)*2+1);
-      EscapeShString(val,escaped);
+      char* escaped = (char*)module_malloc((size_t)((strlen(val) * 2) + 1));
+      EscapeShString(val, escaped);
 
-      fprintf( stdout, "%s=%s %sexport %s%s", var, escaped, shell_cmd_separator,
-	       var, shell_cmd_separator);
+      fprintf(stdout, "%s=%s %sexport %s%s", var, escaped, shell_cmd_separator,
+			  var, shell_cmd_separator);
       free(escaped);
 
     /**
      **  EMACS
      **/
-    } else if( !strcmp((char*) shell_derelict, "emacs")) {
-	fprintf( stdout, "(setenv \"%s\" \'%s\')\n", var, val);
+    } else if (!strcmp((char*)shell_derelict, "emacs")) {
+		fprintf(stdout, "(setenv \"%s\" \'%s\')\n", var, val);
 
     /**
      **  PERL
      **/
-    } else if( !strcmp((char*) shell_derelict, "perl")) {
-		char* escaped = stringer(NULL,strlen(val)*2+1,NULL);
-		EscapePerlString(val,escaped);
+    } else if (!strcmp((char*)shell_derelict, "perl")) {
+		char* escaped = stringer(NULL, (int)((strlen(val) * 2) + 1), NULL);
+		EscapePerlString(val, escaped);
 		fprintf(stdout, "$ENV{'%s'} = '%s'%s", var, escaped,
-			shell_cmd_separator);
-		null_free((void *) &escaped);
+				shell_cmd_separator);
+		null_free((void *)&escaped);
 
     /**
      **  PYTHON
      **/
-    } else if( !strcmp((char*) shell_derelict, "python")) {
-	fprintf( stdout, "os.environ['%s'] = '%s'\n", var, val);
+    } else if(!strcmp((char*)shell_derelict, "python")) {
+		fprintf(stdout, "os.environ['%s'] = '%s'\n", var, val);
 
     /**
      **  RUBY
      **/
-    } else if( !strcmp((char*) shell_derelict, "ruby")) {
-	fprintf( stdout, "ENV['%s'] = '%s'\n", var, val);
+    } else if(!strcmp((char*) shell_derelict, "ruby")) {
+		fprintf(stdout, "ENV['%s'] = '%s'\n", var, val);
 
     /**
      **  CMAKE
      **/
-    } else if( !strcmp((char*) shell_derelict, "cmake")) {
-		char* escaped = stringer(NULL, strlen(val)*2+1,NULL);
-		EscapeCmakeString(val,escaped);
+    } else if (!strcmp((char*)shell_derelict, "cmake")) {
+		char* escaped = stringer(NULL, (int)((strlen(val) * 2) + 1), NULL);
+		EscapeCmakeString(val, escaped);
 		fprintf(stdout, "set(ENV{%s} \"%s\")%s", var, escaped,
-			shell_cmd_separator);
-		null_free((void *) &escaped);
+				shell_cmd_separator);
+		null_free((void *)&escaped);
 
     /**
      ** SCM
      **/
-    } else if ( !strcmp((char*) shell_derelict, "scm")) {
-	fprintf( stdout, "(putenv \"%s=%s\")\n", var, val);
+    } else if (!strcmp((char*)shell_derelict, "scm")) {
+		fprintf(stdout, "(putenv \"%s=%s\")\n", var, val);
 
     /**
      ** MEL (Maya Extension Language)
      **/
-    } else if ( !strcmp((char*) shell_derelict, "mel")) {
-        fprintf( stdout, "putenv \"%s\" \"%s\";", var, val);
-
-    /**
-     **  Unknown shell type - print an error message and
-     **  return on error
-     **/
+    } else if (!strcmp((char*)shell_derelict, "mel")) {
+        fprintf(stdout, "putenv \"%s\" \"%s\";", var, val);
+	/**
+	 **  Unknown shell type - print an error message and
+	 **  return on error:
+	 **/
     } else {
-	if( OK != ErrorLogger( ERR_DERELICT, LOC, shell_derelict, NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+		if (OK != ErrorLogger(ERR_DERELICT, LOC, shell_derelict, NULL)) {
+			return (TCL_ERROR); /** -------- EXIT (FAILURE) -------> **/
+		}
     }
 
     /**
      **  Return and acknowldge success
      **/
     g_output = 1;
-    return( TCL_OK);
+    return (TCL_OK);
 
 } /** End of 'output_set_variable' **/
 
@@ -1659,50 +1738,51 @@ char	*getLMFILES( Tcl_Interp	*interp)
      **  Now the pointer is NULL in case of the variable has not been defined.
      **  In this case try to read in the splitted variable from _LMFILES_xxx
      **/
-    if( !lmfiles || !*lmfiles) {
+    if (!lmfiles || !*lmfiles) {
 
-        char	buffer[ MOD_BUFSIZE];	/** Used to set up the split variab- **/
-					/** les name			     **/
-        int	count = 0;		/** Split part count		     **/
-        int	lmsize = 0;		/** Total size of _LMFILES_ content  **/
-        int	old_lmsize;		/** Size save buffer		     **/
-        int	cptr_len;		/** Size of the current split part   **/
-        char	*cptr;			/** Split part read pointer	     **/
+        char	buffer[MOD_BUFSIZE]; /** Used to set up the names of the
+									  *** split variables **/
+        int	count = 0;		/** Split part count **/
+        int	lmsize = 0;		/** Total size of _LMFILES_ content **/
+        int	old_lmsize;		/** Size save buffer **/
+        int	cptr_len;		/** Size of the current split part **/
+        char	*cptr;		/** Split part read pointer **/
 
 	/**
 	 **  Set up the split part environment variable name and try to read it
 	 **  in
 	 **/
-        sprintf( buffer, "_LMFILES_%03d", count++);
-        cptr = EMGetEnv( interp, buffer);
+        sprintf(buffer, "_LMFILES_%03d", count++);
+        cptr = EMGetEnv(interp, buffer);
 
-	while(cptr && *cptr) {		/** Something available		     **/
-
-	    /**
-	     **  Count up the variables length
-	     **/
-            cptr_len = strlen( cptr);
+		while(cptr && *cptr) {		/** Something available		     **/
+			/**
+			 **  Count up the variables length
+			 **/
+            cptr_len = (int)strlen(cptr);
             old_lmsize = lmsize;
             lmsize += cptr_len;
 
-	    /**
-	     **  Reallocate the value's buffer and copy the current split
-	     **  part at its end
-	     **/
+			/**
+			 **  Reallocate the value's buffer and copy the current split
+			 **  part at its end
+			 **/
             if(!(lmfiles =
-		(char*) module_realloc( lmfiles, lmsize * sizeof(char) + 1))) {
-		    if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
-			return( NULL);		/** ---- EXIT (FAILURE) ---> **/
-	    }
+				 (char*)module_realloc(lmfiles,
+									   (size_t)(((unsigned long)lmsize * sizeof(char)) + 1)))) {
+				if (OK != ErrorLogger(ERR_ALLOC, LOC, NULL)) {
+					return (NULL); /** ---- EXIT (FAILURE) ---> **/
+				}
+			}
 
-            strncpy( lmfiles + old_lmsize, cptr, cptr_len);
+            strncpy((lmfiles + old_lmsize), cptr, (size_t)cptr_len);
             *(lmfiles + old_lmsize + cptr_len) = '\0';
 
-	    /**
-	     **  Read the next split part variable
-	     **/
-            sprintf( buffer, "_LMFILES_%03d", count++);
-            cptr = EMGetEnv( interp,buffer);
+			/**
+			 **  Read the next split part variable
+			 **/
+            sprintf(buffer, "_LMFILES_%03d", count++);
+            cptr = EMGetEnv(interp,buffer);
         }
 
     } else {  /** if( lmfiles) **/
@@ -1803,37 +1883,34 @@ int IsLoaded_ExactMatch(	Tcl_Interp	 *interp,
  **  The subroutine __IsLoaded finally checks for the requested module being
  **  loaded or not.
  **/
-static int __IsLoaded(	Tcl_Interp	 *interp,
-			char		 *modulename,
-			char		**realname,
-			char		 *filename,
-			int		  exact)
+static int __IsLoaded(Tcl_Interp *interp, char *modulename, char **realname,
+					  char *filename, int exact)
 {
     char *l_modules = NULL;		/** Internal module list buffer	     **/
     char *l_modulefiles = NULL;		/** Internal module file list buffer **/
     char *loaded = NULL;		/** Buffer for the module            **/
     char *basename = NULL;		/** Pointer to module basename       **/
-    char *loadedmodule_path = NULL;	/** Pointer to one loaded module out **/
-					/** of the loaded modules list	     **/
+    char *loadedmodule_path = NULL;	/** Pointer to one loaded module out of
+									 ** the loaded modules list	     **/
     int   count = 0;
 
     /**
      **  Get a list of loaded modules (environment variable 'LOADEDMODULES')
      **  and the list of loaded module-files (env. var. __LMFILES__)
      **/
-    char	*loaded_modules = EMGetEnv( interp, "LOADEDMODULES");
-    char	*loaded_modulefiles = getLMFILES( interp);
+    char	*loaded_modules = EMGetEnv(interp, "LOADEDMODULES");
+    char	*loaded_modulefiles = getLMFILES(interp);
 
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_START, LOC, _proc___IsLoaded, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc___IsLoaded, NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
     /**
      **  If no module is currently loaded ... the requested module is surely
      **  not loaded, too ;-)
      **/
-    if( !loaded_modules || !*loaded_modules) {
-	goto unwind0;
+    if (!loaded_modules || !*loaded_modules) {
+		goto unwind0;
     }
 
     /**
@@ -1841,139 +1918,148 @@ static int __IsLoaded(	Tcl_Interp	 *interp,
      **  for further handling. If this fails it will be assumed, that the
      **  module is *NOT* loaded.
      **/
-    if((char *) NULL == (l_modules = stringer(NULL,0,loaded_modules,NULL)))
-	if( OK != ErrorLogger( ERR_STRING, LOC, NULL))
-	    goto unwind0;
+    if	((char *)NULL == (l_modules = stringer(NULL, 0,
+											   loaded_modules, NULL))) {
+		if (OK != ErrorLogger(ERR_STRING, LOC, NULL)) {
+			goto unwind0;
+		}
+	}
 
     /**
      **  Copy the list of currently loaded modulefiles into a new allocated
-     **  array for further handling. If this failes it will be assumed, that
+     **  array for further handling. If this fails, then it will be assumed that
      **  the module is *NOT* loaded.
      **/
-    if(loaded_modulefiles)
-	if((char *) NULL == (l_modulefiles = stringer(NULL,0,
-		loaded_modulefiles,NULL)))
-	    if( OK != ErrorLogger( ERR_STRING, LOC, NULL))
-		goto unwind1;
+    if (loaded_modulefiles) {
+		if ((char *)NULL == (l_modulefiles = stringer(NULL, 0,
+													  loaded_modulefiles,
+													  NULL))) {
+			if (OK != ErrorLogger( ERR_STRING, LOC, NULL)) {
+				goto unwind1;
+			}
+		}
+	}
 
     /**
      **  Assume the modulename given was an exact match so there is no
      **  difference to return -- this will change in the case it wasn't an
      **  exact match below
      **/
-    if( realname)
+    if (realname) {
         *realname = modulename;
+	}
 
-    if( *l_modules) {
+	/* try to keep 'l_modules' from being null: */
+	if ((l_modules == NULL) && (loaded_modules != NULL)) {
+		l_modules = loaded_modules;
+	}
 
-	/**
-	 **  Get each single module which is loaded by splitting up at colons
-	 **  The variable LOADEDMODULES contains a list of modulefile like the
-	 **  following:
-	 **                gnu/2.0:openwin/3.0
-	 **/
-	loadedmodule_path = xstrtok( l_modules, ":");
-	while( loadedmodule_path) {
-
-	    if((char *) NULL == (loaded = stringer(NULL,0,
-		    loadedmodule_path,NULL)))
-		if( OK != ErrorLogger( ERR_STRING, LOC, NULL))
-		    goto unwind2;
-
-	    /**
-	     **  Get a modulefile without a version and check if this is the
-	     **  requested one.
-	     **/
-	    if( !strcmp( loaded, modulename)) {	/** FOUND    **/
-
-		null_free ((void *) &loaded);
-		break;			/** leave the while loop	     **/
-
-	    } else if( !exact) {		/** NOT FOUND	     **/
-
+    if (*l_modules) {
 		/**
-		 **  Try to more and more simplify the modulename by removing
-		 **  all detail (version) information
+		 **  Get each single module which is loaded by splitting up at colons
+		 **  The variable LOADEDMODULES contains a list of modulefile like the
+		 **  following:
+		 **                gnu/2.0:openwin/3.0
 		 **/
-		basename = get_module_basename( loaded);
-		while( basename && strcmp( basename, modulename)) {
-		    basename = get_module_basename( basename);
+		loadedmodule_path = xstrtok(l_modules, ":");
+		while (loadedmodule_path) {
+
+			if ((char *)NULL == (loaded = stringer(NULL, 0,
+												   loadedmodule_path, NULL))) {
+				if (OK != ErrorLogger(ERR_STRING, LOC, NULL)) {
+					goto unwind2;
+				}
+			}
+
+			/**
+			 **  Get a modulefile without a version and check if this is the
+			 **  requested one.
+			 **/
+			if (!strcmp(loaded, modulename)) { /** FOUND **/
+				null_free ((void *) &loaded);
+				break;			/** leave the while-loop **/
+			} else if (!exact) { /** NOT FOUND **/
+				/**
+				 **  Try to more and more simplify the modulename by removing
+				 **  all detail (version) information
+				 **/
+				basename = get_module_basename(loaded);
+				while (basename && strcmp(basename, modulename)) {
+					basename = get_module_basename(basename);
                 }
 
-		/**
-		 **  Something left after splitting again? If yes the requested
-		 **  module is found!
+				/**
+				 **  Something left after splitting again? If yes the requested
+				 **  module is found!
                  **  Since the name given was a basename, return the fully
-		 **  loaded path
-		 **/
-                if( basename) {
-		    null_free ((void *) &loaded);
-                    if( realname)
-			if((char *) NULL == (*realname = stringer(NULL,0,
-				loadedmodule_path,NULL)))
-			    if( OK != ErrorLogger( ERR_STRING, LOC, NULL))
-				goto unwind2;
+				 **  loaded path:
+				 **/
+                if (basename) {
+					null_free((void *)&loaded);
+                    if (realname) {
+						if ((char *)NULL == (*realname = stringer(NULL, 0,
+																  loadedmodule_path,
+																  NULL))) {
+							if (OK != ErrorLogger(ERR_STRING, LOC, NULL)) {
+								goto unwind2;
+							}
+						}
+					}
+					break;		/** leave the while-loop **/
+				} /** end "if (basename)" **/
+			} /** if not found with single basename **/
 
-		    break;		/** leave the while loop	     **/
-
-		} /** if( basename) **/
-	    } /** if not found with single basename **/
-
-	    /**
-	     **  Get the next entry from the loaded modules list
-	     **/
-	    loadedmodule_path = xstrtok( NULL, ":");
+			/**
+			 **  Get the next entry from the loaded modules list
+			 **/
+			loadedmodule_path = xstrtok(NULL, ":");
             count++;
 
-	    null_free ((void *) &loaded); /** Free what has been alloc. **/
-
-	} /** while **/
-    } /** if( *l_modules) **/
+			null_free((void *)&loaded); /** Free what has been alloc. **/
+		} /** end while-loop **/
+    } /** end "if (*l_modules)" **/
 
     /**
-     **  If we found something locate it's associated modulefile
+     **  If we found something, then locate its associated modulefile:
      **/
-    if( loadedmodule_path) {
-        if( filename && l_modulefiles && *l_modulefiles) {
-
-	    /**
-	     **  The position of the loaded module within the list of loaded
-	     **  modules has been counted in 'count'. The position of the
-	     **  associated modulefile should be the same. So tokenize the
-	     **  list of modulefiles by the colon until the wanted position
-	     **  is reached.
-	     **/
+    if (loadedmodule_path) {
+        if (filename && l_modulefiles && *l_modulefiles) {
+			/**
+			 **  The position of the loaded module within the list of loaded
+			 **  modules has been counted in 'count'. The position of the
+			 **  associated modulefile should be the same. So tokenize the
+			 **  list of modulefiles by the colon until the wanted position
+			 **  is reached.
+			 **/
             char* modulefile_path = xstrtok(l_modulefiles, ":");
 
-            while( count) {
-                if( !( modulefile_path = xstrtok( NULL, ":"))) {
-
-		    /**
-		     **  Oops! Fewer entries in the list of loaded modulefiles
-		     **  than in the list of loaded modules. This will
-		     **  generally suggest that _LMFILES_ has become corrupted,
-		     **  but it may just mean we're working intermittantly with
-		     **  an old version.  So, I'll just not touch filename which
-		     **  means the search will continue using the old method of
-		     **  looking through MODULEPATH.
-                     */
-		    goto success0;
+            while (count) {
+                if (!(modulefile_path = xstrtok(NULL, ":"))) {
+					/**
+					 **  Oops! Fewer entries in the list of loaded modulefiles
+					 **  than in the list of loaded modules. This will
+					 **  generally suggest that _LMFILES_ has become corrupted,
+					 **  but it may just mean we are/were working intermittently
+					 **  with an old version.  So, I will just not touch
+					 **  filename which means the search will continue using
+					 **  the old method of looking through MODULEPATH.
+                     **/
+					goto success0;
                 }
                 count--;
+            } /** end while-loop **/
 
-            } /** while **/
-
-	    /**
-	     **  Copy the result into the buffer passed from the caller
-	     **/
-            strcpy( filename, modulefile_path);
+			/**
+			 **  Copy the result into the buffer passed from the caller
+			 **/
+            strcpy(filename, modulefile_path);
         }
 
-	/**
-	 **  FOUND.
-	 **  free up everything which has been allocated and return on success
-	 **/
-	goto success0;
+		/**
+		 **  FOUND.
+		 **  free up everything that has been allocated and return on success:
+		 **/
+		goto success0;
     }
 
     /**
@@ -1982,19 +2068,21 @@ static int __IsLoaded(	Tcl_Interp	 *interp,
      **/
 
 unwind2:
-    if( l_modulefiles)
-	null_free((void *) &l_modulefiles);
+    if (l_modulefiles) {
+		null_free((void *)&l_modulefiles);
+	}
 unwind1:
-    null_free((void *) &l_modules);
+    null_free((void *)&l_modules);
 unwind0:
     null_free((void *)&loaded_modules);
-    return( 0);				/** -------- EXIT (FAILURE) -------> **/
+    return (0);				/** -------- EXIT (FAILURE) -------> **/
 
 success0:
-    if( l_modulefiles)
-	null_free((void *) &l_modulefiles);
-    null_free((void *) &l_modules);
-    return( 1);				/** -------- EXIT (SUCCESS) -------> **/
+    if (l_modulefiles) {
+		null_free((void *)&l_modulefiles);
+	}
+    null_free((void *)&l_modules);
+    return (1);				/** -------- EXIT (SUCCESS) -------> **/
 
 } /** End of '__IsLoaded' **/
 
@@ -2023,39 +2111,40 @@ success0:
  ** ************************************************************************ **
  ++++*/
 
-intptr_t chk_marked_entry(	Tcl_HashTable	*table,
-				char		*var)
+intptr_t chk_marked_entry(Tcl_HashTable *table, char *var)
 {
     Tcl_HashEntry 	*hentry;
 
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_START, LOC, _proc_chk_marked_entry, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_chk_marked_entry, NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
-    if( hentry = Tcl_FindHashEntry( table, var))
-        return((intptr_t) Tcl_GetHashValue( hentry));
-    else
+    if (hentry = Tcl_FindHashEntry(table, var)) {
+        return ((intptr_t)Tcl_GetHashValue(hentry));
+	} else {
         return 0;
+	}
 }
 
-void set_marked_entry(	Tcl_HashTable	*table,
-			char		*var,
-			intptr_t 	 val)
+void set_marked_entry(Tcl_HashTable *table, char *var, intptr_t val)
 {
     Tcl_HashEntry	*hentry;
     int    		 new;
 
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_START, LOC, _proc_set_marked_entry, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_set_marked_entry, NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
-    if( hentry = Tcl_CreateHashEntry( table, var, &new)) {
-        if( val)
-            Tcl_SetHashValue( hentry, val);
+	/* 'hentry' would be unintialized otherwise, so assume that the '=' is
+	 * correct: */
+    if ((hentry = Tcl_CreateHashEntry(table, var, &new))) {
+        if (val) {
+            Tcl_SetHashValue(hentry, val);
+		}
     }
 
-    /**  ??? Shouldn't there be an error return in case of hash creation
-	     failing ??? **/
+    /**  ??? Should there not be an error return in case of hash creation
+	 **  failing ??? **/
 }
 
 /*++++
@@ -2217,47 +2306,51 @@ int Update_LoadedList(	Tcl_Interp	*interp,
  ** ************************************************************************ **
  ++++*/
 
-int check_magic( char	*filename,
-		 char	*magic_name,
-		 int	 magic_len)
+int check_magic(char *filename, char *magic_name, int magic_len)
 {
     int  fd;				/** File descriptor for reading in   **/
     int  read_len;			/** Number of bytes read	     **/
     char buf[BUFSIZ];			/** Read buffer			     **/
 
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_START, LOC, _proc_check_magic, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_check_magic, NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
     /**
      **  Parameter check. The length of the magic cookie shouldn't exceed the
      **  length of out read buffer
      **/
-    if( magic_len > BUFSIZ)
-	return 0;
+    if (magic_len > BUFSIZ) {
+		return 0;
+	}
 
     /**
      **  Open the file and read in as many bytes as required for checking the
      **  magic cookie. If there's an I/O error (Unable to open the file or
      **  less than magic_len have been read) return on failure.
      **/
-    if( 0 > (fd = open( filename, O_RDONLY)))
-	if( OK != ErrorLogger( ERR_OPEN, LOC, filename, "reading", NULL))
-	    return( 0);			/** -------- EXIT (FAILURE) -------> **/
+    if (0 > (fd = open(filename, O_RDONLY))) {
+		if (OK != ErrorLogger(ERR_OPEN, LOC, filename, "reading", NULL)) {
+			return (0);			/** -------- EXIT (FAILURE) -------> **/
+		}
+	}
 
-    read_len = read( fd, buf, magic_len);
+    read_len = read(fd, buf, (size_t)magic_len);
 
-    if( 0 > close(fd))
-	if( OK != ErrorLogger( ERR_CLOSE, LOC, filename, NULL))
-	    return( 0);			/** -------- EXIT (FAILURE) -------> **/
+    if (0 > close(fd)) {
+		if (OK != ErrorLogger(ERR_CLOSE, LOC, filename, NULL)) {
+			return (0);			/** -------- EXIT (FAILURE) -------> **/
+		}
+	}
 
-    if( read_len < magic_len)
-	return( 0);
+    if (read_len < magic_len) {
+		return (0);
+	}
 
     /**
      **  Check the magic cookie now
      **/
-    return( !strncmp( buf, magic_name, magic_len));
+    return (!strncmp(buf, magic_name, (size_t)magic_len));
 
 } /** end of 'check_magic' **/
 
@@ -2286,7 +2379,7 @@ int check_magic( char	*filename,
 
 void regex_quote(const char *path, char *newpath, int len)
 {
-    unsigned int path_len = strlen( path);	/** Length of the orig. path **/
+    unsigned int path_len = strlen(path);	/** Length of the orig. path **/
     int 	 i,				/** Read index		     **/
     		 j;				/** Write index		     **/
 
@@ -2298,23 +2391,23 @@ void regex_quote(const char *path, char *newpath, int len)
      **  Stopping at (len - 1) ensures that the newpath string can be
      **  null-terminated below.
      **/
-    for( i=0, j=0; i<path_len && j<(len - 1); i++, j++) {
+    for ((i = 0), (j = 0); ((i < (int)path_len) && (j < (len - 1))); i++, j++) {
 
-        switch(*path) {
+        switch (*path) {
             case '.':
             case '+':
             case '$':
-		*newpath++ = '\\';		/** devalue '.' and '+'	    **/
-		j++;
-		break;
+				*newpath++ = '\\';		/** devalue '.' and '+'	    **/
+				j++;
+				break;
         }
 
-	/**
-	 **  Flush the current character into the newpath buffer
-	 **/
+		/**
+		 **  Flush the current character into the newpath buffer
+		 **/
         *newpath++ = *path++;
 
-    } /** for **/
+    } /** end for-loop **/
 
     /**
      **  Put a string terminator at the newpaths end
@@ -2341,31 +2434,36 @@ void regex_quote(const char *path, char *newpath, int len)
  ** ************************************************************************ **
  ++++*/
 
-static	char *chop( const char	*string)
+static	char *chop(const char	*string)
 {
     char	*s, *t;			/** source and target pointers       **/
 
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_START, LOC, _proc_chop, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_chop, NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
     /**
      **  Remove '\n'
      **/
 
-    s = t = (char *) string;
-    while( *s) {
-	if( '\n' == *s)
-	    s++;
-	else
-	    *t++ = *s++;
+    s = t = (char *)string;
+    while (*s) {
+		if ('\n' == *s) {
+			s++;
+		} else {
+			*t++ = *s++;
+		}
     }
 
     /**
-     **  Copy the trailing terminator and return
+     **  Copy the trailing terminator and return:
      **/
     *t++ = '\0';
-    return( (char *) string);
+	/* dummy condition to use value stored to 't': */
+	if (t == NULL) {
+		;
+	}
+    return ((char *)string);
 
 } /** End of 'chop' **/
 
@@ -2428,8 +2526,12 @@ char *xstrtok_r(char *s, const char *delim, char **ptrptr) {
 	register int	 c = 0, sc = 0;
 	const char	*tok;
 
+	/* dummy condition to use 'c' and 'sc': */
+	if ((c == 0) || (sc == 0) || (c == sc)) {
+		;
+	}
 	/* return NULL if NULL string and at end of the line */
-	if (s == NULL && *ptrptr == NULL) {
+	if ((s == NULL) && (*ptrptr == NULL)) {
 		return (NULL);
 	}
 
@@ -2543,13 +2645,15 @@ void chk4spch(char* s)
 void *module_malloc(size_t size) {
 	void *ret;
 
-	if (size == 0)	size = 1;
+	if (size == 0)	{
+		size = 1;
+	}
 #ifdef TCL_MEM_DEBUG
 	ret = ckalloc(size);
 #else
 	ret = malloc(size);
-#endif
-	ret = memset(ret,'\0',size);
+#endif /* TCL_MEM_DEBUG */
+	ret = memset(ret, '\0', size);
 
 	return ret;
 } /** End of 'module_malloc' **/
@@ -2591,15 +2695,19 @@ char *xdup(char const *string) {
 	char *result = NULL;
 	char *dollarptr;
 
-	if (string == (char *)NULL) return result;
+	if (string == (char *)NULL) {
+		return result;
+	}
 
 	/** need to work from copy of string **/
-	if (((char *) NULL) == (result = stringer(NULL,0, string, NULL)))
-	    if( OK != ErrorLogger( ERR_STRING, LOC, NULL))
-		return( (char*) NULL);	/** -------- EXIT (FAILURE) -------> **/
+	if (((char *) NULL) == (result = stringer(NULL,0, string, NULL))) {
+	    if (OK != ErrorLogger(ERR_STRING, LOC, NULL)) {
+			return( (char*) NULL);	/** -------- EXIT (FAILURE) -------> **/
+		}
+	}
 
 	/** check for '$' else just pass strdup of it **/
-	if ((dollarptr = strchr(result, '$')) == (char *) NULL) {
+	if ((dollarptr = strchr(result, '$')) == (char *)NULL) {
 		return result;
 	} else {
 	/** found something **/
@@ -2612,8 +2720,11 @@ char *xdup(char const *string) {
 		int   brace;		/** flag if ${name}		**/
 		pid_t pid;		/** the process id		**/
 
-		/** zero out buffers */
-		memset(   buffer, '\0', MOD_BUFSIZE);
+		slashchr = '/'; /* initialize */
+		brace = 0; /* initialize */
+
+		/** zero out buffers: */
+		memset(buffer, '\0', MOD_BUFSIZE);
 		memset(oldbuffer, '\0', MOD_BUFSIZE);
 
 		/** copy everything upto $ into old buffer **/
@@ -2628,39 +2739,42 @@ char *xdup(char const *string) {
 			/** get the env.var. name **/
 			if (*(dollarptr + 1) == '{') {
 				brace = 1;
-				slashptr = strchr(dollarptr + 1, '}');
+				slashptr = strchr((dollarptr + 1), '}');
 			} else if (*(dollarptr + 1) == '$') {
-				slashptr = dollarptr + 2;
+				slashptr = (dollarptr + 2);
 			} else {
-				slashptr = dollarptr + 1
-					+ strcspn(dollarptr + 1,"/:$\\");
+				slashptr = (dollarptr + 1 + strcspn((dollarptr + 1), "/:$\\"));
 				brace = 0;
 			}
 			if (*slashptr) {
 				slashchr = *slashptr;
 				*slashptr = '\0';
-			} else slashptr = (char *)NULL;
+			} else {
+				slashptr = (char *)NULL;
+			}
 
 			/** see if escaped **/
 			if ((result != dollarptr) && *(dollarptr - 1) == '\\') {
-				/** replace \ with 0 and copy rest of name **/
-				buffer[blen - 1] = '\0';
-				strncat(buffer, dollarptr, MOD_BUFSIZE-blen);
+				/** replace \ with 0 and copy rest of name: **/
+				buffer[(blen - 1)] = '\0';
+				strncat(buffer, dollarptr, (MOD_BUFSIZE - blen));
 				blen = strlen(buffer);
-				if(brace)
-					strncat(buffer,"}",MOD_BUFSIZE-blen-1);
+				if (brace) {
+					strncat(buffer, "}", (MOD_BUFSIZE - blen - 1));
+				}
 			} else {
-				if (! strcmp(dollarptr + 1 + brace, "$")) {
+				if (! strcmp((dollarptr + 1 + brace), "$")) {
 					/** put in the process pid **/
 					pid = getpid();
-					sprintf(buffer + blen,"%ld",(long)pid);
+					sprintf((buffer + blen), "%ld", (long)pid);
 				} else {
-					/** get env.var. value **/
+					/** get env.var. value: **/
 					envvar = getenv(dollarptr + 1 + brace);
 
-					/** cat value to rest of string **/
-					if (envvar) strncat(buffer,envvar,
-						MOD_BUFSIZE-blen-1);
+					/** cat value to rest of string: **/
+					if (envvar) {
+						strncat(buffer, envvar, (MOD_BUFSIZE - blen - 1));
+					}
 				}
 			}
 			blen = strlen(buffer);
@@ -2670,9 +2784,10 @@ char *xdup(char const *string) {
 				*slashptr = slashchr;
 				dollarptr = strchr(slashptr, '$');
 				/** copy everything upto $ **/
-				if (dollarptr) *dollarptr = '\0';
-				strncat(buffer, slashptr + brace,
-					MOD_BUFSIZE -blen -1);
+				if (dollarptr) {
+					*dollarptr = '\0';
+				}
+				strncat(buffer, (slashptr + brace), (MOD_BUFSIZE - blen - 1));
 				if (dollarptr) {
 					*dollarptr = '$';
 					strncpy(oldbuffer, buffer, MOD_BUFSIZE);
@@ -2681,8 +2796,8 @@ char *xdup(char const *string) {
 				dollarptr = (char *)NULL;
 			}
 		}
-		null_free((void *) &result);
-		return stringer(NULL,0, buffer, NULL);
+		null_free((void *)&result);
+		return stringer(NULL, 0, buffer, NULL);
 	}
 
 } /** End of 'xdup' **/
@@ -2846,31 +2961,38 @@ int tmpfile_mod(char** filename, FILE** file) {
   FILE* f = NULL;
   int trial = 0;
 
-  if ((char *) NULL == (filename2 =
-	 stringer(NULL, strlen(TMP_DIR)+strlen("modulesource")+20, NULL)))
-     if( OK != ErrorLogger( ERR_STRING, LOC, NULL))
-	 return 1;
+  /* dummy condition to use 'f': */
+  if (f == NULL) {
+	  ;
+  }
+
+  if ((char *)NULL == (filename2 = stringer(NULL,
+											(strlen(TMP_DIR) + strlen("modulesource") + 20),
+											NULL))) {
+	  if (OK != ErrorLogger( ERR_STRING, LOC, NULL)) {
+		 return 1;
+	  }
+  }
 
   do {
     int fildes;
 
     sprintf(filename2,"%s/modulesource_%d",TMP_DIR,trial++);
-    fildes = open(filename2,O_WRONLY | O_CREAT | O_EXCL | O_TRUNC,0755);
+    fildes = open(filename2, (O_WRONLY | O_CREAT | O_EXCL | O_TRUNC), 0755);
 #if 0
-    fprintf(stderr,"DEBUG: filename=%s fildes=%d\n",
+    fprintf(stderr, "DEBUG: filename=%s fildes=%d\n",
 	   filename2,fildes);
-#endif
+#endif /* 0 */
     if (fildes >=0) {
-      *file = fdopen(fildes,"w");
+      *file = fdopen(fildes, "w");
       *filename = filename2;
       return 0;
     }
   } while (trial < 1000);
 
-  null_free((void *) &filename2);
-  fprintf(stderr,
-	"FATAL: could not get a temp file! at %s(%d)",__FILE__,__LINE__);
-
+  null_free((void *)&filename2);
+  fprintf(stderr, "FATAL: could not get a temp file! at %s(%d)",
+		  __FILE__, __LINE__);
   return 1;
 }
 
@@ -2919,30 +3041,36 @@ char *stringer(char *buffer, int len, ...)
 	char	*(*strfn)(char*, const char*) = strcpy;
 				/** ptr to 1st string function		**/
 
-#if WITH_DEBUGGING_UTIL_2
+#if WITH_DEBUGGING_UTIL_2 && defined(ErrorLogger) && defined(LOC)
     ErrorLogger(NO_ERR_START, LOC, _proc_stringer, NULL);
-#endif /* WITH_DEBUGGING_UTIL_2 */
+#endif /* WITH_DEBUGGING_UTIL_2 && ErrorLogger && LOC */
 
 	/* get start of optional arguments and sum string lengths */
 	va_start(argptr, len);
 	while ((ptr = va_arg(argptr, char *))) {
+#ifdef HAVE_STRNLEN
+		/* not sure what exactly to use for the size argument: */
+		sumlen += strnlen(ptr, sizeof(ptr));
+#else
 		sumlen += strlen(ptr);
+#endif /* HAVE_STRNLEN */
 	}
 	va_end(argptr);
 
 	/* can we even proceed? */
-	if (tbuf && (sumlen >= len || len < 0)) {
-		return (char *) NULL;
+	if (tbuf && ((sumlen >= len) || (len < 0))) {
+		return (char *)NULL;
 	}
 
 	/* do we need to allocate memory? */
-	if (tbuf == (char *) NULL) {
+	if (tbuf == (char *)NULL) {
 		if (len == 0) {
-			len = sumlen + 1;
+			len = (sumlen + 1);
 		}
-		if ((char *) NULL == (tbuf = (char*) module_malloc(len))) {
-			if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
-				return (char *) NULL;
+		if ((char *)NULL == (tbuf = (char*)module_malloc((size_t)len))) {
+			if (OK != ErrorLogger(ERR_ALLOC, LOC, NULL)) {
+				return (char *)NULL;
+			}
 		}
 	}
 
@@ -3048,80 +3176,90 @@ size_t countTclHash(Tcl_HashTable *table) {
 
 EM_RetVal ReturnValue(Tcl_Interp *interp, int retval) {
 	EM_RetVal	 em_result;
-	char		*startp		= (char *) NULL,
-			*endp		= (char *) NULL;
+	char	*startp		= (char *)NULL,
+			*endp		= (char *)NULL;
 	const char 	*tstr;
-	int		 result;
+	int		 result = 0;
 	static char	*Exit_	= "^EXIT ([0-9]*)",
-			*Break	= ".*\"break\".*",
-			*Cont	= ".*\"continue\".*";
-	static Tcl_Obj	*exit_Ptr	= (Tcl_Obj *) NULL,
-			*break_Ptr	= (Tcl_Obj *) NULL,
-			*cont_Ptr	= (Tcl_Obj *) NULL;
-	static Tcl_RegExp	exit__expPtr	= (Tcl_RegExp) NULL,
-				break_expPtr	= (Tcl_RegExp) NULL,
-				cont_expPtr	= (Tcl_RegExp) NULL;
+				*Break	= ".*\"break\".*",
+				*Cont	= ".*\"continue\".*";
+	static Tcl_Obj *exit_Ptr	= (Tcl_Obj *)NULL,
+				   *break_Ptr	= (Tcl_Obj *)NULL,
+				   *cont_Ptr	= (Tcl_Obj *)NULL;
+	static Tcl_RegExp exit__expPtr	= (Tcl_RegExp)NULL,
+					  break_expPtr	= (Tcl_RegExp)NULL,
+					  cont_expPtr	= (Tcl_RegExp)NULL;
 
-	tstr = (const char *) TCL_RESULT(interp);
+	tstr = (const char *)TCL_RESULT(interp);
 
 	/* compile regular expression the first time through */
-	if (!exit_Ptr)
-		exit_Ptr	= Tcl_NewStringObj(Exit_,strlen(Exit_));
-	if (!exit__expPtr)
-		exit__expPtr = Tcl_GetRegExpFromObj(interp,
-			exit_Ptr,TCL_REG_ADVANCED);
+	if (!exit_Ptr) {
+		exit_Ptr	= Tcl_NewStringObj(Exit_, (int)strlen(Exit_));
+	}
+	if (!exit__expPtr) {
+		exit__expPtr = Tcl_GetRegExpFromObj(interp, exit_Ptr,
+											TCL_REG_ADVANCED);
+	}
 
 	/*  result = "invoked \"break\" outside of a loop" */
-	if (!break_Ptr)
-		break_Ptr	= Tcl_NewStringObj(Break,strlen(Break));
-	if (!break_expPtr)
-		break_expPtr = Tcl_GetRegExpFromObj(interp,
-			break_Ptr,TCL_REG_ADVANCED);
+	if (!break_Ptr) {
+		break_Ptr	= Tcl_NewStringObj(Break, (int)strlen(Break));
+	}
+	if (!break_expPtr) {
+		break_expPtr = Tcl_GetRegExpFromObj(interp, break_Ptr,
+											TCL_REG_ADVANCED);
+	}
 
 	/*  result = "invoked \"continue\" outside of a loop" */
-	if (!cont_Ptr)
-		cont_Ptr	= Tcl_NewStringObj(Cont,strlen(Cont));
-	if (!cont_expPtr)
-		cont_expPtr = Tcl_GetRegExpFromObj(interp,
-			cont_Ptr,TCL_REG_ADVANCED);
+	if (!cont_Ptr) {
+		cont_Ptr	= Tcl_NewStringObj(Cont, (int)strlen(Cont));
+	}
+	if (!cont_expPtr) {
+		cont_expPtr = Tcl_GetRegExpFromObj(interp, cont_Ptr,
+										   TCL_REG_ADVANCED);
+	}
 
 	/* intercept any "EXIT N" first */
-	if(tstr && *tstr && 0 < Tcl_RegExpExec(interp, exit__expPtr,
-		(CONST84 char *) tstr, (CONST84 char *) tstr)){
+	if (tstr && *tstr && (0 < Tcl_RegExpExec(interp, exit__expPtr,
+											 (CONST84 char *)tstr,
+											 (CONST84 char *)tstr))) {
 		/* found 'EXIT' */
-		Tcl_RegExpRange(exit__expPtr, 1,
-			(CONST84 char **) &startp, (CONST84 char **) &endp);
-		if( startp != '\0')
-			result = atoi((const char *) startp);
+		Tcl_RegExpRange(exit__expPtr, 1, (CONST84 char **)&startp,
+						(CONST84 char **)&endp);
+		if (startp != '\0') {
+			result = atoi((const char *)startp);
+		}
 
 		g_retval = result;
 		em_result = EM_EXIT;
 
-	/* check for a break not within loop */
-	} else if(tstr && *tstr && 0 < Tcl_RegExpExec(interp, break_expPtr,
-		(CONST84 char *) tstr, (CONST84 char *) tstr)){
+	/* check for a break not within loop: */
+	} else if (tstr && *tstr && (0 < Tcl_RegExpExec(interp, break_expPtr,
+													(CONST84 char *)tstr,
+													(CONST84 char *)tstr))) {
 		em_result = EM_BREAK;
 
 	/* check for a continue not within loop */
-	} else if(tstr && *tstr && 0 < Tcl_RegExpExec(interp, cont_expPtr,
-		(CONST84 char *) tstr, (CONST84 char *) tstr)){
+	} else if (tstr && *tstr && (0 < Tcl_RegExpExec(interp, cont_expPtr,
+													(CONST84 char *)tstr,
+													(CONST84 char *)tstr))) {
 		em_result = EM_CONTINUE;
 
 	} else {
 		switch (retval) {
-		case TCL_OK:
-			em_result = EM_OK;
-			break;
-		case TCL_BREAK:
-			em_result = EM_BREAK;
-			break;
-		case TCL_CONTINUE:
-			em_result = EM_CONTINUE;
-			break;
-		case TCL_ERROR:
-		default:
-			em_result = EM_ERROR;
-			break;
+			case TCL_OK:
+				em_result = EM_OK;
+				break;
+			case TCL_BREAK:
+				em_result = EM_BREAK;
+				break;
+			case TCL_CONTINUE:
+				em_result = EM_CONTINUE;
+				break;
+			case TCL_ERROR:
+			default:
+				em_result = EM_ERROR;
+				break;
 		}
 	}
 	return em_result;
@@ -3146,7 +3284,7 @@ EM_RetVal ReturnValue(Tcl_Interp *interp, int retval) {
  ** 									     **
  ** ************************************************************************ **
  ++++*/
-void OutputExit() {
+void OutputExit(void) {
 
 	if (shell_derelict == NULL) {
 		return;

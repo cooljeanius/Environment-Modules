@@ -95,7 +95,7 @@ static	char	module_name[] = "cmdXResource.c";	/** File name of this module **/
 #if WITH_DEBUGGING_UTIL_2
 static	char	_proc_addDef[] = "addDef";
 static	char	_proc_addNum[] = "addNum";
-#endif
+#endif /* WITH_DEBUGGING_UTIL_2 */
 #if WITH_DEBUGGING_UTIL_1
 static	char	_proc_doDisplayDefines[] = "doDisplayDefines";
 static	char	_proc_doScreenDefines[] = "doScreenDefines";
@@ -105,34 +105,34 @@ static	char	_proc_storeResProp[] = "storeResProp";
 static	char	_proc_getOld[] = "getOld";
 static	char	_proc_initBuffers[] = "initBuffers";
 static	char	_proc_xresourceFinish[] = "xresourceFinish";
-#endif
+#endif /* WITH_DEBUGGING_UTIL_1 */
 #if WITH_DEBUGGING_CALLBACK
 static	char	_proc_cmdXResource[] = "cmdXResource";
-#endif
+#endif /* WITH_DEBUGGING_CALLBACK */
 
 #ifdef HAS_X11LIBS
-static Display		*dpy		= (Display *) NULL;
-static char		*defines	= (char *) NULL;
+static Display		*dpy		= (Display *)NULL;
+static char		*defines	= (char *)NULL;
 static int		def_base	= 0;
-static Tcl_DString	*buffer		= (Tcl_DString *) NULL;
-static ResourceDB	resDB		= { NULL, (Window) 0, (Atom) 0 };
-#endif
+static Tcl_DString	*buffer		= (Tcl_DString *)NULL;
+static ResourceDB	resDB		= { NULL, (Window)0, (Atom)0 };
+#endif /* HAS_X11LIBS */
 
 /** ************************************************************************ **/
 /**				    PROTOTYPES				     **/
 /** ************************************************************************ **/
 
-static	void	addDef(	char*, char*);
-static	void	addNum(	char*, int);
+static	void	addDef(char*, char*);
+static	void	addNum(char*, int);
 static	void	doDisplayDefines(void);
-static	void	doScreenDefines( int);
-static	int	readFile( register FILE	*, int);
-static	ErrType getEntries(Tcl_Interp*,  Tcl_HashTable*, register char*, int);
+static	void	doScreenDefines(int);
+static	int	readFile(register FILE *, int);
+static	ErrType getEntries(Tcl_Interp*, Tcl_HashTable*, register char*, int);
 #ifdef HAS_X11LIBS
-static	void	storeResProp( register ResourceDB* );
-#endif
-static	ErrType getOld( register char**);
-static	ErrType	initBuffers(Tcl_Interp*, register int );
+static	void	storeResProp(register ResourceDB*);
+#endif /* HAS_X11LIBS */
+static	ErrType getOld(register char**);
+static	ErrType	initBuffers(Tcl_Interp*, register int);
 
 #ifdef HAS_X11LIBS
 
@@ -158,14 +158,13 @@ static	ErrType	initBuffers(Tcl_Interp*, register int );
  ** ************************************************************************ **
  ++++*/
 
-static	void	addDef(	char	*title,
-			char	*value)
+static void addDef(char *title, char *value)
 {
     register int quote;
 
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_START, LOC, _proc_addDef, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_addDef, NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
     /**
      **  Add '-D title' at first
@@ -200,7 +199,7 @@ static	void	addNum(	char	*title,
 
 #if WITH_DEBUGGING_UTIL_2
     ErrorLogger( NO_ERR_START, LOC, _proc_addNum, NULL);
-#endif
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
     sprintf( num, "%d", value);
     addDef( title, num);
@@ -227,15 +226,15 @@ static	void	addNum(	char	*title,
  ** ************************************************************************ **
  ++++*/
 
-static	void	doDisplayDefines()
+static void doDisplayDefines(void)
 {
-    char	 client[ MAXHOSTNAME],		/** X client name buffer     **/
-		 server[ MAXHOSTNAME],		/** X server name buffer     **/
+    char client[MAXHOSTNAME],		/** X client name buffer     **/
+		 server[MAXHOSTNAME],		/** X server name buffer     **/
 		*colon;				/** Pointer for seeking the  **/
 						/** colon in the server name **/
 #if WITH_DEBUGGING_UTIL_1
-    ErrorLogger( NO_ERR_START, LOC, _proc_doDisplayDefines, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_doDisplayDefines, NULL);
+#endif /* WITH_DEBUGGING_UTIL_1 */
 
     /**
      **  Get client and server hostname. Remove everything after the ':' from
@@ -291,7 +290,7 @@ static	void	 doScreenDefines( int	scrno)
 
 #if WITH_DEBUGGING_UTIL_1
     ErrorLogger( NO_ERR_START, LOC, _proc_doScreenDefines, NULL);
-#endif
+#endif /* WITH_DEBUGGING_UTIL_1 */
 
     /**
      **  Get screen data at first
@@ -369,29 +368,33 @@ static	void	 doScreenDefines( int	scrno)
  ** ************************************************************************ **
  ++++*/
 
-static	int	readFile(	register FILE	*input,
-				int		 do_cpp)
+static int readFile(register FILE *input, int do_cpp)
 {
     register int bytes;
 
 #if WITH_DEBUGGING_UTIL_1
-    ErrorLogger( NO_ERR_START, LOC, _proc_readFile, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_readFile, NULL);
+#endif /* WITH_DEBUGGING_UTIL_1 */
 
-    while( !feof( input) && (bytes = fread( line, 1, LINELENGTH, input)))
-	Tcl_DStringAppend( buffer, line, bytes);
+    while (!feof(input) && (bytes = (int)fread(line, 1, LINELENGTH, input))) {
+		Tcl_DStringAppend(buffer, line, bytes);
+	}
 
-    if( do_cpp) {
-	if( -1 == pclose( input))
-	    if( OK != ErrorLogger( ERR_PCLOSE, LOC, NULL))
-		return( TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
+    if (do_cpp) {
+		if (-1 == pclose(input)) {
+			if (OK != ErrorLogger(ERR_PCLOSE, LOC, NULL)) {
+				return (TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
+			}
+		}
     } else {
-	if( EOF == fclose( input))
-	    if( OK != ErrorLogger( ERR_CLOSE, LOC, NULL))
-		return( TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
+		if (EOF == fclose(input)) {
+			if (OK != ErrorLogger(ERR_CLOSE, LOC, NULL)) {
+				return (TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
+			}
+		}
     }
 
-    return( TCL_OK);
+    return (TCL_OK);
 
 } /**  End of 'readFile' **/
 
@@ -412,7 +415,7 @@ static	int	readFile(	register FILE	*input,
  **			register char	*buf	The buffer containing the    **
  **						resources to be modified in **
  **						X resource syntax	     **
- **			int		 remove	Remove or add resources     **
+ **			int whether_to_remove	Remove or add resources     **
  ** 									     **
  **   Result:		ErrType	NO_ERR		Success			     **
  **				ERR_PARSE	Parse error		     **
@@ -422,8 +425,8 @@ static	int	readFile(	register FILE	*input,
  ** ************************************************************************ **
  ++++*/
 
-static	ErrType getEntries(Tcl_Interp *interp, Tcl_HashTable *data,
-						   register char *buf, int remove)
+static ErrType getEntries(Tcl_Interp *interp, Tcl_HashTable *data,
+						  register char *buf, int whether_to_remove)
 {
     register Tcl_HashEntry *entry;
     char *end;
@@ -450,12 +453,12 @@ static	ErrType getEntries(Tcl_Interp *interp, Tcl_HashTable *data,
      **  is a constant regexp!
      **/
 
-    if(!res_obj) {
+    if (!res_obj) {
 		/* not sure if these casts are correct... */
 		res_obj = Tcl_NewStringObj((const char *)Res,
-								   strlen((const char *)Res));
+									(int)strlen((const char *)Res));
 	}
-    if(!res_exp) {
+    if (!res_exp) {
 		res_exp = Tcl_GetRegExpFromObj(interp, res_obj,TCL_REG_ADVANCED);
 	}
 
@@ -463,30 +466,31 @@ static	ErrType getEntries(Tcl_Interp *interp, Tcl_HashTable *data,
      **  Seek for the lines (buffers) end. Put a terminator there. Take care of
      **  escaped newlines!
      **/
-
-    for( end = buf; *end; end++)
-	if( *end == '\\' && *(end+1) == '\n')
-	    end++;
-	else if( *end == '\n')
-	    *end = '\0';
+    for ((end = buf); *end; end++) {
+		if ((*end == '\\') && (*(end + 1) == '\n')) {
+			end++;
+		} else if (*end == '\n') {
+			*end = '\0';
+		}
+	}
 
     /**
      **  Now read the whole buffer.
-     **  At first, we have to ignore comments
+     **  At first, we have to ignore comments:
      **/
+    while (buf <= end) {
 
-    while( buf <= end) {
-
-	if( *buf == '#' || *buf == '!' || !*buf) {
-	    while( *buf++) ;
+	if ((*buf == '#') || (*buf == '!') || !*buf) {
+	    while (*buf++) {
+			; /* (do nothing) */
+		}
 
 	/**
-	 **  Otherwise we're seeking for a syntacticl correct X resource entry
+	 **  Otherwise, we are seeking for a syntactically correct X resource entry
 	 **/
-
-	} else if( !Tcl_RegExpExec(interp, res_exp, buf, buf)) {
-	    if( OK != ErrorLogger( ERR_PARSE, LOC, NULL)) {
-		return( ERR_PARSE);	/** ------ EXIT (PARSE ERROR) -----> **/
+	} else if (!Tcl_RegExpExec(interp, res_exp, buf, buf)) {
+	    if (OK != ErrorLogger(ERR_PARSE, LOC, NULL)) {
+			return (ERR_PARSE); /** ------ EXIT (PARSE ERROR) -----> **/
 	    }
 
 	} else {
@@ -512,7 +516,7 @@ static	ErrType getEntries(Tcl_Interp *interp, Tcl_HashTable *data,
 	     **  Now create (or remove) a hash entry for the parsed resource
 	     **/
 
-	    if( remove) {
+	    if( whether_to_remove) {
 	        Tcl_RegExpRange(res_exp, 1,
 			(CONST84 char **) &startp, (CONST84 char **) &endp);
 		if( entry = Tcl_FindHashEntry( data, startp)) {
@@ -534,10 +538,9 @@ static	ErrType getEntries(Tcl_Interp *interp, Tcl_HashTable *data,
     } /** while **/
 
     /**
-     **  Return on success
+     **  Return on success:
      **/
-
-    return( NO_ERR);
+    return (NO_ERR);
 
 } /** end of 'getEntries' **/
 
@@ -559,9 +562,9 @@ static	ErrType getEntries(Tcl_Interp *interp, Tcl_HashTable *data,
  ** 									     **
  ** ************************************************************************ **
  ++++*/
-
+/* are we not already in a "HAS_X11LIBS" conditional? */
 #ifdef HAS_X11LIBS
-static	void	storeResProp(	register ResourceDB *rdb)
+static void storeResProp(register ResourceDB *rdb)
 {
     Tcl_HashSearch	search;
     register int	mode = PropModeReplace;
@@ -617,7 +620,7 @@ static	void	storeResProp(	register ResourceDB *rdb)
 	XUngrabServer( dpy);
 
 } /** End of 'storeResProp' **/
-#endif
+#endif /* HAS_X11LIBS */
 
 /*++++
  ** ** Function-Header ***************************************************** **
@@ -650,8 +653,8 @@ static	ErrType getOld( register char **buf)
 {
 
 #if WITH_DEBUGGING_UTIL_1
-    ErrorLogger( NO_ERR_START, LOC, _proc_getOld, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_getOld, NULL);
+#endif /* WITH_DEBUGGING_UTIL_1 */
 
     /**
      **  Allocate memory for the hash table
@@ -710,81 +713,92 @@ static	ErrType getOld( register char **buf)
  ** ************************************************************************ **
  ++++*/
 
-static	ErrType	initBuffers(	Tcl_Interp *interp,
-				register int is_file)
+static ErrType initBuffers(Tcl_Interp *interp, register int is_file)
 {
     char *tmpbuf;
 
+	tmpbuf = ""; /* initialize (not sure what I should have used...) */
+
 #if WITH_DEBUGGING_UTIL_1
-    ErrorLogger( NO_ERR_START, LOC, _proc_initBuffers, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_initBuffers, NULL);
+#endif /* WITH_DEBUGGING_UTIL_1 */
 
     /**
-     **  Open the display
+     **  Open the display:
      **/
+    if (!dpy && !(dpy = XOpenDisplay(NULL))) {
+		if (OK != ErrorLogger(ERR_DISPLAY, LOC, NULL)) {
+			return (ERR_DISPLAY);	/** -------- EXIT (FAILURE) -------> **/
+		}
+	}
 
-    if( !dpy && !(dpy = XOpenDisplay( NULL)))
-	if( OK != ErrorLogger( ERR_DISPLAY, LOC, NULL))
-	    return( ERR_DISPLAY);	/** -------- EXIT (FAILURE) -------> **/
 
     /**
      **  Read in the old setup at first and put it into the resource database
      **/
 
-    if( !resDB.data) {
+    if (!resDB.data) {
+		if (getOld(&tmpbuf) != NO_ERR)	{ /** NULL if no resources exists **/
+			if (OK != ErrorLogger(ERR_ALLOC, LOC, NULL)) {
+				return (ERR_ALLOC);	/** ----- EXIT (OUT OF MEMORY) ----> **/
+			}
+		}
 
-	if( getOld( &tmpbuf) != NO_ERR)	/** NULL if no resources exists      **/
-	    if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
-		return( ERR_ALLOC);	/** ----- EXIT (OUT OF MEMORY) ----> **/
-
-	if( tmpbuf && (getEntries(interp, resDB.data, tmpbuf, 0) != NO_ERR))
-	    if( OK != ErrorLogger( ERR_EXTRACT, LOC, NULL))
-		return( ERR_EXTRACT);
-    }
+		if (tmpbuf && (getEntries(interp, resDB.data, tmpbuf, 0) != NO_ERR)) {
+			if (OK != ErrorLogger(ERR_EXTRACT, LOC, NULL)) {
+				return (ERR_EXTRACT);
+			}
+		}
+    } /* braces (or lack thereof) got confusing around here */
 
     /**
      **  Conditionally allocate a buffer and initialize this guy
      **/
 
-    if( !buffer) {
-	if( !(buffer = (Tcl_DString *) module_malloc(sizeof(Tcl_DString)))) {
-	    if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
-		return( ERR_ALLOC);	/** ----- EXIT (OUT OF MEMORY) ----> **/
-	} else
-	    Tcl_DStringInit( buffer);
-    } else
-	Tcl_DStringTrunc( buffer, 0);
+    if (!buffer) {
+		if (!(buffer = (Tcl_DString *)module_malloc(sizeof(Tcl_DString)))) {
+			if (OK != ErrorLogger(ERR_ALLOC, LOC, NULL)) {
+				return (ERR_ALLOC);	/** ----- EXIT (OUT OF MEMORY) ----> **/
+			}
+		} else {
+			Tcl_DStringInit(buffer);
+		}
+    } else {
+		Tcl_DStringTrunc(buffer, 0);
+	}
 
     /**
      **  Set up all the defines according display and screen
      **/
 
-    if( defines)
-	defines[ def_base] = '\0';
-    else if( is_file) {
+    if (defines) {
+		defines[def_base] = '\0';
+    } else if (is_file) {
+		if (!(defines = (char *)module_malloc(BUFSIZ * sizeof(char)))) {
+			if (OK != ErrorLogger(ERR_ALLOC, LOC, NULL)) {
+				return (ERR_ALLOC);	/** ----- EXIT (OUT OF MEMORY) ----> **/
+			}
+		}
 
-	if( !(defines = (char *) module_malloc(BUFSIZ * sizeof( char))))
-	    if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
-		return( ERR_ALLOC);	/** ----- EXIT (OUT OF MEMORY) ----> **/
-
-	/* sprintf( defines, "%s %s ", CPPSTDIN, CPPMINUS); */
-	strcpy( defines, CPPSTDIN);
-	strcat( defines, " ");
-	strcat( defines, CPPMINUS);
-	strcat( defines, " ");
-	doDisplayDefines();
-	doScreenDefines( DefaultScreen( dpy));
-	def_base = strlen( strcat( defines, " "));
+#if 0
+		sprintf(defines, "%s %s ", CPPSTDIN, CPPMINUS);
+#endif /* 0 */
+		strcpy(defines, CPPSTDIN);
+		strcat(defines, " ");
+		strcat(defines, CPPMINUS);
+		strcat(defines, " ");
+		doDisplayDefines();
+		doScreenDefines(DefaultScreen(dpy));
+		def_base = (int)strlen(strcat(defines, " "));
     }
 
     /**
-     **  Return on success
+     **  Return on success:
      **/
-
-    return( NO_ERR);
+    return (NO_ERR);
 
 } /** End of 'initBuffers' **/
-#endif
+#endif /* HAS_X11LIBS */
 
 /*++++
  ** ** Function-Header ***************************************************** **
@@ -812,8 +826,8 @@ void xresourceFinish(register int no_errors)
 {
 
 #if WITH_DEBUGGING_UTIL_1
-    ErrorLogger( NO_ERR_START, LOC, _proc_xresourceFinish, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_xresourceFinish, NULL);
+#endif /* WITH_DEBUGGING_UTIL_1 */
 
 #ifdef HAS_X11LIBS
 
@@ -834,7 +848,7 @@ void xresourceFinish(register int no_errors)
     if( buffer)
 	Tcl_DStringFree( buffer);
 
-#endif
+#endif /* HAS_X11LIBS */
 
 } /** End of 'xresourceFinish' **/
 
@@ -866,10 +880,8 @@ void xresourceFinish(register int no_errors)
  ** ************************************************************************ **
  ++++*/
 
-int	cmdXResource(	ClientData	 client_data,
-			Tcl_Interp	*interp,
-			int		 argc,
-			CONST84 char	*argv[])
+int	cmdXResource(ClientData client_data, Tcl_Interp *interp, int argc,
+				 CONST84 char *argv[])
 {
     register FILE	*inp;
     int			 is_file, i,
@@ -877,8 +889,8 @@ int	cmdXResource(	ClientData	 client_data,
     			 opt_ind = 1;
 
 #if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_START, LOC, _proc_cmdXResource, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_cmdXResource, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
 
     /**
      **  Whatis mode?
@@ -961,23 +973,25 @@ int	cmdXResource(	ClientData	 client_data,
 		return( TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
 	    }
 	}
-#else
+#else /* do not have X11_LIBS: */
 	if( g_flags & M_DISPLAY) {
 	    fprintf( stderr, "xrdb -merge\t ");
 	    for( i=1; i<argc; i++)
 		fprintf( stderr, "%s ", argv[ i]);
 	    fprintf( stderr, "*** ignored ***\n");
 	}
-#endif
+#endif /* HAS_X11LIBS */
 
 	opt_ind++;
 
     } /** while **/
 
 #if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_END, LOC, _proc_cmdXResource, NULL);
-#endif
+    ErrorLogger(NO_ERR_END, LOC, _proc_cmdXResource, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
 
-    return( TCL_OK);
+    return (TCL_OK);
 
 } /** End of 'cmdXResource' **/
+
+/* EOF */

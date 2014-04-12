@@ -33,6 +33,7 @@ AM_GNU_GETTEXT
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRCOLL
+AC_FUNC_STRNLEN
 AC_CHECK_FUNCS([dup2 gethostname memset setlocale strchr strcspn strdup strrchr strstr uname])
 
 AC_CONFIG_FILES([Makefile

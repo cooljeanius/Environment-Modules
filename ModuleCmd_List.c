@@ -90,7 +90,7 @@ static	char	_proc_ModuleCmd_List[] = "ModuleCmd_List";
  ** ************************************************************************ **
  ++++*/
 
-int	ModuleCmd_List(Tcl_Interp	*interp, int argc, char *argv[])
+int	ModuleCmd_List(Tcl_Interp *interp, int argc, char *argv[])
 {
     /**
      **  Get the list of loaded modules at first
@@ -157,7 +157,7 @@ int	ModuleCmd_List(Tcl_Interp	*interp, int argc, char *argv[])
 		 **/
 
 		for ((i = 0); (i < count1); i++) {
-			len = (strlen(files[i]) - strlen(list[i]));
+			len = ((int)strlen(files[i]) - (int)strlen(list[i]));
 			tmplist[i] = files[i];
 
 			/**
@@ -167,7 +167,7 @@ int	ModuleCmd_List(Tcl_Interp	*interp, int argc, char *argv[])
 
 			s = (files[i] + len);
 			while (s) {
-				if (s = strchr( s, '/')) {
+				if (s = strchr(s, '/')) {
 					*s = '\0';
 				}
 

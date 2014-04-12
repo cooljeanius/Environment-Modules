@@ -91,20 +91,21 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/autobuild.m4 \
 	$(top_srcdir)/m4/ax_cvs.m4 $(top_srcdir)/m4/ax_file_escapes.m4 \
 	$(top_srcdir)/m4/ax_print_to_file.m4 \
 	$(top_srcdir)/m4/ax_prog_tcl.m4 \
-	$(top_srcdir)/m4/ax_split_version.m4 $(top_srcdir)/m4/emtcl.m4 \
-	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/inttypes_h.m4 \
-	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
-	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/mp_tcl.m4 $(top_srcdir)/m4/nls.m4 \
-	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/m4/po.m4 \
-	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/stdint_h.m4 \
-	$(top_srcdir)/m4/tcl.m4 $(top_srcdir)/m4/threadlib.m4 \
-	$(top_srcdir)/m4/uintmax_t.m4 $(top_srcdir)/m4/xorg-macros.m4 \
-	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/ax_split_version.m4 $(top_srcdir)/m4/cmake.m4 \
+	$(top_srcdir)/m4/emtcl.m4 $(top_srcdir)/m4/gettext.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/intlmacosx.m4 \
+	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/lib-ld.m4 \
+	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/lock.m4 \
+	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/mp_tcl.m4 \
+	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/pkg.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
+	$(top_srcdir)/m4/stdint_h.m4 $(top_srcdir)/m4/tcl.m4 \
+	$(top_srcdir)/m4/threadlib.m4 $(top_srcdir)/m4/uintmax_t.m4 \
+	$(top_srcdir)/m4/xorg-macros.m4 $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -188,6 +189,7 @@ CFLAGS_DEBUG = @CFLAGS_DEBUG@
 CFLAGS_DEFAULT = @CFLAGS_DEFAULT@
 CFLAGS_OPTIMIZE = @CFLAGS_OPTIMIZE@
 CFLAGS_WARNING = @CFLAGS_WARNING@
+CMAKE_BINARY = @CMAKE_BINARY@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CVS = @CVS@
@@ -213,6 +215,8 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+EMACS = @EMACS@
+EMACSLOADPATH = @EMACSLOADPATH@
 ETCPATH = @ETCPATH@
 EXEEXT = @EXEEXT@
 EXTDIR = @EXTDIR@
@@ -284,11 +288,17 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PERL = @PERL@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PLAT_OBJS = @PLAT_OBJS@
 POSUB = @POSUB@
+PYTHON = @PYTHON@
+PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
+PYTHON_PLATFORM = @PYTHON_PLATFORM@
+PYTHON_PREFIX = @PYTHON_PREFIX@
+PYTHON_VERSION = @PYTHON_VERSION@
 RANLIB = @RANLIB@
 RAWCPP = @RAWCPP@
 RAWCPPFLAGS = @RAWCPPFLAGS@
@@ -380,15 +390,20 @@ infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+lispdir = @lispdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
 pdfdir = @pdfdir@
+pkgpyexecdir = @pkgpyexecdir@
+pkgpythondir = @pkgpythondir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+pyexecdir = @pyexecdir@
+pythondir = @pythondir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@

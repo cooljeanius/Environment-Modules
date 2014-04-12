@@ -27,7 +27,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: c7add002bfd4245181fa551c05d0426cd79abc76 $";
@@ -103,68 +103,72 @@ static	char	_proc_moduleUnsetenv[] = "moduleUnsetenv";
  ** ************************************************************************ **
  ++++*/
 
-int	cmdSetEnv(	ClientData	 client_data,
-	  		Tcl_Interp	*interp,
-	  		int		 argc,
-	  		CONST84 char	*argv[])
+int	cmdSetEnv(ClientData client_data, Tcl_Interp *interp, int argc,
+			  CONST84 char *argv[])
 {
     int		 force;			/** Force removale of variables	     **/
-    char	*var;			/** Varibales name		     **/
-    char	*val;			/** Varibales value		     **/
+    char	*var;			/** name of variable		     **/
+    char	*val;			/** value of varibale		     **/
+
+	force = 0; /* initialize */
+	var = (char *)argv[1]; /* initialize (same as default case below) */
+	val = (char *)argv[2]; /* initialize (same as default case below) */
 
 #if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_START, LOC, _proc_cmdSetEnv, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_cmdSetEnv, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
 
     /**
      **  Check parameters. Usage is:  [-force] variable value
      **/
 
-    if( argc < 3 || argc > 4) {
-	if( OK != ErrorLogger( ERR_USAGE, LOC, argv[0], "[-force] variable value",
-	    NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+    if ((argc < 3) || (argc > 4)) {
+		if (OK != ErrorLogger(ERR_USAGE, LOC, argv[0],
+							  "[-force] variable value", NULL)) {
+			return (TCL_ERROR); /** -------- EXIT (FAILURE) -------> **/
+		}
     }
 
     /**
-     **  Get variables name and value from the argument array
+     **  Get the name and value of the variable from the argument array:
      **/
-
-    if( *argv[1] == '-') {
-        if( !strncmp( argv[1], "-force", 6)) {
+    if (*argv[1] == '-') {
+        if (!strncmp(argv[1], "-force", 6)) {
             force = 1;
-            var = (char *) argv[2];
-            val = (char *) argv[3];
+            var = (char *)argv[2];
+            val = (char *)argv[3];
         } else {
-	    if( OK != ErrorLogger( ERR_USAGE, LOC, argv[0], "[-force] variable value",
-		NULL))
-		return( TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
-        }            
-    } else  {
+			if (OK != ErrorLogger(ERR_USAGE, LOC, argv[0],
+								  "[-force] variable value", NULL)) {
+				return (TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
+			}
+        }
+    } else {
+		/* default case: */
         force = 0;
-        var = (char *) argv[1];
-        val = (char *) argv[2];
+        var = (char *)argv[1];
+        val = (char *)argv[2];
     }
 
-    moduleSetenv( interp, var, val, force);
+    moduleSetenv(interp, var, val, force);
 
     /**
      **  This has to be done after everything has been set because the
      **  variables may be needed later in the modulefile.
      **/
-
-    if( g_flags & M_DISPLAY) {
-	fprintf( stderr, "%s\t\t ", argv[ 0]);
-	while( --argc)
-	    fprintf( stderr, "%s ", *++argv);
-	fprintf( stderr, "\n");
+    if (g_flags & M_DISPLAY) {
+		fprintf(stderr, "%s\t\t ", argv[0]);
+		while (--argc) {
+			fprintf( stderr, "%s ", *++argv);
+		}
+		fprintf(stderr, "\n");
     }
 
 #if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_END, LOC, _proc_cmdSetEnv, NULL);
-#endif
+    ErrorLogger(NO_ERR_END, LOC, _proc_cmdSetEnv, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
 
-    return( TCL_OK);
+    return(TCL_OK);
 
 } /** End of 'cmdSetEnv' **/
 
@@ -206,9 +210,9 @@ int	moduleSetenv(	Tcl_Interp	*interp,
     oldval = EMGetEnv( interp, variable);
     if (!oldval || !*oldval)
 	null_free((void *)&oldval);
-  
+
     /**
-     **  Check to see if variable is already set correctly... 
+     **  Check to see if variable is already set correctly...
      **/
 
     if( !(g_flags & (M_REMOVE|M_DISPLAY|M_SWITCH|M_NONPERSIST)) && oldval) {
@@ -232,7 +236,7 @@ int	moduleSetenv(	Tcl_Interp	*interp,
      **  they are still the same, then I'll just unset them and return.
      **
      **  And, if I'm not doing any switching, then just unset the variable if
-     **  I'm in remove mode. 
+     **  I'm in remove mode.
      **/
 
     if( g_flags & M_SWSTATE1) {
@@ -309,7 +313,7 @@ int	cmdUnsetEnv(	ClientData	 client_data,
     /**
      **  Parameter check. The name of the variable has to be specified
      **/
-    
+
 #if WITH_DEBUGGING_CALLBACK
     ErrorLogger( NO_ERR_START, LOC, _proc_cmdUnsetEnv, NULL);
 #endif
@@ -320,11 +324,11 @@ int	cmdUnsetEnv(	ClientData	 client_data,
 	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
     }
 
-  
+
     /**
      **  Non-persist mode?
      **/
-    
+
     if (g_flags & M_NONPERSIST) {
 	return (TCL_OK);
     }
@@ -399,7 +403,7 @@ int	moduleUnsetenv(	Tcl_Interp	*interp,
         store_hash_value( unsetenvHashTable, variable, NULL);
         clear_hash_value( setenvHashTable, variable);
     }
-  
+
 #if WITH_DEBUGGING_UTIL_1
     ErrorLogger( NO_ERR_END, LOC, _proc_moduleUnsetenv, NULL);
 #endif

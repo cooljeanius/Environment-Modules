@@ -68,20 +68,20 @@ static	char	module_name[] = "locate_module.c";	/** File name of this module **/
 
 #if WITH_DEBUGGING_LOCATE
 static	char	_proc_Locate_ModuleFile[] = "Locate_ModuleFile";
-#endif
+#endif /* !WITH_DEBUGGING_LOCATE */
 #if WITH_DEBUGGING_LOCATE_1
 static	char	_proc_GetModuleName[] = "GetModuleName";
-#endif
+#endif /* WITH_DEBUGGING_LOCATE_1 */
 #if WITH_DEBUGGING_UTIL_1
 static	char	_proc_SortedDirList[] = "SortedDirList";
 static	char	_proc_SplitIntoList[] = "SplitIntoList";
-#endif
+#endif /* WITH_DEBUGGING_UTIL_1 */
 #if WITH_DEBUGGING_UTIL_2
 static	char	_proc_FreeList[] = "FreeList";
-#endif
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
-static	char	buf[ MOD_BUFSIZE];
-static	char	modfil_buf[ MOD_BUFSIZE];
+static	char	buf[MOD_BUFSIZE];
+static	char	modfil_buf[MOD_BUFSIZE];
 
 /** ************************************************************************ **/
 /**				    PROTOTYPES				     **/
@@ -360,16 +360,14 @@ unwind0:
  ** ************************************************************************ **
  ++++*/
 
-static	char	*GetModuleName(	Tcl_Interp	*interp,
-			     	char		*path,
-				char		*prefix,
-			     	char		*modulename)
+static char *GetModuleName(Tcl_Interp *interp, char *path, char *prefix,
+						   char *modulename)
 {
     struct stat	  stats;		/** Buffer for the stat() systemcall **/
     char	 *fullpath = NULL;	/** Buffer for creating path names   **/
     char	 *Result = NULL;	/** Our return value		     **/
-    char	**filelist = NULL;	/** Buffer for a list of possible    **/
-					/** module files		     **/
+    char	**filelist = NULL;	/** Buffer for a list of possible
+								 ** module files		     **/
     int		  numlist;		/** Size of this list		     **/
     int		  i, slen, is_def;
     char	 *s, *t;		/** Private string buffer	     **/
@@ -377,131 +375,151 @@ static	char	*GetModuleName(	Tcl_Interp	*interp,
     char	 *mod1, *ver1;		/** Temp pointer		     **/
 
 #if WITH_DEBUGGING_LOCATE_1
-    ErrorLogger( NO_ERR_START, LOC, _proc_GetModuleName, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_GetModuleName, NULL);
+#endif /* WITH_DEBUGGING_LOCATE_1 */
     /**
      **  Split the modulename into module and version. Use a private buffer
      **  for this
      **/
-    if((char *) NULL == (s = stringer(NULL, 0,  modulename, NULL))) {
-	ErrorLogger( ERR_ALLOC, LOC, NULL);
-	goto unwind0;
+    if ((char *)NULL == (s = stringer(NULL, 0,  modulename, NULL))) {
+		ErrorLogger(ERR_ALLOC, LOC, NULL);
+		goto unwind0;
     }
-    slen = strlen( s) + 1;
+    slen = (int)(strlen(s) + 1);
     mod = s;
-    if( ver = strrchr( mod, '/'))
-	*ver++ = '\0';
-    /**
-     **  Allocate a buffer for full pathname building
-     **/
-    if((char *) NULL == (fullpath = stringer(NULL, MOD_BUFSIZE, NULL))) {
-	if( OK != ErrorLogger( ERR_STRING, LOC, NULL)) {
-	    goto unwind1;
+	/* assume that the '=' here is correct, because otherwise 'ver' would not
+	 * be initialized here yet (I think): */
+    if ((ver = strrchr(mod, '/'))) {
+		*ver++ = '\0';
 	}
+    /**
+     **  Allocate a buffer for full pathname building:
+     **/
+    if ((char *)NULL == (fullpath = stringer(NULL, MOD_BUFSIZE, NULL))) {
+		if (OK != ErrorLogger(ERR_STRING, LOC, NULL)) {
+			goto unwind1;
+		}
     }
     /**
      **  Check whether $path/$prefix/$modulename is a directory.
      **/
-    if( prefix) {
-	if((char *) NULL == stringer(fullpath, MOD_BUFSIZE,
-	path,"/",prefix,"/",modulename, NULL))
-	    goto unwind1;
+    if (prefix) {
+		if ((char *)NULL == stringer(fullpath, MOD_BUFSIZE, path, "/", prefix,
+									 "/", modulename, NULL)) {
+			goto unwind1;
+		}
     } else {
-	if((char *) NULL == stringer(fullpath, MOD_BUFSIZE,
-	path,"/",modulename, NULL))
-	    goto unwind1;
+		if ((char *)NULL == stringer(fullpath, MOD_BUFSIZE, path, "/",
+									 modulename, NULL)) {
+			goto unwind1;
+		}
     }
-    if( !stat( fullpath, &stats) && S_ISDIR( stats.st_mode)) {
-	/**
-	 ** So the full modulename is $modulename/default.  Recurse on that.
-	 **/
-	if((char *) NULL == (t = stringer(NULL, 0, modulename, "/",
-					  _default, NULL)))
-	    goto unwind1;
-	Result = GetModuleName( interp, path, prefix, t);
-	null_free((void *) &t);
-	null_free((void *) &fullpath);
-	null_free((void *) &s);
-	return( Result);
+    if (!stat(fullpath, &stats) && S_ISDIR(stats.st_mode)) {
+		/**
+		 ** So the full modulename is $modulename/default.  Recurse on that.
+		 **/
+		if ((char *)NULL == (t = stringer(NULL, 0, modulename, "/",
+										  _default, NULL))) {
+			goto unwind1;
+		}
+		Result = GetModuleName(interp, path, prefix, t);
+		null_free((void *)&t);
+		null_free((void *)&fullpath);
+		null_free((void *)&s);
+		return (Result);
     }
 
     /**
-     **  Check whether $path/$prefix/$mod is a directory
+     **  Check whether $path/$prefix/$mod is a directory:
      **/
-    if( prefix) {
-	if((char *) NULL == stringer(fullpath, MOD_BUFSIZE,
-	path,"/",prefix,"/",mod, NULL))
-	    goto unwind1;
+    if (prefix) {
+		if ((char *)NULL == stringer(fullpath, MOD_BUFSIZE, path, "/", prefix,
+									 "/", mod, NULL)) {
+			goto unwind1;
+		}
     } else {
-	if((char *) NULL == stringer(fullpath, MOD_BUFSIZE,
-	path,"/",mod, NULL))
-	    goto unwind1;
+		if ((char *)NULL == stringer(fullpath, MOD_BUFSIZE, path, "/",
+									 mod, NULL)) {
+			goto unwind1;
+		}
     }
-    is_def = !strcmp( mod, _default);
+    is_def = !strcmp(mod, _default);
 
-    if( is_def || !stat( fullpath, &stats)) {
-	/**
-	 **  If it is a directory
-	 **/
-    	if( !is_def && S_ISDIR( stats.st_mode)) {
-	    /**
-	     **  Source the ".modulerc" file if it exists
-	     **  For compatibility source the .version file, too
-	     **/
-	    if( prefix) {
-		if((char *) NULL == stringer(modfil_buf, MOD_BUFSIZE,
-		prefix,"/",mod, NULL))
-		    goto unwind2;
-	    } else {
-		if((char *) NULL == stringer(modfil_buf, MOD_BUFSIZE,mod, NULL))
-		    goto unwind2;
-	    }
-
-	    if((char *) NULL == stringer(fullpath, MOD_BUFSIZE,
-	    path,"/",modfil_buf, NULL))
-		goto unwind2;
-	    g_current_module = modfil_buf;
-
-	    if(	TCL_ERROR == SourceRC( interp, fullpath, modulerc_file) ||
-		TCL_ERROR == SourceVers( interp, fullpath, modfil_buf)) {
-		/* flags = save_flags; */
-		    goto unwind2;
-	    }
-	    /**
-	     **  After sourcing the RC files, we have to look up versions again
-	     **/
-	    if( VersionLookup( modulename, &mod1, &ver1)) {
-		int len = strlen( mod1) + strlen( ver1) + 2;
+    if (is_def || !stat(fullpath, &stats)) {
 		/**
-		 **  Maybe we have to enlarge s
+		 **  If it is a directory, then do this:
 		 **/
-		if( len > slen) {
-		    null_free((void *) &s);
-		    if((char *) NULL == (s = stringer( NULL, len, NULL))) {
-			ErrorLogger( ERR_STRING, LOC, NULL);
-			goto unwind2;
-		    }
-		    slen = len;
-		}
-		/**
-		 **  Print the new module/version in the buffer
-		 **/
-		if((char *) NULL == stringer( s, len, mod1,"/", ver1, NULL)) {
-		    ErrorLogger( ERR_STRING, LOC, NULL);
-		    goto unwind2;
-		}
-		mod = s;
-		if( ver = strchr( s, '/'))
-		    *ver++ = '\0';
-	    }
-	    /**
-	     **  recursively delve into subdirectories (until ver == NULL).
-	     **/
-	    if( ver) {
-		int len = strlen( mod) + 1;
+    	if (!is_def && S_ISDIR( stats.st_mode)) {
+			/**
+			 **  Source the ".modulerc" file if it exists.
+			 **  For compatibility source the .version file, too.
+			 **/
+			if (prefix) {
+				if ((char *)NULL == stringer(modfil_buf, MOD_BUFSIZE,
+											 prefix, "/", mod, NULL)) {
+					goto unwind2;
+				}
+			} else {
+				if ((char *)NULL == stringer(modfil_buf, MOD_BUFSIZE,
+											 mod, NULL)) {
+					goto unwind2;
+				}
+			}
 
-		if( prefix)
-		    len += strlen( prefix) +1;
+			if ((char *)NULL == stringer(fullpath, MOD_BUFSIZE, path, "/",
+										 modfil_buf, NULL)) {
+				goto unwind2;
+			}
+			g_current_module = modfil_buf;
+
+			if ((TCL_ERROR == SourceRC(interp, fullpath, modulerc_file)) ||
+				(TCL_ERROR == SourceVers(interp, fullpath, modfil_buf))) {
+				/* flags = save_flags; */
+				goto unwind2;
+			}
+			/**
+			 **  After sourcing the RC files, we have to look up the
+			 **  versions again:
+			 **/
+			if (VersionLookup(modulename, &mod1, &ver1)) {
+				int len = (int)(strlen(mod1) + strlen(ver1) + 2);
+				/**
+				 **  Maybe we have to enlarge s:
+				 **/
+				if (len > slen) {
+					null_free((void *)&s);
+					if((char *)NULL == (s = stringer( NULL, len, NULL))) {
+						ErrorLogger( ERR_STRING, LOC, NULL);
+						goto unwind2;
+					}
+					slen = len;
+					/* dummy condition to use 'slen': */
+					if (slen == 0) {
+						;
+					}
+				}
+				/**
+				 **  Print the new module/version in the buffer:
+				 **/
+				if ((char *)NULL == stringer(s, len, mod1, "/", ver1, NULL)) {
+					ErrorLogger(ERR_STRING, LOC, NULL);
+					goto unwind2;
+				}
+				mod = s;
+				if (ver = strchr(s, (int)'/')) {
+					*ver++ = '\0';
+				}
+			}
+			/**
+			 **  recursively delve into subdirectories (until ver == NULL).
+			 **/
+	    if (ver) {
+			int len;
+			len = (int)(strlen(mod) + 1);
+
+			if (prefix) {
+				len += (strlen(prefix) + 1);
+			}
 		/**
 		 **  Build the new prefix
 		 **/
@@ -536,7 +554,7 @@ unwindt:
 		    goto unwind2;
 		}
 	    }
-	} else {     /** if( $path/$prefix/$mod is a directory) **/
+	} else {     /** if ($path/$prefix/$mod is a directory) **/
 	    /**
 	     **  Now 'mod' should be either a file or the word 'default'
 	     **  In case of default get the file with the highest version number
@@ -549,19 +567,19 @@ unwindt:
 		&numlist)))
 		    goto unwind1;
 
-		prefix = (char *) NULL;
+		prefix = (char *)NULL;
 		/**
 		 **  Select the first one on the list which is either a
 		 **  modulefile or another directory. We start at the highest
 		 **  lexicographical name in the directory since the filelist
 		 **  is reverse sorted.
-		 **  If it's a directory, we delve into it.
+		 **  If it is a directory, then we delve into it.
 		 **/
 		for( i=0; i<numlist && Result==NULL; i++) {
 		    /**
 		     **  Build the full path name and check if it is a
 		     **  directory. If it is, recursively try to find there what
-		     **  we're seeking for
+		     **  we are/were seeking for
 		     **/
 		    if ((char *)NULL == stringer(fullpath, MOD_BUFSIZE,
 			path, "/", filelist[i], NULL))
@@ -577,8 +595,8 @@ unwindt:
 			if( check_magic( fullpath, MODULES_MAGIC_COOKIE,
 			    MODULES_MAGIC_COOKIE_LENGTH))
 			    Result = filelist[ i];
-		    } /** if( !stat) **/
-		} /** for **/
+		    } /** end "if (!stat)" **/
+		} /** end for-loop **/
 	    } else {  /** default **/
 		/**
 		 **  If mod names a file, we have to check wheter it exists and
@@ -596,11 +614,13 @@ unwindt:
 	     **  Build the full filename (using prefix and Result) if
 	     **  Result is defined
 	     **/
-	    if( Result) {
-		int len = strlen( Result) + 1;
+	    if (Result) {
+			int len;
+			len = (int)(strlen(Result) + 1);
 
-		if( prefix)
-		    len += strlen( prefix) + 1;
+			if (prefix) {
+				len += (strlen(prefix) + 1);
+			}
 
 		if((char *) NULL == (t = stringer(NULL, len, NULL))) {
 		   ErrorLogger( ERR_STRING, LOC, NULL);
@@ -627,21 +647,21 @@ unwindt2:
      **/
     null_free((void*) &fullpath);
     null_free((void*) &s);
-    FreeList( filelist, numlist);
+    FreeList(filelist, numlist);
 
 #if WITH_DEBUGGING_LOCATE_1
-    ErrorLogger( NO_ERR_END, LOC, _proc_GetModuleName, NULL);
-#endif
-    return( Result);			/** -------- EXIT (SUCCESS) -------> **/
+    ErrorLogger(NO_ERR_END, LOC, _proc_GetModuleName, NULL);
+#endif /* WITH_DEBUGGING_LOCATE_1 */
+    return (Result);			/** -------- EXIT (SUCCESS) -------> **/
 
 unwind2:
-    null_free((void *) &fullpath);
+    null_free((void *)&fullpath);
 unwind1:
-    null_free((void *) &s);
+    null_free((void *)&s);
 unwind0:
     return(NULL);			/** -------- EXIT (FAILURE) -------> **/
 
-} /** End of 'GetModuleName' **/
+} /** End of 'GetModuleName' (that was a lengthy function...) **/
 
 /*++++
  ** ** Function-Header ***************************************************** **
@@ -675,10 +695,8 @@ unwind0:
  ** ************************************************************************ **
  ++++*/
 
-char	**SortedDirList(	Tcl_Interp	*interp,
-		     		char		*path,
-		     		char		*modulename,
-		     		int		*listcnt)
+char **SortedDirList(Tcl_Interp *interp, char *path, char *modulename,
+					 int *listcnt)
 {
     struct dirent	*file;		/** Directory entry		     **/
     struct stat    	 stats;		/** Stat buffer			     **/
@@ -691,67 +709,78 @@ char	**SortedDirList(	Tcl_Interp	*interp,
 			 pathlen;	/** String length of 'fullpath'	     **/
 
 #if WITH_DEBUGGING_UTIL_1
-    ErrorLogger( NO_ERR_START, LOC, _proc_SortedDirList, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_SortedDirList, NULL);
+#endif /* WITH_DEBUGGING_UTIL_1 */
     /**
      **  Allocate memory for the list to be created. Suggest a list size of
      **  100 Elements. This may be changed later on.
      **/
-    if(!(filelist = (char**) module_malloc((n = 100)*sizeof(char*))))
-	if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
-	    goto unwind0;
+    if (!(filelist = (char**)module_malloc((size_t)((unsigned long)(n = 100) * sizeof(char*))))) {
+		if (OK != ErrorLogger( ERR_ALLOC, LOC, NULL)) {
+			goto unwind0;
+		}
+	}
     /**
      **  Form the suggested module file name out of the passed path and
      **  the name of the module. Alloc memory in order to do this.
      **/
-    if((char *) NULL == (full_path = stringer(NULL, 0,
-	path,"/",modulename, NULL)))
-	if( OK != ErrorLogger( ERR_STRING, LOC, NULL))
-	    goto unwind0;
-    pathlen = strlen(full_path);
+    if ((char *)NULL == (full_path = stringer(NULL, 0, path, "/",
+											  modulename, NULL))) {
+		if (OK != ErrorLogger(ERR_STRING, LOC, NULL)) {
+			goto unwind0;
+		}
+	}
+    pathlen = (int)strlen(full_path);
 
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_DEBUG, LOC, "full_path='", full_path, "'", NULL);
-#endif
+    ErrorLogger(NO_ERR_DEBUG, LOC, "full_path='", full_path, "'", NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
     /**
-     **  Check whether this file exists. If it doesn't free up everything
-     **  and return on failure
+     **  Check whether this file exists. If it does NOT, then free up everything
+     **  and return on failure:
      **/
-    if( stat( full_path, &stats))
-	goto unwind2;
+    if (stat(full_path, &stats)) {
+		goto unwind2;
+	}
     /**
-     **  If the suggested module file is a regular one, we've found what we've
-     **  seeked for. Put it on the top of the list and return.
+     **  If the suggested module file is a regular one, we have found what
+	 **  we had sought for. Put it on the top of the list and return.
      **/
-    if( S_ISREG( stats.st_mode)) {
-	*listcnt = 1;
-	filelist[0] = strdup( modulename);
-
+    if (S_ISREG(stats.st_mode)) {
+		*listcnt = 1;
+		filelist[0] = strdup(modulename);
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_DEBUG, LOC, "Module '", modulename, "' found", NULL);
-#endif
-
-	null_free((void*) &full_path);
-	return( filelist);		/** --- EXIT PROCEDURE (SUCCESS) --> **/
+    ErrorLogger(NO_ERR_DEBUG, LOC, "Module '", modulename, "' found", NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
+		null_free((void*)&full_path);
+		return (filelist); /** --- EXIT PROCEDURE (SUCCESS) --> **/
     }
     /**
-     **  What we've found is a directory
+     **  What we have found is a directory:
      **/
-    if( S_ISDIR( stats.st_mode)) {
-        char	*tbuf;		/** Buffer for the whole filename for each   **/
-				/** content of the directory		     **/
-        char	*mpath;		/** Pointer into *tbuf where to write the dir**/
-				/** entry				     **/
+    if (S_ISDIR(stats.st_mode)) {
+        char	*tbuf;		/** Buffer for the whole filename for each
+							 ** item in the contents of the directory **/
+        char *mpath; /** Pointer into *tbuf where to write the direntry **/
 
 	/**
 	 **  Open the directory for reading
 	 **/
-	if( NULL == (subdirp = opendir( full_path))) {
+	if (NULL == (subdirp = opendir(full_path))) {
+		/* dummy condition to use value stored to 'subdirp' outside of its
+		 * enclosing expression: */
+		if (subdirp == NULL) {
+			;
+		}
 #if 0
-	/* if you can't open the directory ... is that really an error? */
-	    if( OK != ErrorLogger( ERR_OPENDIR, LOC, full_path, NULL))
-#endif
+	/* if you cannot open the directory ... is that really an error? */
+	    if (OK != ErrorLogger(ERR_OPENDIR, LOC, full_path, NULL)) {
+			goto unwind2;
+		}
+#endif /* 0 */
 	    goto unwind2;
+	} else {
+		subdirp = opendir(full_path);
 	}
 	/**
 	 **  Allocate a buffer for constructing complete file names
@@ -766,28 +795,29 @@ char	**SortedDirList(	Tcl_Interp	*interp,
 	 **  Now scan all entries of the just opened directory
 	 **/
 #if WITH_DEBUGGING_UTIL_2
-	ErrorLogger( NO_ERR_DEBUG, LOC, "Reading directory '", full_path, "'", NULL);
-#endif
-	for( file = readdir( subdirp), i = 0, j = 0;
-	     file != NULL;
-	     file = readdir( subdirp), i++) {
+	ErrorLogger(NO_ERR_DEBUG, LOC, "Reading directory '", full_path, "'", NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
+	for ((file = readdir(subdirp)), (i = 0), (j = 0);
+	     (file != NULL); (file = readdir(subdirp)), i++) {
 	    /**
 	     **  Oops! This one exceeds our array. Enlarge it.
 	     **/
-	    if( j == n)
-		if(!(filelist = (char**)
-			module_realloc((char*) filelist, (n*=2)*sizeof(char*))))
-		    if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
-			goto unwindt;
+	    if (j == n) {
+			if (!(filelist = (char**)module_realloc((char*)filelist,
+													(size_t)((unsigned long)(n *= 2) * sizeof(char*))))) {
+				if (OK != ErrorLogger( ERR_ALLOC, LOC, NULL)) {
+					goto unwindt;
+				}
+			}
+		}
 	    /**
 	     **  Now, if we got a real entry which is not '.*' or '..' and
 	     **  finally is not a temporary file (which are defined to end
 	     **  on '~' ...
 	     **/
-	    if( file->d_name                &&
-                *file->d_name != '.'        &&
-                strcmp( file->d_name, "..")  &&
-                file->d_name[ NLENGTH( file) - 1] != '~') {
+	    if (file->d_name && (*file->d_name != '.') &&
+			strcmp(file->d_name, "..") &&
+			(file->d_name[(NLENGTH(file) - 1)] != '~')) {
 		/**
 		 **  ... build the full pathname and check for the magic
 		 **  cookie or for another directory level in order to
@@ -841,19 +871,20 @@ unwindt:
 /** ??? What about links ??? **/
 
 unwind3:
-    if( -1 == closedir( subdirp))
-	ErrorLogger( ERR_CLOSEDIR, LOC, full_path, NULL);
+    if (-1 == closedir(subdirp)) {
+		ErrorLogger(ERR_CLOSEDIR, LOC, full_path, NULL);
+	}
 unwind2:
-    null_free((void*) &full_path);
+    null_free((void*)&full_path);
 unwind1:
-    FreeList( filelist, n);
+    FreeList(filelist, n);
 
 unwind0:
 #if WITH_DEBUGGING_UTIL_1
-    ErrorLogger( NO_ERR_END, LOC, _proc_SortedDirList, NULL);
-#endif
+    ErrorLogger(NO_ERR_END, LOC, _proc_SortedDirList, NULL);
+#endif /* WITH_DEBUGGING_UTIL_1 */
 
-    return( NULL);			/** --- EXIT PROCEDURE (FAILURE) --> **/
+    return (NULL); /** --- EXIT PROCEDURE (FAILURE) --> **/
 
 } /** End of 'SortedDirList' **/
 
@@ -885,85 +916,93 @@ unwind0:
  ** ************************************************************************ **
  ++++*/
 
-char	**SplitIntoList(	Tcl_Interp	*interp,
-		     		char		*pathenv,
-		     		int		*numpaths,
-				const char	*delim)
+char **SplitIntoList(Tcl_Interp *interp, char *pathenv, int *numpaths,
+					 const char *delim)
 {
-    char	**pathlist = NULL;	/** Temporary base pointer for the   **/
-					/** array to be created		     **/
-    char	 *givenpath = NULL;	/** Temporary buffer used to tokenize**/
-					/** the passed input path	     **/
+    char	**pathlist = NULL;	/** Temporary base pointer for the
+								 ** array to be created **/
+    char	 *givenpath = NULL;	/** Temporary buffer used to tokenize
+								 ** the passed input path **/
     char	 *dirname = NULL;	/** Token pointer		     **/
-    int     	  i, 			/** Counts the number of elements    **/
+    int   i, 			/** Counts the number of elements    **/
 		  n;			/** Size of the array		     **/
 
 #if WITH_DEBUGGING_UTIL_1
-    ErrorLogger( NO_ERR_START, LOC, _proc_SplitIntoList, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_SplitIntoList, NULL);
+#endif /* WITH_DEBUGGING_UTIL_1 */
     /**
      **  Paramter check
      **/
-    if( !pathenv)
-	if( OK != ErrorLogger( ERR_PARAM, LOC, "pathenv", NULL))
-	    goto unwind0;
+    if (!pathenv) {
+		if (OK != ErrorLogger(ERR_PARAM, LOC, "pathenv", NULL)) {
+			goto unwind0;
+		}
+	}
     /**
      **  Allocate space to copy in the value of the path value to
-     **  split. Thus this procedure doesn't change its input parameters.
+     **  split. Thus this procedure does NOT change its input parameters.
      **/
-    if( (char *) NULL == (givenpath = stringer(NULL,0, pathenv,NULL)))
-	if( OK != ErrorLogger( ERR_STRING, LOC, NULL))
-	    goto unwind0;
+    if ((char *)NULL == (givenpath = stringer(NULL, 0, pathenv, NULL))) {
+		if (OK != ErrorLogger(ERR_STRING, LOC, NULL)) {
+			goto unwind0;
+		}
+	}
     /**
      **  Allocate the list which is an array of char*.  n is used to
      **  manage the array's growth if there are more than 100 paths in
      **  the list.
      **  Copy the passed path into the new buffer.
      **/
-    if(!(pathlist = (char**) module_malloc((n = 100)*sizeof( char*))))
-	if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
-	    goto unwind1;
+    if (!(pathlist = (char**)module_malloc((size_t)((unsigned long)(n = 100) * sizeof(char*))))) {
+		if (OK != ErrorLogger(ERR_ALLOC, LOC, NULL)) {
+			goto unwind1;
+		}
+	}
     /**
      **  Split the given path environment variable into its components.
      **/
-    for( i=0, dirname = xstrtok( givenpath, delim);
-         dirname;
-	 dirname = xstrtok( NULL, delim)) {
-	/**
-	 **  Oops! The number of tokens exceed my array - reallocate it
-	 **  and double its size!
-	 **/
-	if( i == n )
-	    if(!(pathlist = (char**) module_realloc((char*) pathlist,
-		(n *= 2)*sizeof(char*))))
-		if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
-		    goto unwind1;
-	/**
-	 **  Put the token into the array. Therefor a new area is allocated for
-	 **  the token using 'xdup' - which expands 1 level of env.vars.
-	 **/
-	if( NULL == (pathlist[ i++] = xdup( dirname)))
-	    if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL)) {
-		FreeList( pathlist, --i);
-		goto unwind1;
-	    }
-    } /** for **/
+    for ((i = 0), (dirname = xstrtok(givenpath, delim)); dirname;
+		 (dirname = xstrtok(NULL, delim))) {
+		/**
+		 **  Oops! The number of tokens exceed my array - reallocate it
+		 **  and double its size!
+		 **/
+		if (i == n) {
+			if (!(pathlist = (char**)module_realloc((char*)pathlist,
+													(size_t)((unsigned long)(n *= 2) * sizeof(char*))))) {
+				if (OK != ErrorLogger(ERR_ALLOC, LOC, NULL)) {
+					goto unwind1;
+				}
+			}
+		}
+		/**
+		 **  Put the token into the array. Therefore a new area is allocated for
+		 **  the token using 'xdup' - which expands 1 level of env.vars.
+		 **/
+		if (NULL == (pathlist[i++] = xdup(dirname))) {
+			if (OK != ErrorLogger(ERR_ALLOC, LOC, NULL)) {
+				FreeList(pathlist, --i);
+				goto unwind1;
+			}
+		}
+    } /** end for-loop **/
     /**
      **  Free up the temporary working array
      **/
-    if( givenpath)
-	null_free((void*) &givenpath);
+    if (givenpath) {
+		null_free((void*) &givenpath);
+	}
     /**
      **  Set up the return value (Number of elements allocated) and pass
      **  the arrays base pointer to the caller
      **/
     *numpaths = i;
-    return( pathlist);
+    return (pathlist);
 
 unwind1:
-    null_free((void *) &givenpath);
+    null_free((void *)&givenpath);
 unwind0:
-    return( NULL);			/** -------- EXIT FAILURE -------> **/
+    return (NULL); /** -------- EXIT FAILURE -------> **/
 } /** End of 'SplitIntoList' **/
 
 #ifndef FreeList
@@ -987,14 +1026,13 @@ unwind0:
  ** ************************************************************************ **
  ++++*/
 
-void FreeList(	char	**list,
-		int	  numelem)
+void FreeList(char **list, int numelem)
 {
     register int j;
 
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_START, LOC, _proc_FreeList, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_FreeList, NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
     /**
      **  Nothing to do ?
      **/
@@ -1044,84 +1082,92 @@ int SourceRC(Tcl_Interp *interp, char *path, char *name)
     int 	  save_flags, i = 0;
     char	 *buffer;
     int		  Result = TCL_OK;
-    static char	**srclist = (char **) NULL;
+    static char	**srclist = (char **)NULL;
     static int	  listsize = 0, listndx = 0;
 
+	/* dummy condition to use 'i': */
+	if (i == 0) {
+		;
+	}
+
     /**
-     **  If there's a problem with the input parameters it means, that
+     **  If there is a problem with the input parameters it means, that
      **  we do not have to source anything
      **  Only a valid TCL interpreter should be there
      **/
-    if( !path || !name)
-	return( TCL_OK);
+    if (!path || !name) {
+		return (TCL_OK);
+	}
 
-    if( !interp)
-	return( TCL_ERROR);
+    if (!interp) {
+		return (TCL_ERROR);
+	}
     /**
      **  Build the full name of the RC file
      **  Avoid duplicate sourcing
      **/
-    if ((char *) NULL == (buffer = stringer(NULL, 0, path,"/",name, NULL)))
-	if( OK != ErrorLogger( ERR_STRING, LOC, NULL))
-	    goto unwind0;
+    if ((char *)NULL == (buffer = stringer(NULL, 0, path,"/", name, NULL))) {
+		if (OK != ErrorLogger(ERR_STRING, LOC, NULL)) {
+			goto unwind0;
+		}
+	}
     /**
      **  Check whether the RC file exists and has the magic cookie inside
      **/
-    if( !stat( buffer, &stats)) {
-	if( check_magic( buffer, MODULES_MAGIC_COOKIE,
-	    MODULES_MAGIC_COOKIE_LENGTH)) {
-	    /**
-	     **  Set the flags to 'load only'. This prevents from accidently
-	     **  printing something
-	     **/
-	    save_flags = g_flags;
-	    g_flags = M_LOAD;
-	    /**
-	     **  Source now
-	     **/
-	    if( TCL_ERROR == Execute_TclFile( interp, buffer))
-		if( OK != ErrorLogger( ERR_SOURCE, LOC, buffer, NULL))
-		    Result = TCL_ERROR;
-	    g_flags = save_flags;
-	    /**
-	     **  Save the currently sourced file in the list
-	     **  Check whether the list is big enough to fit in a new entry
-	     **/
-	    if( !listsize) {
-		listsize = SRCFRAG;
-		if((char **) NULL
-			== (srclist = (char **) module_malloc( listsize *
-		    sizeof( char **)))) {
-		    ErrorLogger( ERR_ALLOC, LOC, NULL);
-		    goto unwind1;
+    if (!stat(buffer, &stats)) {
+		if (check_magic(buffer, MODULES_MAGIC_COOKIE,
+						MODULES_MAGIC_COOKIE_LENGTH)) {
+			/**
+			 **  Set the flags to 'load only'. This prevents from accidently
+			 **  printing something
+			 **/
+			save_flags = g_flags;
+			g_flags = M_LOAD;
+			/**
+			 **  Source now
+			 **/
+			if (TCL_ERROR == Execute_TclFile(interp, buffer)) {
+				if (OK != ErrorLogger(ERR_SOURCE, LOC, buffer, NULL)) {
+					Result = TCL_ERROR;
+				}
+			}
+			g_flags = save_flags;
+			/**
+			 **  Save the currently sourced file in the list
+			 **  Check whether the list is big enough to fit in a new entry
+			 **/
+			if (!listsize) {
+				listsize = SRCFRAG;
+				if ((char **)NULL == (srclist = (char **)module_malloc((size_t)((unsigned long)listsize * sizeof(char **))))) {
+					ErrorLogger(ERR_ALLOC, LOC, NULL);
+					goto unwind1;
+				}
+			} else if ((listndx + 1) >= listsize) {
+				listsize += SRCFRAG;
+				if (!(srclist = (char **)module_realloc(srclist,
+														(size_t)((unsigned long)listsize * sizeof(char **))))) {
+					ErrorLogger(ERR_ALLOC, LOC, NULL);
+					goto unwind1;
+				}
+			}
+			/**
+			 **  Put the current RC files name on the list:
+			 **/
+			srclist[listndx++] = buffer;
+		} else {
+			ErrorLogger(ERR_MAGIC, LOC, buffer, NULL);
+			null_free((void *)&buffer);
 		}
-	    } else if( listndx + 1 >= listsize) {
-		listsize += SRCFRAG;
-		if(!(srclist = (char **) module_realloc( srclist,
-		    listsize * sizeof( char **)))) {
-		    ErrorLogger( ERR_ALLOC, LOC, NULL);
-		    goto unwind1;
-		}
-	    }
-	    /**
-	     **  Put the current RC files name on the list
-	     **/
-	    srclist[ listndx++] = buffer;
-
-	} else {
-	    ErrorLogger( ERR_MAGIC, LOC, buffer, NULL);
-	    null_free((void *) &buffer);
-	}
-    } /** if( !stat) **/
+    } /** end "if (!stat)" **/
     /**
      **  Return our result
      **/
-    return( Result);
+    return (Result);
 
 unwind1:
-    null_free((void *) &buffer);
+    null_free((void *)&buffer);
 unwind0:
-    return( TCL_ERROR);
+    return (TCL_ERROR);
 
 } /** End of 'SourceRC' **/
 

@@ -151,21 +151,21 @@ static	char	module_name[] = "main.c";	/** File name of this module **/
 
 #if WITH_DEBUGGING
 static	char	_proc_main[] = "main";
-#endif
+#endif /* WITH_DEBUGGING */
 #if WITH_DEBUGGING_MODULECMD
 static	char	_proc_Module_Usage[] = "Module_Usage";
-#endif
+#endif /* WITH_DEBUGGING_MODULECMD */
 #if WITH_DEBUGGING_INIT
 static	char	_proc_Check_Switches[] = "Check_Switches";
 static	char	_proc_Tcl_AppInit[] = "Tcl_AppInit";
-#endif
+#endif /* WITH_DEBUGGING_INIT */
 
 /** ************************************************************************ **/
 /**				    PROTOTYPES				     **/
 /** ************************************************************************ **/
 
-static int	Check_Switches( int *argc, char *argv[]);
-static void	version (FILE *output);
+static int	Check_Switches(int *argc, char *argv[]);
+static void	version(FILE *output);
 
 /*++++
  ** ** Function-Header ***************************************************** **
@@ -191,7 +191,8 @@ static void	version (FILE *output);
  ** ************************************************************************ **
  ++++*/
 
-int	main( int argc, char *argv[], char *environ[]) {
+/* since when does 'main()' take three arguments? */
+int	main(int argc, char *argv[], char *environ[]) {
 
     Tcl_Interp	*interp;
     int          return_val = 0;
@@ -199,15 +200,15 @@ int	main( int argc, char *argv[], char *environ[]) {
     char	*rc_path;
 
 #if WITH_DEBUGGING
-    ErrorLogger( NO_ERR_START, LOC, _proc_main, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_main, NULL);
+#endif /* WITH_DEBUGGING */
     /**
      ** check if first argument is --version or -V then output the
      ** version to stdout.  This is a special circumstance handled
      ** by the regular options.
      **/
-    if (argc > 1 && *argv[1] == '-') {
-        if (!strcmp("-V", argv[1]) || !strcmp("--version", argv[1])) {
+    if ((argc > 1) && (*argv[1] == '-')) {
+        if ((!strcmp("-V", argv[1])) || (!strcmp("--version", argv[1]))) {
 			version(stdout);
 			return 0;
         }
@@ -218,18 +219,21 @@ int	main( int argc, char *argv[], char *environ[]) {
      **  initialization function in case of invalid command line arguments.
      **/
 
-    if( TCL_OK != Initialize_Tcl( &interp, argc, argv, environ))
+    if (TCL_OK != Initialize_Tcl(&interp, argc, argv, environ)) {
 		goto unwind0;
+	}
 
-    if( TCL_OK != Setup_Environment( interp))
+    if (TCL_OK != Setup_Environment(interp)) {
 		goto unwind0;
+	}
 
     /**
      **  Check for command line switches
      **/
 
-    if( TCL_OK != Check_Switches( &argc, argv))
+    if (TCL_OK != Check_Switches(&argc, argv)) {
 		goto unwind0;
+	}
 
     /**
      **  Figure out, which global RC file to use. This depends on the environ-
@@ -241,41 +245,43 @@ int	main( int argc, char *argv[], char *environ[]) {
      **  Use xgetenv to expand 1 level of env.vars.
      **/
 
-    if((rc_name = xgetenv( "MODULERCFILE"))) {
+    if ((rc_name = xgetenv("MODULERCFILE"))) {
 		/* found something in MODULERCFILE */
-		if((char *) NULL == (rc_path = stringer(NULL,0,rc_name,NULL))) {
-			if( OK != ErrorLogger( ERR_STRING, LOC, NULL))
+		if ((char *)NULL == (rc_path = stringer(NULL, 0, rc_name, NULL))) {
+			if (OK != ErrorLogger(ERR_STRING, LOC, NULL)) {
 				goto unwind1;
-			else
-				null_free((void *) &rc_name);
+			} else {
+				null_free((void *)&rc_name);
+			}
 		} else {
-			null_free((void *) &rc_name);
-			if((char *) NULL == (rc_name = strrchr( rc_path, '/'))) {
+			null_free((void *)&rc_name);
+			if ((char *)NULL == (rc_name = strrchr(rc_path, '/'))) {
 				rc_name = rc_path;
 				rc_path = instpath;
-			} else
+			} else {
 				*rc_name++ = '\0';
-			if( !*rc_name) {
+			}
+			if (!*rc_name) {
 				rc_name = rc_file;
 			}
 		}
     } else {
 		rc_path = instpath;
-		null_free((void *) &rc_name);
+		null_free((void *)&rc_name);
 		rc_name = rc_file;
     }
 
     /**
      **  Finally we have to change PREFIX -> PREFIX/etc
      **/
-
-    if( rc_path == instpath) {
-		if((char *) NULL == (rc_path = stringer(NULL,0, instpath,"/etc",NULL))){
-			if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
+    if (rc_path == instpath) {
+		if ((char *)NULL == (rc_path = stringer(NULL, 0, instpath,
+												"/etc", NULL))) {
+			if (OK != ErrorLogger(ERR_ALLOC, LOC, NULL)) {
 				goto unwind1;
-			else
+			} else {
 				rc_path = NULL;
-
+			}
 		}
     }
 
@@ -283,43 +289,44 @@ int	main( int argc, char *argv[], char *environ[]) {
      **  Source the global and the user defined RC file
      **/
 
-    g_current_module = (char *) NULL;
+    g_current_module = (char *)NULL;
 
-    if( TCL_ERROR == SourceRC( interp, rc_path, rc_name) ||
-	   TCL_ERROR == SourceRC( interp, getenv( "HOME"), modulerc_file))
-		exit( 1);
+    if ((TCL_ERROR == SourceRC(interp, rc_path, rc_name)) ||
+		(TCL_ERROR == SourceRC(interp, getenv("HOME"), modulerc_file))) {
+		exit(1);
+	}
 
-    if( rc_path)
-		null_free((void *) &rc_path);
+    if (rc_path) {
+		null_free((void *)&rc_path);
+	}
 
     /**
      **  Invocation of the module command as specified in the command line
      **/
 
     g_flags = 0;
-    return_val = cmdModule((ClientData) 0,interp,(argc-1),
-						   (CONST84 char **) (argv + 1));
+    return_val = cmdModule((ClientData)0, interp, (argc - 1),
+						   (CONST84 char **)(argv + 1));
 
     /**
      **  If we were doing some operation that has already flushed its output,
-     **  then we don't need to re-flush the output here.
+     **  then we do NOT need to re-flush the output here.
      **
-     **  Also, if we've had an error here, then the whole modulecmd failed
-     **  and not just the values for a single modulefile.  So, we'll pass in
+     **  Also, if we have had an error here, then the whole modulecmd failed
+     **  and not just the values for a single modulefile.  So, we shall pass in
      **  a NULL here to indicate that any error message should say that
      **  absolutely NO changes were made to the environment.
      **/
-
-    if( TCL_OK == return_val) {
-		Output_Modulefile_Changes( interp);
+    if (TCL_OK == return_val) {
+		Output_Modulefile_Changes(interp);
 #ifdef HAS_X11LIBS
-		xresourceFinish( 1);
-#endif
+		xresourceFinish(1);
+#endif /* HAS_X11LIBS */
     } else {
-		Unwind_Modulefile_Changes( interp, NULL);
+		Unwind_Modulefile_Changes(interp, NULL);
 #ifdef HAS_X11LIBS
-		xresourceFinish( 0);
-#endif
+		xresourceFinish(0);
+#endif /* HAS_X11LIBS */
     }
 
     /**
@@ -329,25 +336,27 @@ int	main( int argc, char *argv[], char *environ[]) {
 
     Delete_Global_Hash_Tables();
 
-    if( line)
-		null_free((void *) &line);
-    if( error_line)
-		null_free((void *) &error_line);
+    if (line) {
+		null_free((void *)&line);
+	}
+    if (error_line) {
+		null_free((void *)&error_line);
+	}
 
     /**
-     **  This return value may be evaluated by the calling shell
+     **  This return value may be evaluated by the calling shell:
      **/
 #if WITH_DEBUGGING
-    ErrorLogger( NO_ERR_END, LOC, _proc_main, NULL);
-#endif
+    ErrorLogger(NO_ERR_END, LOC, _proc_main, NULL);
+#endif /* WITH_DEBUGGING */
 
     OutputExit();
-    return ( return_val ? return_val : g_retval);
+    return (return_val ? return_val : g_retval);
 
 unwind2:
-    null_free((void *) &rc_path);
+    null_free((void *)&rc_path);
 unwind1:
-    null_free((void *) &rc_name);
+    null_free((void *)&rc_name);
 unwind0:
 
     /* an error occurred of some type */
@@ -684,24 +693,23 @@ static int	Check_Switches( int *argc, char *argv[])
      **  Finally remove all options from the command line stream
      **/
 
-    c = optind - 1;
-    if( optind < *argc && c > 0) {
-		while( optind < *argc) {
-			argv[ optind-c] = argv[ optind];
+    c = (optind - 1);
+    if ((optind < *argc) && (c > 0)) {
+		while (optind < *argc) {
+			argv[(optind - c)] = argv[optind];
 			optind++;
 		}
 		*argc -= c;
     }
 
     /**
-     **  Exit on success
+     **  Exit on success:
      **/
-
 #if WITH_DEBUGGING_INIT
-    ErrorLogger( NO_ERR_END, LOC, _proc_Check_Switches, NULL);
-#endif
+    ErrorLogger(NO_ERR_END, LOC, _proc_Check_Switches, NULL);
+#endif /* WITH_DEBUGGING_INIT */
 
-    return( TCL_OK);
+    return (TCL_OK);
 
 } /** End of 'Check_Switches' **/
 
@@ -723,22 +731,22 @@ static int	Check_Switches( int *argc, char *argv[])
  ** ************************************************************************ **
  ++++*/
 
-#ifndef HAVE_DUP2
-int dup2( int old, int new)
+#if !defined(HAVE_DUP2) && defined(EMFILE)
+int dup2(int old, int new)
 {
     int fd;
 
     close(new);
     fd = dup(old);
     if (fd != new) {
-		close( fd);
+		close(fd);
 		errno = EMFILE;
 		fd = -1;
     }
 
-    return( fd);
+    return (fd);
 }
-#endif
+#endif /* !HAVE_DUP2 && EMFILE */
 
 /*++++
  ** ** Function-Header ***************************************************** **
@@ -762,42 +770,47 @@ int dup2( int old, int new)
  ++++*/
 
 #define str(a) #a
+#define format "%s=%s\n"
 #define isdefined(a,b)	{if (strcmp(str(a),b)) x=str(a); else x="undef"; \
 fprintf(output,format,b,x);}
 
-static void version (FILE *output) {
-	char	*x,
-	*format = "%s=%s\n";
+static void version(FILE *output) {
+	char	*x;
+	/* the "%s=%s\n"; format used to be assigned to a variable called "format",
+	 * but fprintf() wants string literals, so define it as a preprocessor
+	 * macro above instead */
 
 	fprintf(output, format, "VERSION", version_string);
 	fprintf(output, format, "DATE", date_string);
 	fprintf(output, "\n");
-	isdefined(AUTOLOADPATH,str(AUTOLOADPATH));
-	isdefined(BASEPREFIX,str(BASEPREFIX));
-	isdefined(BEGINENV,str(BEGINENV));
-	isdefined(CACHE_AVAIL,str(CACHE_AVAIL));
-	isdefined(DEF_COLLATE_BY_NUMBER,str(DEF_COLLATE_BY_NUMBER));
-	isdefined(DOT_EXT,str(DOT_EXT));
-	isdefined(EVAL_ALIAS,str(EVAL_ALIAS));
-	isdefined(HAS_BOURNE_FUNCS,str(HAS_BOURNE_FUNCS));
-	isdefined(HAS_BOURNE_ALIAS,str(HAS_BOURNE_ALIAS));
-	isdefined(HAS_TCLXLIBS,str(HAS_TCLXLIBS));
-	isdefined(HAS_X11LIBS,str(HAS_X11LIBS));
-	isdefined(LMSPLIT_SIZE,str(LMSPLIT_SIZE));
-	isdefined(MODULEPATH,str(MODULEPATH));
-	isdefined(MODULES_INIT_DIR,str(MODULES_INIT_DIR));
-	isdefined(PREFIX,str(PREFIX));
-	isdefined(TCL_VERSION,str(TCL_VERSION));
-	isdefined(TCL_PATCH_LEVEL,str(TCL_PATCH_LEVEL));
-	isdefined(TMP_DIR,str(TMP_DIR));
-	isdefined(USE_FREE,str(USE_FREE));
-	isdefined(VERSION_MAGIC,str(VERSION_MAGIC));
-	isdefined(VERSIONPATH,str(VERSIONPATH));
-	isdefined(WANTS_VERSIONING,str(WANTS_VERSIONING));
-	isdefined(WITH_DEBUG_INFO,str(WITH_DEBUG_INFO));
+	isdefined(AUTOLOADPATH, str(AUTOLOADPATH));
+	isdefined(BASEPREFIX, str(BASEPREFIX));
+	isdefined(BEGINENV, str(BEGINENV));
+	isdefined(CACHE_AVAIL, str(CACHE_AVAIL));
+	isdefined(DEF_COLLATE_BY_NUMBER, str(DEF_COLLATE_BY_NUMBER));
+	isdefined(DOT_EXT, str(DOT_EXT));
+	isdefined(EVAL_ALIAS, str(EVAL_ALIAS));
+	isdefined(HAS_BOURNE_FUNCS, str(HAS_BOURNE_FUNCS));
+	isdefined(HAS_BOURNE_ALIAS, str(HAS_BOURNE_ALIAS));
+	isdefined(HAS_TCLXLIBS, str(HAS_TCLXLIBS));
+	isdefined(HAS_X11LIBS, str(HAS_X11LIBS));
+	isdefined(LMSPLIT_SIZE, str(LMSPLIT_SIZE));
+	isdefined(MODULEPATH, str(MODULEPATH));
+	isdefined(MODULES_INIT_DIR, str(MODULES_INIT_DIR));
+	isdefined(PREFIX, str(PREFIX));
+	isdefined(TCL_VERSION, str(TCL_VERSION));
+	isdefined(TCL_PATCH_LEVEL, str(TCL_PATCH_LEVEL));
+	isdefined(TMP_DIR, str(TMP_DIR));
+	isdefined(USE_FREE, str(USE_FREE));
+	isdefined(VERSION_MAGIC, str(VERSION_MAGIC));
+	isdefined(VERSIONPATH, str(VERSIONPATH));
+	isdefined(WANTS_VERSIONING, str(WANTS_VERSIONING));
+	isdefined(WITH_DEBUG_INFO, str(WITH_DEBUG_INFO));
 
 	fprintf(output, "\n");
 }
 
 #undef str
 #undef isdefined
+
+/* EOF */

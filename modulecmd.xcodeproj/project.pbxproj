@@ -66,7 +66,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		8DD76FB20486AB0100D96B5E /* modulecmd.subproj */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = modulecmd.subproj; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DD76FB20486AB0100D96B5E /* modulecmd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = modulecmd; sourceTree = BUILT_PRODUCTS_DIR; };
 		A563BBE518F75C8100D199D6 /* cmdAlias.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdAlias.c; sourceTree = "<group>"; };
 		A563BBE618F75C8100D199D6 /* cmdChdir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdChdir.c; sourceTree = "<group>"; };
 		A563BBE718F75C8100D199D6 /* cmdConflict.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdConflict.c; sourceTree = "<group>"; };
@@ -189,7 +189,7 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DD76FB20486AB0100D96B5E /* modulecmd.subproj */,
+				8DD76FB20486AB0100D96B5E /* modulecmd */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -245,7 +245,7 @@
 			name = modulecmd;
 			productInstallPath = "$(HOME)/bin";
 			productName = modulecmd.subproj;
-			productReference = 8DD76FB20486AB0100D96B5E /* modulecmd.subproj */;
+			productReference = 8DD76FB20486AB0100D96B5E /* modulecmd */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -284,7 +284,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\n\nexport PATH=/opt/local/bin:/opt/local/sbin:$PATH\n\nsleep 1\n\necho \"Environment variables: \"\necho \" \"\n\nenv | uniq | sort | uniq\n\necho \" \"\necho \"Done printing environment, now seeing if we need to regenerate config.h...\"\necho \" \"\n\nsleep 1\n\nif test ! -e ${SRCROOT}/config.h; then\n\t${SRCROOT}/configure\nelse\n\techo \"config.h is already present\"\nfi\n\nsleep 1\n";
+			shellScript = "#!/bin/sh\n\nexport PATH=/opt/local/bin:/opt/local/sbin:${PATH}\n\nif test \"x${I_ACTUALLY_WANT_TO_READ_THE_MESSAGES}\" = \"x1\"; then\n\tsleep 1\nfi\n\necho \"Environment variables: \"\necho \" \"\n\nenv | uniq | sort | uniq\n\necho \" \"\necho \"Done printing environment, now seeing if we need to regenerate config.h...\"\necho \" \"\n\nif test \"x${I_ACTUALLY_WANT_TO_READ_THE_MESSAGES}\" = \"x1\"; then\n\tsleep 1\nfi\n\nif test ! -e ${SRCROOT}/config.h; then\n\tif test \"x${BUILD_STYLE}\" = \"xRelease\"; then\n\t\t${SRCROOT}/configure\n\telif test \"x${BUILD_STYLE}\" = \"xDebug\"; then\n\t\t${SRCROOT}/configure --enable-symbols --enable-logging --with-debug=44\n\telse\n\t\t${SRCROOT}/configure\n\tfi\nelse\n\techo \"config.h is already present\"\nfi\n\nif test \"x${I_ACTUALLY_WANT_TO_READ_THE_MESSAGES}\" = \"x1\"; then\n\tsleep 1\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -314,6 +314,7 @@
 				A563BC2118F75CAF00D199D6 /* getopt.c in Sources */,
 				A563BC2218F75CAF00D199D6 /* init.c in Sources */,
 				A563BC2318F75CAF00D199D6 /* locate_module.c in Sources */,
+				A563BD9F18F7624500D199D6 /* main.c in Sources */,
 				A563BC2418F75CAF00D199D6 /* ModuleCmd_Avail.c in Sources */,
 				A563BC2518F75CAF00D199D6 /* ModuleCmd_Clear.c in Sources */,
 				A563BC2618F75CAF00D199D6 /* ModuleCmd_Display.c in Sources */,
@@ -329,7 +330,6 @@
 				A563BC3018F75CAF00D199D6 /* ModuleCmd_Whatis.c in Sources */,
 				A563BC3318F75CBB00D199D6 /* utility.c in Sources */,
 				A563BC3418F75CBB00D199D6 /* version.c in Sources */,
-				A563BD9F18F7624500D199D6 /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -345,12 +345,13 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREFIX_HEADER = "";
 				INSTALL_PATH = /usr/local/bin;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/opt/local/lib,
 				);
-				PRODUCT_NAME = modulecmd.subproj;
+				PRODUCT_NAME = modulecmd;
 			};
 			name = Debug;
 		};
@@ -381,7 +382,12 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = modules_def.h;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TCL_COMPILE_DEBUG=1",
+					"TCL_MEM_DEBUG=1",
+				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = YES;
 				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
@@ -433,6 +439,22 @@
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wimplicit",
+					"-Wpointer-arith",
+					"-Wmissing-declarations",
+					"-Wformat=2",
+					"-Wnonnull",
+					"-Wformat-nonliteral",
+					"-Wformat-security",
+					"-Wformat-y2k",
+					"-Wstrict-prototypes",
+					"-Wbad-function-cast",
+					"-Wold-style-definition",
+					"-Wdeclaration-after-statement",
+					"-Wcast-qual",
+					"-Wmissing-noreturn",
+					"-Wnested-externs",
+					"-Wredundant-decls",
+					"-Wmissing-format-attribute",
 				);
 			};
 			name = Debug;

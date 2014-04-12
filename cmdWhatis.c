@@ -25,7 +25,7 @@
  ** 									     **
  ** Copyright 1991-1994 by John L. Furlan.                      	     **
  ** see LICENSE.GPL, which must be provided, for details		     **
- ** 									     ** 
+ ** 									     **
  ** ************************************************************************ **/
 
 static char Id[] = "@(#)$Id: 5baa4abe56ea1394baa1a5b33b827f517148b14c $";
@@ -125,22 +125,23 @@ int	cmdModuleWhatis(	ClientData	 client_data,
      **  Parameter check
      **/
 
-    if( argc < 2) {
-	if( OK != ErrorLogger( ERR_USAGE, LOC, argv[0], " string", NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+    if (argc < 2) {
+		if (OK != ErrorLogger(ERR_USAGE, LOC, argv[0], " string", NULL)) {
+			return (TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+		}
     }
-  
+
     /**
-     **  If we don't have any whatis list buffer until now, we will create one
+     **  If we do NOT have any whatis list buffer until now, then we shall
+	 **  create one:
      **/
 
-    if( !whatis) {
-	whatis_size = WHATIS_FRAG;
-	if((char **) NULL
-		== (whatis = module_malloc(whatis_size * sizeof(char *)))){
-	    ErrorLogger( ERR_ALLOC, LOC, NULL);
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
-	}
+    if (!whatis) {
+		whatis_size = WHATIS_FRAG;
+		if ((char **)NULL == (whatis = module_malloc((size_t)((unsigned long)whatis_size * sizeof(char *))))){
+			ErrorLogger(ERR_ALLOC, LOC, NULL);
+			return (TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+		}
     }
 
     /**
@@ -156,52 +157,50 @@ int	cmdModuleWhatis(	ClientData	 client_data,
     }
 
     /**
-     **  Check if printing is requested 
+     **  Check if printing is requested
      **/
 
-    if( g_flags & M_WHATIS ) {
-	while( i < argc) {
+    if (g_flags & M_WHATIS ) {
+		while (i < argc) {
+			/**
+			 **  Conditionally we have to enlarge our buffer
+			 **/
+			while ((whatis_ndx + 2) >= whatis_size) {
+				whatis_size += WHATIS_FRAG;
+				if (!(whatis = module_realloc(whatis,
+											  (size_t)((unsigned long)whatis_size * sizeof(char *))))) {
+					ErrorLogger(ERR_ALLOC, LOC, NULL);
+					return (TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
+				}
+			}
 
-	    /**
-	     **  Conditionally we have to enlarge our buffer
-	     **/
+			/**
+			 **  Put the string on the buffer
+			 **/
 
-	    while( whatis_ndx + 2 >= whatis_size) {
-		whatis_size += WHATIS_FRAG;
-		if(!(whatis = module_realloc( whatis, whatis_size *
-		    sizeof( char *)))) {
-		    ErrorLogger( ERR_ALLOC, LOC, NULL);
-		    return( TCL_ERROR);	/** -------- EXIT (FAILURE) -------> **/
-		}
-	    }
-
-	    /**
-	     **  Put the string on the buffer
-	     **/
-
-	    if((char *) NULL == (whatis[ whatis_ndx++] = strdup( argv[ i++]))) {
-		if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
-		    return( TCL_ERROR);
-		whatis_ndx--;
-	    }
-
-	} /** while **/
+			if ((char *)NULL == (whatis[whatis_ndx++] = strdup(argv[i++]))) {
+				if (OK != ErrorLogger(ERR_ALLOC, LOC, NULL)) {
+					return (TCL_ERROR);
+				}
+				whatis_ndx--;
+			}
+		} /** end while-loop **/
     } /** if **/
 
     /**
      **  Put a trailing terminator on the buffer
      **/
 
-    whatis[ whatis_ndx] = (char *) NULL;
+    whatis[whatis_ndx] = (char *)NULL;
 
 #if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_END, LOC, _proc_cmdModuleWhatis, NULL);
-#endif
+    ErrorLogger(NO_ERR_END, LOC, _proc_cmdModuleWhatis, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
 
-    return( TCL_OK);
+    return (TCL_OK);
 
 } /** End of 'cmdModuleWhatis' **/
-   
+
 /*++++
  ** ** Function-Header ***************************************************** **
  ** 									     **
@@ -220,13 +219,13 @@ int	cmdModuleWhatis(	ClientData	 client_data,
  ** ************************************************************************ **
  ++++*/
 
-void	cmdModuleWhatisInit()
+void cmdModuleWhatisInit(void)
 {
     whatis_ndx = 0;
 
 } /** End of 'cmdModuleWhatisInit' **/
 
-void	cmdModuleWhatisShut()
+void cmdModuleWhatisShut(void)
 {
     char **ptr = whatis;
 

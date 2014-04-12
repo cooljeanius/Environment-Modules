@@ -26,7 +26,8 @@ man_MANS = doc/module.1 doc/modulefile.4
 SUBDIRS = . init modulefiles @EXTDIR@ doc po
 DIST_SUBDIRS = . init modulefiles etc ext doc
 SOURCES_H = modules_def.h getopt.h config.h gettext.h
-DISTCLEANFILES = *~ .DS_Store
+DISTCLEANFILES = *~ .DS_Store config/*~ m4/*~ m4/.DS_Store po/*~ autoscan.log
+MAINTAINERCLEANFILES = aminclude_static.am configure.scan
 EXTRA_DIST = config/config.rpath  [config]dnl/config.rpath  modules_def.h getopt.h testsuite INSTALL.RH7x		\
 	init/filter init/bash.in init/sh.in init/zsh.in			\
 	init/csh.in init/ksh.in init/perl.pm.in init/python.py.in	\
@@ -74,6 +75,7 @@ SED=@SED@
 CVS=@CVS@
 GZIP=gzip
 BZIP2=bzip2
+## TODO: consider subst-ing GZIP and BZIP2?
 
 patch: $(srcdir)/configure
 	@echo "Creating patch file -- do this after CVS tagging"
@@ -95,15 +97,18 @@ tag:
 	  `${SED} -n -e 's/^.*NEW TAG.*"\(.*\)".*$$/\1/p' ${srcdir}/version.c` \
 	  modules
 
+# ChangeLog from pre-git days has been renamed as "ChangeLog-pre-git"
 ChangeLog: CL
 
-CL: rmChangeLog
+CL: rmChangeLog ./gitlog2changelog.py
 	@echo "Updating ChangeLog"
 	-@./gitlog2changelog.py
 
 rmChangeLog: NEWS
 	-@rm -f ChangeLog
 
+configure.scan: $(modulecmd_SOURCES)
+	autoscan || touch configure.scan
 
 lsm:
 # sends off the modules.lsm file to update the Linux Software Map

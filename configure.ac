@@ -239,14 +239,28 @@ PKG_PROG_PKG_CONFIG([0.9])
 
 dnl#
 dnl#-----------------------------------------------------------------------
+dnl# Checks for different scripting languages
+dnl#-----------------------------------------------------------------------
+dnl#
+AM_PATH_PYTHON
+AM_PATH_LISPDIR
+CMAKE_FIND_BINARY
+XORG_WITH_PERL
+
+dnl#
+dnl#-----------------------------------------------------------------------
 dnl# Checks for header files
 dnl#-----------------------------------------------------------------------
 dnl#
 
+AC_SYS_POSIX_TERMIOS
 AC_HEADER_DIRENT
+AC_HEADER_STAT
+AC_HEADER_TIOCGWINSZ
 AC_CHECK_HEADERS([assert.h ctype.h dejagnu.h fcntl.h libintl.h \
-	locale.h modules_def.h stdarg.h stdio.h sysconf.h syslog.h \
-	sys/ioctl.h sys/mode.h sys/termios.h termio.h varargs.h])dnl
+	locale.h modules_def.h ndir.h stdarg.h stdio.h sysconf.h syslog.h \
+	sys/dir.h sys/ioctl.h sys/mode.h sys/ndir.h sys/termios.h \
+	termio.h varargs.h])dnl
 gl_AC_HEADER_INTTYPES_H
 SC_MISSING_POSIX_HEADERS
 
@@ -263,6 +277,7 @@ SC_TCL_64BIT_FLAGS
 AC_C_PROTOTYPES
 AC_C_CONST
 AC_C_INLINE
+AC_TYPE_INTPTR_T
 AC_TYPE_UID_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
@@ -279,11 +294,13 @@ dnl#
 AC_FUNC_MALLOC
 XORG_CHECK_MALLOC_ZERO
 AC_FUNC_REALLOC
+AC_FUNC_STAT
 AC_FUNC_STRCOLL
-AC_CHECK_FUNCS([dup2 exit fread gethostname getdomainname ioctl \
-        memset mktemp qsort setlocale strchr strcspn strdup strlen \
-        strncmp strncpy strrchr strstr strtok syslog tmpnam tempnam \
-        uname])dnl
+AC_FUNC_STRNLEN
+AC_CHECK_FUNCS([atexit dup2 exit feof fread gethostname getdomainname \
+        ioctl memset mktemp qsort setlocale strchr strcpy strcspn strdup \
+        strlen strncmp strncpy strrchr strstr strtok syslog \
+        tmpnam tempnam umask uname])dnl
 AC_CHECK_DECLS([buffer, environ, index, remove, shell_name, strtok])
 
 dnl#
@@ -622,10 +639,14 @@ AC_ARG_WITH([cache-umask],
 	fi])dnl
 
 dnl#-----------------------------------------------------------------------
+dnl# "44" is the highest value that changes anything:
 
-AH_TEMPLATE([WITH_DEBUG_INFO],[WITH_DEBUG_INFO: Debug info level if defined])dnl
+AH_TEMPLATE([WITH_DEBUG_INFO],
+            [WITH_DEBUG_INFO: Debug info level if defined
+             ("44" is the highest value that changes anything)])dnl
 AC_ARG_WITH([debug],
-	[AS_HELP_STRING([--with-debug=<value>],[set debugging level <value> [[no]]])],
+	[AS_HELP_STRING([--with-debug=<value>],
+                        [set debugging level <value: 0 to 44> [[no]]])],
 	[if test "x${withval}" != "xno"; then
 		test "x${withval}" = "xyes" && withval="1"
 		AC_DEFINE_UNQUOTED([WITH_DEBUG_INFO],[${withval}])dnl

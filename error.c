@@ -426,23 +426,21 @@ void Module_Tracing(	int	result,
 
 } /** End of 'Module_Tracing' **/
 
-void Module_Verbosity(	int	argc,
-		   	char	**argv)
+void Module_Verbosity(int argc, char **argv)
 {
-    if( sw_verbose && argc && *argv)
-	if( !FlushError( NO_ERR_VERBOSE, g_current_module,linenum,WGHT_VERBOSE,
-	    Measurements[ MEAS_VERB_NDX].message, *argv, argc, argv)) {
-	    ErrorLogger( ERR_INTERRL, LOC, NULL);
+    if (sw_verbose && argc && *argv) {
+		if (!FlushError(NO_ERR_VERBOSE, g_current_module, linenum,
+						WGHT_VERBOSE, Measurements[MEAS_VERB_NDX].message,
+						*argv, argc, argv)) {
+			ErrorLogger(ERR_INTERRL, LOC, NULL);
+		}
 	}
-
 } /** End of 'Module_Verbosity' **/
 
-static	void Print_Tracing(	char	 *buffer,
-				int	  result,
-			   	int	  argc,
-			   	char	**argv)
+static void Print_Tracing(char *buffer_for_string, int result, int argc,
+						  char **argv)
 {
-    char 		*s = buffer;
+    char 		*s = buffer_for_string;
     struct passwd 	*pwent;
     struct group 	*grpent;
     uid_t 		 uid;
@@ -452,11 +450,13 @@ static	void Print_Tracing(	char	 *buffer,
      **  Print the arguments
      **/
 
-    while( argc--) {
-	/* sprintf( s, "%s ", *argv++); */
-	strcpy( s, *argv++);
-	strcat( s, " ");
-	s += strlen( s);
+    while (argc--) {
+#if 0
+		sprintf(s, "%s ", *argv++);
+#endif /* 0 */
+		strcpy(s, *argv++);
+		strcat(s, " ");
+		s += strlen(s);
     }
 
     /**
@@ -595,10 +595,10 @@ int Module_Error(ErrType error_type, char *module, int lineno, ...)
 	}
 
     /**
-     **  Argument check
+     **  Argument check:
      **/
-    if (NO_ERR_VERBOSE == error_type && !sw_verbose) {
-		return(OK);
+    if ((NO_ERR_VERBOSE == error_type) && !sw_verbose) {
+		return (OK);
 	}
 
     if (!module) {
@@ -609,100 +609,122 @@ int Module_Error(ErrType error_type, char *module, int lineno, ...)
      **  Build the argument array at first
      **/
 
-    if( NULL == (argv = (char **) module_malloc(listsize * sizeof( char *)))) {
-	module = module_name;
-	error_type = ERR_ALLOC;
-	NoArgs = 1;
-    }
-
-    va_start( parptr, lineno);
-    while( !NoArgs && (NULL != (arg = va_arg( parptr, char *)))) {
-
-	/**
-	 **  Conditionally realloc
-	 **/
-	while( argc >= listsize) {
-	    listsize += ARGLIST_SIZE;
-	    if(!(argv = (char **) module_realloc( argv,
-		listsize * sizeof(char *)))) {
+    if (NULL == (argv = (char **)module_malloc((size_t)((unsigned long)listsize * sizeof(char *))))) {
 		module = module_name;
 		error_type = ERR_ALLOC;
 		NoArgs = 1;
-		break;
-	    }
+    }
+
+    va_start(parptr, lineno);
+    while (!NoArgs && (NULL != (arg = va_arg(parptr, char *)))) {
+		/**
+		 **  Conditionally realloc:
+		 **/
+		while (argc >= listsize) {
+			listsize += ARGLIST_SIZE;
+			if (!(argv = (char **)module_realloc(argv,
+												 (size_t)((unsigned long)listsize * sizeof(char *))))) {
+				module = module_name;
+				error_type = ERR_ALLOC;
+				NoArgs = 1;
+				break;
+			}
+		} /* end inner while-loop */
+
+		argv[argc++] = arg;
+    } /** end outer while-loop **/
+
+    if ((NO_ERR_VERBOSE == error_type) && !argc) {
+		return (OK);
 	}
-
-	argv[ argc++] = arg;
-
-    } /** while **/
-
-    if( NO_ERR_VERBOSE == error_type && !argc)
-	return( OK);
 
     /**
      **  Locate the error translation table entry according to the
-     **  passed error type
+     **  passed error type:
      **/
-    if( NULL == (TransPtr = ErrorLookup( error_type))) {
-	if( argv)
-	    null_free((void *) &argv);
-	return( ErrorLogger( ERR_INVAL, LOC, (sprintf( buffer, "%d",
-	    error_type), buffer), NULL));
+    if (NULL == (TransPtr = ErrorLookup(error_type))) {
+		if (argv) {
+			null_free((void *) &argv);
+		}
+		return (ErrorLogger(ERR_INVAL, LOC, (sprintf(buffer, "%d", error_type),
+											 buffer), NULL));
     }
 
     /**
      **  Now locate the assigned error weight ...
      **/
 
-    if( NULL == (MeasPtr = MeasLookup( TransPtr->error_weight))) {
-	if( argv)
-	    null_free((void *) &argv);
-	argc = 0;
-	return( ErrorLogger( ERR_INVWGHT, LOC, (sprintf( buffer, "%d",
-	    TransPtr->error_weight), buffer), NULL));
+    if (NULL == (MeasPtr = MeasLookup(TransPtr->error_weight))) {
+		if (argv) {
+			null_free((void *) &argv);
+		}
+		argc = 0;
+		/* dummy condition to use value stored to 'argc': */
+		if (argc == 0) {
+			;
+		}
+		return (ErrorLogger(ERR_INVWGHT, LOC,
+							(sprintf(buffer, "%d", TransPtr->error_weight),
+							 buffer), NULL));
     }
 
     /**
-     **  Use the return code as defined for the current user level
+     **  Use the return code as defined for the current user level:
      **/
-    switch( sw_userlvl) {
-	case UL_NOVICE:
-	    ret_code = MeasPtr->ret_nov;
-	    break;
-	case UL_ADVANCED:
-	    ret_code = MeasPtr->ret_adv;
-	    break;
-	case UL_EXPERT:
-	    ret_code = MeasPtr->ret_exp;
-	    break;
+    switch (sw_userlvl) {
+		case UL_NOVICE:
+			ret_code = MeasPtr->ret_nov;
+			break;
+		case UL_ADVANCED:
+			ret_code = MeasPtr->ret_adv;
+			break;
+		case UL_EXPERT:
+			ret_code = MeasPtr->ret_exp;
+			break;
+		default:
+			ret_code = OK;
+			break;
     }
 
     /**
-     **  Print the error message
+     **  Print the error message:
      **/
-    if( TransPtr->error_weight <= WGHT_TRACE || ret_code != OK)
-	if( !FlushError( error_type, module, lineno, TransPtr->error_weight,
-	    MeasPtr->message, TransPtr->messages, argc, argv)) {
-	    if( argv)
-		null_free((void *) &argv);
-	    argc = 0;
-	    return( ErrorLogger( ERR_INTERRL, LOC, NULL));
+    if ((TransPtr->error_weight <= WGHT_TRACE) || (ret_code != OK)) {
+		if (!FlushError(error_type, module, lineno, TransPtr->error_weight,
+						MeasPtr->message, TransPtr->messages, argc, argv)) {
+			if (argv) {
+				null_free((void *) &argv);
+			}
+			argc = 0;
+			/* dummy condition to use value stored to 'argc': */
+			if (argc == 0) {
+				;
+			}
+			return (ErrorLogger(ERR_INTERRL, LOC, NULL));
+		}
 	}
 
     /**
      **  Return to the caller ... conditionally ...
      **/
-    if( WARN == ret_code)
-	ret_code = OK;
+    if (WARN == ret_code) {
+		ret_code = OK;
+	}
 
-    if( argv)
-	null_free((void *) &argv);
+    if (argv) {
+		null_free((void *)&argv);
+	}
     argc = 0;
+	/* dummy condition to use value stored to 'argc': */
+	if (argc == 0) {
+		;
+	}
 
-    if( ret_code > ERROR)
-	exit( ret_code);
+    if (ret_code > ERROR) {
+		exit((int)ret_code);
+	}
 
-    return( ret_code);
+    return (ret_code);
 } /** End of 'Module_Error' **/
 
 /*++++
@@ -792,52 +814,53 @@ static	ErrTransTab	*ErrorLookup(	ErrType error_type )
  ** ************************************************************************ **
  ++++*/
 
-static	ErrMeasr	*MeasLookup(	ErrWeights weigth )
+static ErrMeasr *MeasLookup(ErrWeights weigth)
 {
-    ErrMeasr	*low, *mid, *high, *save;	/** Search pointers	     **/
+    ErrMeasr	*low, *mid, *high, *save;	/** Search pointers **/
 
     /**
      **  Init serach pointers
      **/
 
     low = Measurements;
-    high = Measurements + (sizeof( Measurements) / sizeof( Measurements[0]) -1);
-    save = (ErrMeasr *) NULL;
-    mid = (ErrMeasr *) NULL;
-
+    high = (Measurements + ((sizeof(Measurements) / sizeof(Measurements[0])) - 1));
+    save = (ErrMeasr *)NULL;
+    mid = save; /* was just the same thing we had stored to 'save', so just
+				 * assign the value of 'save' to it instead so that it will be
+				 * used */
     /**
      **  Search loop
      **/
+    while (low < high) {
+		save = mid;
+		mid = (low + ((high - low) / 2));
+		if (save == mid) {
+			low = mid = high;			/** Just to be sure ...      **/
+		}
 
-    while( low < high) {
-
-	save = mid;
-	mid = low + ((high - low) / 2);
-	if( save == mid)
-	    low = mid = high;			/** Just to be sure ...      **/
-
-	if( mid->error_weight < weigth ) {
-	    low = mid;
-	} else if( mid->error_weight > weigth ) {
-	    high = mid;
-	} else
-	    return( mid);		/** Yep! Got it!		     **/
-
-    } /** while **/
+		if (mid->error_weight < weigth) {
+			low = mid;
+		} else if (mid->error_weight > weigth) {
+			high = mid;
+		} else {
+			return (mid);		/** Yep! Got it! **/
+		}
+    } /** end while-loop **/
 
     /**
      **  Maybe the loop has been finished before the comparison took place
      **  (low == high) and hit!
      **/
 
-    if( mid->error_weight == weigth )
-	return( mid);               	/** Yep! Got it!                     **/
+    if (mid->error_weight == weigth) {
+		return (mid); /** Yep! Got it! **/
+	}
 
     /**
      **  If this point is reached, nothing has been found ...
      **/
 
-    return( NULL);
+    return (NULL);
 
 } /** End of 'MeasLookup' **/
 
@@ -866,14 +889,9 @@ static	ErrMeasr	*MeasLookup(	ErrWeights weigth )
  ** ************************************************************************ **
  ++++*/
 
-static	int	FlushError(	ErrType		  Type,
-				char		 *module,
-				int		  lineno,
-				ErrWeights	  Weight,
-				char		 *WeightMsg,
-				char		 *ErrMsgs,
-				int		  argc,
-				char		**argv)
+static int FlushError(ErrType Type, char *module, int lineno,
+					  ErrWeights Weight, char *WeightMsg, char *ErrMsgs,
+					  int argc, char **argv)
 {
     char	*facilities, *buffer;
     char 	*fac;
@@ -882,17 +900,18 @@ static	int	FlushError(	ErrType		  Type,
     int		 fac_alloc = 0;
 
     /**
-     **  get the error facilities at first. If there isn't any, we may
-     **  return on success immediatelly.
+     **  get the error facilities at first. If no such facilities exist, then
+	 **  we may return on success immediatelly.
      **/
-    if((char *) NULL == (facilities = GetFacility( Weight)))
-	goto success0;
+    if ((char *)NULL == (facilities = GetFacility(Weight))) {
+		goto success0;
+	}
 
     /**
      **  PANIC and FATAL error messages ought to be on stderr at least!
      **/
-    if( WGHT_FATAL == Weight || WGHT_PANIC == Weight)
-	if( !strstr( facilities, _stderr)) {
+    if ((WGHT_FATAL == Weight) || (WGHT_PANIC == Weight))
+	if (!strstr( facilities, _stderr)) {
 
 	    if((char *) NULL == (buffer = stringer(NULL,0,
 		    _stderr,":", facilities, NULL))) {
@@ -1072,45 +1091,49 @@ static	char	*GetFacility(	ErrWeights	  Weight)
 
 } /** End of 'GetFacility' **/
 
-static	ErrFacilities	*GetFacility_sub(	ErrWeights	  Weight)
+static ErrFacilities *GetFacility_sub(ErrWeights Weight)
 {
     ErrFacilities	*low, *mid, *high, *save;
-    char		buffer[ 20];
+    char buffer[20];
 
     /**
      **  Binary search for the passed facility in the Facilities table.
      **  This requires the table to be sorted on ascending error weight
      **/
     low = Facilities;
-    high = Facilities + (sizeof( Facilities) / sizeof( Facilities[0]));
+    high = (Facilities + (sizeof(Facilities) / sizeof(Facilities[0])));
     save = (ErrFacilities *) NULL;
-    mid = (ErrFacilities *) NULL;
+    mid = save; /* was just the same thing we had stored to 'save', so just
+				 * assign the value of 'save' to it instead so that it will be
+				 * used */
+    while (low < high) {
+		save = mid;
+		mid = (low + ((high - low) / 2));
+		if (save == mid) {
+			low = mid = high;			/** Just to be sure... **/
+		}
 
-    while( low < high) {
-	save = mid;
-	mid = low + ((high - low) / 2);
-	if( save == mid)
-	    low = mid = high;			/** Just to be sure ...	     **/
-
-	if( mid->Weight > Weight)
-	    high = mid;
-	else if( mid->Weight < Weight)
-	    low = mid;
-	else
-	    break;	/** found! **/
+		if (mid->Weight > Weight) {
+			high = mid;
+		} else if (mid->Weight < Weight) {
+			low = mid;
+		} else {
+			break;	/** found! **/
+		}
     }
 
     /**
-     **  We have to check, if we've found something or if there's an internal
-     **  error (wrong weight)
+     **  We have to check, if we have found somethingm or if there was an
+	 **  internal error (such as a wrong weight)
      **/
-    if( mid->Weight != Weight) {
-	if( OK == ErrorLogger( ERR_INVWGHT, LOC, (sprintf( buffer, "%d",
-	    Weight), buffer), NULL))
-	    return( NULL);
+    if (mid->Weight != Weight) {
+		if (OK == ErrorLogger(ERR_INVWGHT, LOC, (sprintf(buffer, "%d", Weight),
+												 buffer), NULL)) {
+			return (NULL);
+		}
     }
 
-    return( mid);
+    return (mid);
 
 } /** End of 'GetFacility_sub' **/
 
@@ -1205,36 +1228,48 @@ unwind0:
  ** ************************************************************************ **
  ++++*/
 
-static	int	scan_facility( char *s, FacilityNames *table, int size)
+static int scan_facility(char *s, FacilityNames *table, int size)
 {
     FacilityNames *low, *mid, *high, *save;
 
     low = table;
-    high = table + size;
-    save = (FacilityNames *) NULL;
+    high = (table + size);
+    save = (FacilityNames *)NULL;
+	mid = save; /* both initializes for the first time through the loop, and
+				 * uses the value stored to 'save' */
+    while (low < high) {
+		int x;		/** Have to use this, because strcmp will
+					 ** not return -1 and 1 on Solaris 2.x **/
+		/* should be null the first time through, not sure about the rest of
+		 * the times... */
+		if (mid != NULL) {
+			save = mid;
+		}
+		mid = (low + ((high - low) / 2));
+		if (save == mid) {
+			low = mid = high;			/** To prevent endless loops **/
+		}
 
-    while( low < high) {
-	int x;			/** Have to use this, because strcmp will    **/
-				/** not return -1 and 1 on Solaris 2.x	     **/
-	save = mid;
-	mid = low + ((high - low) / 2);
-	if( save == mid)
-	    low = mid = high;			/** To prevent endless loops **/
+		if (mid == high) {
+			return -1;
+		}
+		x = strcmp(mid->name, s);
 
-	if (mid == high)
+		if (x < 0 ) {
+			low = mid;
+		} else if ( x > 0) {
+			high = mid;
+		} else {
+			return (mid->token);
+		}
+    } /** end while-loop **/
+
+	if (mid != NULL) {
+		return ((!strcmp(mid->name, s)) ? mid->token : -1);
+	} else {
 		return -1;
-	x = strcmp( mid->name, s);
+	}
 
-	if( x < 0 )
-	    low = mid;
-	else if( x > 0)
-	    high = mid;
-	else
-	    return( mid->token);
-
-    } /** while **/
-
-    return( !strcmp( mid->name, s) ? mid->token : -1 );
 
 } /** End of 'scan_facility' **/
 
@@ -1268,48 +1303,72 @@ char **GetFacilityPtr(char *facility)
      **  Try to figure out the error weight at first
      **  Need the given weight in upper case for this
      **/
-    len = strlen( facility);
+    len = (int)strlen(facility);
 
-    if((char *) NULL == (buf = stringer(NULL, 0, facility, NULL)))
-	if( OK != ErrorLogger( ERR_ALLOC, LOC, NULL))
-	    goto unwind0;
+    if ((char *)NULL == (buf = stringer(NULL, 0, facility, NULL))) {
+		if (OK != ErrorLogger(ERR_ALLOC, LOC, NULL)) {
+			goto unwind0;
+		}
+	}
 
-    for( t = buf; *t; ++t) *t = toupper(*t);
+	/* use variable 's' (initialize): */
+	s = (char *)NULL;
+
+	/* initialize 't' as well, I guess: */
+	t = (char *)NULL;
+
+	/* try to deal with 'buf' possibly being unintialized: */
+	if ((buf == NULL) && (s != NULL)) {
+		buf = s;
+	} else if ((buf == NULL) && (facility != NULL)) {
+		buf = facility;
+	} else if ((buf == NULL) && (t != NULL)) {
+		buf = t;
+	} else if (buf == NULL) {
+		/* I have no other ideas: */
+		buf = "";
+	}
+
+    for ((t = buf); *t; ++t) {
+		*t = (char)toupper(*t);
+	}
 
     /**
-     **  Now look up the measurements table for the uppercase weight
+     **  Now look up the measurements table for the uppercase weight:
      **/
-    i = sizeof( Measurements) / sizeof( Measurements[ 0]);
+    i = (sizeof(Measurements) / sizeof(Measurements[0]));
     measptr = Measurements;
 
-    while( i) {
-	if( !strncmp( measptr->message, buf, len))
-	    break;
-	i--; measptr++;
+    while (i) {
+		if (!strncmp(measptr->message, buf, (size_t)len)) {
+			break;
+		}
+		i--;
+		measptr++;
     }
 
-    null_free((void *) &buf);
+    null_free((void *)&buf);
 
-    if( !i) 					/** not found		     **/
-	goto unwind0;
+    if (!i) { 					/** not found **/
+		goto unwind0;
+	}
 
     /**
      **  Now get the facility table entry
      **/
 
-    if((ErrFacilities *) NULL == (facptr = GetFacility_sub(
-	measptr->error_weight))) {
-	ErrorLogger( ERR_INVWGHT_WARN, LOC, facility, NULL);
-	goto unwind0;
+    if ((ErrFacilities *)NULL == (facptr = GetFacility_sub(measptr->error_weight))) {
+		ErrorLogger(ERR_INVWGHT_WARN, LOC, facility, NULL);
+		goto unwind0;
     }
 
     /**
      **  Got it ... return the desired pointer
      **/
-    return( &facptr->facility);		/** -------- EXIT (RESULT)  -------> **/
+    return (&facptr->facility);		/** -------- EXIT (RESULT)  -------> **/
 
 unwind0:
-    return((char **) NULL);		/** -------- EXIT (FAILURE) -------> **/
+    return ((char **)NULL);		/** -------- EXIT (FAILURE) -------> **/
 
 } /** End of 'GetFacilityPtr' **/
 
@@ -1411,76 +1470,77 @@ static	int	PrintError(	char 		 *errbuffer,
  ** ************************************************************************ **
  ++++*/
 
-static	char	*ErrorString(	char		 *ErrMsgs,
-				int		  argc,
-				char		**argv)
+static char *ErrorString(char *ErrMsgs, int argc, char **argv)
 {
     char	*s;			/** Insertion pointer		     **/
     int		len = 0;		/** Current length		     **/
-    int		backslash = 0;		/** backslash found ?		     **/
+    int		backslash = 0;		/** backslash found ?	**/
 
-    if( !ErrMsgs)
-	return( NULL);
+    if (!ErrMsgs) {
+		return (NULL);
+	}
 
     /**
      **  Allocate memory if neccessary
      **/
-    if( !error_line)
-	if((char *) NULL ==(error_line = stringer(NULL,strsize = ERR_LINELEN,
-		NULL))){
-	    ErrorLogger( ERR_STRING, LOC, NULL);
-	    return( NULL);
+    if (!error_line) {
+		if ((char *)NULL == (error_line = stringer(NULL,
+												   (strsize = ERR_LINELEN),
+												   NULL))) {
+			ErrorLogger(ERR_STRING, LOC, NULL);
+			return (NULL);
+		}
 	}
 
     s = error_line;
 
     /**
-     **  Scan the error strings to be printed
+     **  Scan the error strings to be printed:
      **/
-    while( *ErrMsgs) {
-
-	/**
-	 **  Check for special characters
-	 **/
-	switch( *ErrMsgs) {
-	    case '\\':	if( !backslash) {
-				backslash = 1;
-				ErrMsgs++;
-				continue;	/** while( *ErrMsgs) **/
+    while (*ErrMsgs) {
+		/**
+		 **  Check for special characters:
+		 **/
+		switch (*ErrMsgs) {
+			case '\\':
+				if (!backslash) {
+					backslash = 1;
+					ErrMsgs++;
+					continue;	/** through the "while (*ErrMsgs)" loop **/
 			    }
-			    break;	/** switch **/
+			    break;	/** out of the switch **/
 
-	    case '$':	if( !backslash) {
-				ErrMsgs++;
-				add_param( &ErrMsgs, &s, &len, argc, argv);
-				error_line = s - len;
-				continue;	/** while( *ErrMsgs) **/
+			case '$':
+				if (!backslash) {
+					ErrMsgs++;
+					add_param(&ErrMsgs, &s, &len, argc, argv);
+					error_line = (s - len);
+					continue;	/** through the "while (*ErrMsgs)" loop **/
 			    }
-			    break;	/** switch **/
-	} /** switch **/
+			    break;	/** out of the switch **/
+		} /** end switch **/
 
-	/**
-	 **  Add a single character to the error string
-	 **/
-	if( ++len >= strsize - 5) {	/** 5 Bytes for safety		     **/
-	    if(!(error_line = (char *) module_realloc( error_line,
-		strsize += ERR_LINELEN))) {
-		ErrorLogger( ERR_ALLOC, LOC, NULL);
-		return( NULL);
-	    }
-	    s = error_line + len - 1;
-	}
+		/**
+		 **  Add a single character to the error string:
+		 **/
+		if (++len >= strsize - 5) { /** 5 Bytes for safety **/
+			if (!(error_line = (char *)module_realloc(error_line,
+													  (size_t)(strsize += ERR_LINELEN)))) {
+				ErrorLogger(ERR_ALLOC, LOC, NULL);
+				return (NULL);
+			}
+			s = (error_line + len - 1);
+		}
 
-	*s++ = *ErrMsgs++;
-	backslash = 0;
-
-    } /** while( *ErrMsgs) **/
+		*s++ = *ErrMsgs++;
+		backslash = 0;
+    } /** end "while (*ErrMsgs)" while-loop **/
 
     /**
-     **  Success. Return a pointer to the newly created string
+     **  Success. Return a pointer to the newly created string:
      **/
     *s++ = '\0';
-    return( error_line);
+    return (error_line);
 
 } /** End of 'ErrorString' **/
 
@@ -1507,87 +1567,87 @@ static	char	*ErrorString(	char		 *ErrMsgs,
  ** ************************************************************************ **
  ++++*/
 
-static	void	add_param(	char		**Control,
-				char		**Target,
-				int		 *Length,
-				int		  argc,
-				char		**argv)
+static void add_param(char **Control, char **Target, int *Length, int argc,
+					  char **argv)
 {
     char	*s;			/** Scan pointer fot the ctrl field  **/
     int		index, last = 0;	/** parameter index		     **/
-    int		len = 0;		/** Parameter string length	     **/
-
+    int		len = 0; /** Parameter string length
+					  ** (should probably actually be 'size_t') **/
     /**
-     **  Copy the current control field into the buffer
+     **  Copy the current control field into the buffer:
      **/
+    for ((s = buffer); **Control; (*Control)++) {
+		if (**Control == '*') {
+			last = argc;
+			continue;
+		} else if ((**Control < '0') || (**Control > '9')) {
+			break;
+		}
 
-    for( s = buffer; **Control; (*Control)++ ) {
-
-	if( **Control == '*') {
-	    last = argc;
-	    continue;
-	} else if( **Control < '0' || **Control > '9')
-	    break;
-
-	*s++ = **Control;
-    }
+		*s++ = **Control;
+    } /* end for-loop */
 
     *s = '\0';
 
     /**
      **  Has something been found ? If not, print a '$'
      **/
-    if( s == buffer && !last) {
-
-	if( ++(*Length) >= strsize) {
-	    if(!(error_line = (char*) module_realloc( error_line,
-		strsize += ERR_LINELEN))) {
-		ErrorLogger( ERR_ALLOC, LOC, NULL);
-		return;
-	    }
-	    *Target = error_line + *Length - 1;
-	}
-
-	*(*Target++) = '$';
-
-    } else {
-
-	/**
-	 **  Something has been found. Form the parameter index at first
-	 **/
-	if( s == buffer)
-	    index = 0;
-	else
-	    index = atoi( buffer) - 1;
-
-	if( !last)
-	    last = index + 1;
-	if( last > argc)
-	    last = argc;
-
-	/**
-	 **  Spool them all out
-	 **/
-	while( index < last) {
-
-	    len = strlen( argv[ index]);
-
-	    while(( *Length + len + 1) >= strsize - 5) {
-		if(!(error_line = (char*) module_realloc( error_line,
-		    strsize += ERR_LINELEN))) {
-		    ErrorLogger( ERR_ALLOC, LOC, NULL);
-		    return;
+    if ((s == buffer) && !last) {
+		if (++(*Length) >= strsize) {
+			if (!(error_line = (char*)module_realloc(error_line,
+													 (size_t)(strsize += ERR_LINELEN)))) {
+				ErrorLogger(ERR_ALLOC, LOC, NULL);
+				return;
+			}
+			*Target = (error_line + *Length - 1);
 		}
-		*Target = error_line + *Length;
-	    }
+		/* brackets (or lack thereof) got kind of confusing around here... */
 
-	    strcpy( *Target, argv[ index]);
-	    *Target += len;
-	    *Length += len;
+		*(*Target++) = '$';
+		/* dummy condition to use 'Target': */
+		if (Target != NULL) {
+			;
+		}
+    } else {
+		/**
+		 **  Something has been found. Form the parameter index at first:
+		 **/
+		if (s == buffer) {
+			index = 0;
+		} else {
+			index = (atoi(buffer) - 1);
+		}
 
-	    index++;
+		if (!last) {
+			last = (index + 1);
+		}
+		if (last > argc) {
+			last = argc;
+		}
 
-	} /** while **/
-    } /** if **/
+		/**
+		 **  Spool them all out
+		 **/
+		while (index < last) {
+			len = (int)strlen(argv[index]);
 
+			while ((*Length + len + 1) >= (strsize - 5)) {
+				if (!(error_line = (char*)module_realloc(error_line,
+														 (size_t)(strsize += ERR_LINELEN)))) {
+					ErrorLogger(ERR_ALLOC, LOC, NULL);
+					return;
+				}
+				*Target = (error_line + *Length);
+			} /* end inner while-loop */
+
+			strcpy(*Target, argv[index]);
+			*Target += len;
+			*Length += len;
+
+			index++;
+		} /** end outer while-loop **/
+    } /** end "if" **/
 } /** End of 'add_param' **/
+
+/* EOF */

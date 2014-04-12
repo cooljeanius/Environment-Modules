@@ -11,6 +11,8 @@ AUTOMAKE_OPTIONS = foreign dejagnu no-installinfo -Wall
 
 EXTRA_scripts = add.ext mkroot
 
+DISTCLEANFILES = .DS_Store
+
 install-data-local : $(EXTRA_scripts)
 	$(mkinstalldirs) $(DESTDIR)$(prefix)/bin
 	@list='$(EXTRA_scripts)'; for p in $$list; do \

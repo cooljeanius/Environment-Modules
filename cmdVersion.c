@@ -142,16 +142,16 @@ static	char	module_name[] = "cmdVersion.c";	/** File name of this module **/
 #if WITH_DEBUGGING_CALLBACK
 static	char	_proc_cmdModuleVersion[] = "cmdModuleVersion";
 static	char	_proc_cmdModuleAlias[] = "cmdModuleAlias";
-#endif
+#endif /* WITH_DEBUGGING_CALLBACK */
 #if WITH_DEBUGGING_UTIL_2
 static	char	_proc_CleanupVersion[] = "CleanupVersion";
-#endif
+#endif /* WITH_DEBUGGING_UTIL_2 */
 #if WITH_DEBUGGING_UTIL_1
 static	char	_proc_AddModule[] = "AddModule";
 static	char	_proc_FindModule[] = "FindModule";
 static	char	_proc_AddName[] = "AddName";
 static	char	_proc_FindName[] = "FindName";
-#endif
+#endif /* WITH_DEBUGGING_UTIL_1 */
 
 /**
  **  The module and aliases list
@@ -210,10 +210,8 @@ extern	void  CleanupVersion(ModModule *ptr);
  ** ************************************************************************ **
  ++++*/
 
-int	cmdModuleVersion(	ClientData	 client_data,
-	      			Tcl_Interp	*interp,
-	      			int		 argc,
-	      			CONST84 char	*argv[])
+int	cmdModuleVersion(ClientData client_data, Tcl_Interp *interp, int argc,
+					 CONST84 char *argv[])
 {
     char	*version, *module;
     ModModule	*modptr;
@@ -221,49 +219,54 @@ int	cmdModuleVersion(	ClientData	 client_data,
     int 	 i;
 
 #if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_START, LOC, _proc_cmdModuleVersion, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_cmdModuleVersion, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
 
     /**
      **  Whatis mode?
      **/
 
-    if( g_flags & M_WHATIS)
-        return( TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
+    if (g_flags & M_WHATIS) {
+        return (TCL_OK); /** ------- EXIT PROCEDURE -------> **/
+	}
 
     /**
      **  Parameter check
      **/
 
-    if( argc < 3) {
-	if( OK != ErrorLogger( ERR_USAGE, LOC, argv[0], " modulename ",
-	    " symbolic-version [symbolic-version ...] ", NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+    if (argc < 3) {
+		if (OK != ErrorLogger(ERR_USAGE, LOC, argv[0], " modulename ",
+							  " symbolic-version [symbolic-version ...] ",
+							  NULL)) {
+			return (TCL_ERROR); /** -------- EXIT (FAILURE) -------> **/
+		}
     }
 
-    if((char *) NULL == (module = CheckModuleVersion( (char *) argv[1]))) {
-	ErrorLogger( ERR_BADMODNAM, LOC, argv[1], NULL);
-	return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+    if ((char *)NULL == (module = CheckModuleVersion((char *)argv[1]))) {
+		ErrorLogger(ERR_BADMODNAM, LOC, argv[1], NULL);
+		return (TCL_ERROR); /** -------- EXIT (FAILURE) -------> **/
     }
 
     /**
      **  Display mode?
      **/
 
-    if( g_flags & M_DISPLAY) {
-	fprintf( stderr, "%s\t ", argv[ 0]);
-	for( i=1; i<argc; i++)
-	    fprintf( stderr, "%s ", argv[ i]);
-	fprintf( stderr, "\n");
+    if (g_flags & M_DISPLAY) {
+		fprintf(stderr, "%s\t ", argv[0]);
+		for((i = 1); (i < argc); i++) {
+			fprintf(stderr, "%s ", argv[i]);
+		}
+		fprintf(stderr, "\n");
     }
 
     /**
      **  get the version from the argument
      **/
 
-    if((char *) NULL == (version = strrchr( module, '/'))) {
-	if( OK != ErrorLogger( ERR_INTERAL, LOC, NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+    if ((char *) NULL == (version = strrchr( module, '/'))) {
+		if (OK != ErrorLogger(ERR_INTERAL, LOC, NULL)) {
+			return (TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+		}
     }
     *version++ = '\0';
 
@@ -273,55 +276,57 @@ int	cmdModuleVersion(	ClientData	 client_data,
      **  and the name queue in order to locate the desired version ...
      **/
 
-    if((ModModule *) NULL == (modptr = AddModule( module))) {
-	ErrorLogger( ERR_BADMODNAM, LOC, argv[1], NULL);
-	return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+    if ((ModModule *)NULL == (modptr = AddModule(module))) {
+		ErrorLogger(ERR_BADMODNAM, LOC, argv[1], NULL);
+		return (TCL_ERROR); /** -------- EXIT (FAILURE) -------> **/
     }
 
-    if((ModName *) NULL == (ptr = FindName( version, modptr->version, &tmp))) {
-	if((ModName *) NULL == (ptr = FindName( version, modptr->name, &tmp)))
-	    versptr = AddName( version, &modptr->version, modptr);
-	else
-	    versptr = ptr->version;
-    } else
-	versptr = ptr;
+    if ((ModName *)NULL == (ptr = FindName(version, modptr->version, &tmp))) {
+		if ((ModName *)NULL == (ptr = FindName(version, modptr->name, &tmp))) {
+			versptr = AddName(version, &modptr->version, modptr);
+		} else {
+			versptr = ptr->version;
+		}
+    } else {
+		versptr = ptr;
+	}
 
     /**
-     **  Check all symbolic names now and allocate a name record for them
+     **  Check all symbolic names now, and allocate a name record for them:
      **/
+    for ((i = 2); (i < argc); i++) {
+		if (strcmp(argv[i], _default) &&
+			FindName((char *)argv[i], modptr->name, &tmp)) {
+			if (OK != ErrorLogger(ERR_DUP_SYMVERS, LOC, argv[i], NULL)) {
+				break; /* out of the for-loop */
+			} else {
+				continue; /* through the for-loop */
+			}
+		}
 
-    for( i=2; i<argc; i++) {
+		if ((ModName *)NULL == (nameptr = AddName((char *)argv[i],
+												  &modptr->name,
+												  modptr))) {
+			if (OK != ErrorLogger(ERR_INTERAL, LOC, NULL)) {
+				break;
+			} else {
+				continue;
+			}
+		}
 
-	if( strcmp(argv[i], _default)
-	&&  FindName( (char *) argv[i], modptr->name, &tmp)) {
-	    if( OK != ErrorLogger( ERR_DUP_SYMVERS, LOC, argv[i], NULL))
-		break;
-	    else
-		continue;
-	}
-
-	if((ModName *)NULL == (nameptr = AddName((char *)argv[ i],&modptr->name,
-	    modptr))) {
-	    if( OK != ErrorLogger( ERR_INTERAL, LOC, NULL))
-		break;
-	    else
-		continue;
-	}
-
-	/**
-	 **  Concat the new element at the beginning of the name queue ...
-	 **/
-
-	nameptr->ptr = versptr->ptr;
-	versptr->ptr = nameptr;
-	nameptr->version = versptr;
-    }
+		/**
+		 **  Concat the new element at the beginning of the name queue ...
+		 **/
+		nameptr->ptr = versptr->ptr;
+		versptr->ptr = nameptr;
+		nameptr->version = versptr;
+    } /* end for-loop */
 
 #if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_END, LOC, _proc_cmdModuleVersion, NULL);
-#endif
+    ErrorLogger(NO_ERR_END, LOC, _proc_cmdModuleVersion, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
 
-    return( TCL_OK);
+    return (TCL_OK);
 
 } /** End of 'cmdModuleVersion' **/
 
@@ -342,61 +347,64 @@ int	cmdModuleVersion(	ClientData	 client_data,
  ** ************************************************************************ **
  ++++*/
 
-char	*ExpandVersions( char	*name)
+char *ExpandVersions(char *name)
 {
     char	*version, *module, *s;
-    static char	 buffer[ BUFSIZ];
+    static char	 buffer[BUFSIZ];
     ModModule	*modptr, *tmp1;
     ModName	*ptr, *tmp2;
 
 #if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_START, LOC, _proc_cmdModuleVersion, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_cmdModuleVersion, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
 
     /**
-     **  Parameter check
+     **  Parameter check:
      **/
+    if ((char *)NULL == (module = CheckModuleVersion(name))) {
+		return ((char *) NULL); /** -------- EXIT (FAILURE) -------> **/
+	}
 
-    if((char *) NULL == (module = CheckModuleVersion( name)))
-	return((char *) NULL );		/** -------- EXIT (FAILURE) -------> **/
-
-    if((char *) NULL == (version = strrchr( module, '/'))) {
-	if( OK != ErrorLogger( ERR_INTERAL, LOC, NULL))
-	    return((char *) NULL );	/** -------- EXIT (FAILURE) -------> **/
+    if ((char *)NULL == (version = strrchr(module, '/'))) {
+		if (OK != ErrorLogger(ERR_INTERAL, LOC, NULL)) {
+			return ((char *)NULL); /** -------- EXIT (FAILURE) -------> **/
+		}
     }
 
     *version++ = '\0';
 
     /**
      **  Now we have a module and a version.
-     **  Check wheter it exists
+     **  Check whether it exists:
      **/
+    if ((ModModule *)NULL == (modptr = FindModule(module, &tmp1))) {
+		return ((char *)NULL); /** -------- EXIT (FAILURE) -------> **/
+	}
 
-    if((ModModule *) NULL == (modptr = FindModule( module, &tmp1)))
-	return((char *) NULL );		/** -------- EXIT (FAILURE) -------> **/
-
-    if((ModName *) NULL == (ptr = FindName( version, modptr->version, &tmp2))) {
-	if((ModName *) NULL == (ptr = FindName( version, modptr->name, &tmp2)))
-	    return((char *) NULL );	/** -------- EXIT (FAILURE) -------> **/
-	ptr = ptr->version;
+    if ((ModName *)NULL == (ptr = FindName(version, modptr->version, &tmp2))) {
+		if ((ModName *)NULL == (ptr = FindName(version, modptr->name, &tmp2))) {
+			return ((char *)NULL);	/** -------- EXIT (FAILURE) -------> **/
+		}
+		ptr = ptr->version;
     }
 
-    if( !ptr->ptr)
-	return((char *) NULL );		/** -------- EXIT (FAILURE) -------> **/
+    if (!ptr->ptr) {
+		return ((char *)NULL); /** -------- EXIT (FAILURE) -------> **/
+	}
 
     /**
-     **  Now scan in all the symbolic version names
+     **  Now scan in all the symbolic version names:
      **/
-
     *buffer = '\0';
-    if( s = scan_versions( buffer, buffer, ptr->ptr, modptr))
-	*--s = '\0';			/** remove trailing ':'		     **/
+    if (s = scan_versions(buffer, buffer, ptr->ptr, modptr)) {
+		*--s = '\0'; /** remove trailing ':' **/
+	}
 
 #if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_END, LOC, _proc_cmdModuleVersion, NULL);
-#endif
+    ErrorLogger(NO_ERR_END, LOC, _proc_cmdModuleVersion, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
 
-    return( buffer);
+    return (buffer);
 
 } /** End of 'ExpandVersions' **/
 
@@ -423,10 +431,8 @@ char	*ExpandVersions( char	*name)
  ** ************************************************************************ **
  ++++*/
 
-static	char	*scan_versions( char		 *buffer,
-				char		 *base,
-				ModName		 *ptr,
-				ModModule	 *modptr)
+static char *scan_versions(char *buffer, char *base, ModName *ptr,
+						   ModModule *modptr)
 {
     ModName     *tmp, *vers;
     char 	*s;
@@ -589,7 +595,7 @@ static	char	*CheckModuleVersion( char *name)
      **  Pass the buffer reference to the caller
      **/
 
-    return( buffer);
+    return (buffer);
 
 } /** End of 'CheckModuleVersion' **/
 
@@ -618,39 +624,47 @@ static	char	*CheckModuleVersion( char *name)
  ** ************************************************************************ **
  ++++*/
 
-int	cmdModuleAlias(	ClientData	 client_data,
-	      		Tcl_Interp	*interp,
-	      		int		 argc,
-	      		CONST84 char	*argv[])
+int cmdModuleAlias(ClientData client_data, Tcl_Interp *interp, int argc,
+				   CONST84 char *argv[])
 {
     ModName	*tmp, *ptr;
     char	*version, *module;
     ModName	*trg_alias;
     ModModule	*modptr;
 
+/* not sure if these are the right things to initialize these two as: */
+#ifdef PACKAGE
+	module = PACKAGE;
+#endif /* PACKAGE */
+#ifdef PACKAGE_VERSION
+	version = PACKAGE_VERSION;
+#endif /* PACKAGE_VERSION */
+
 #if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_START, LOC, _proc_cmdModuleAlias, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_cmdModuleAlias, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
 
     /**
      **  Parameter check
      **/
 
-    if( argc != 3) {
-	if( OK != ErrorLogger( ERR_USAGE, LOC, argv[0], " aliasname ",
-	    "modulename", NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
+    if (argc != 3) {
+		if (OK != ErrorLogger(ERR_USAGE, LOC, argv[0], " aliasname ",
+							  "modulename", NULL)) {
+			return (TCL_ERROR); /** -------- EXIT (FAILURE) -------> **/
+		}
     }
 
     /**
      **  Whatis mode?
      **/
 
-    if( g_flags & M_WHATIS)
-        return( TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
+    if (g_flags & M_WHATIS) {
+        return (TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
+	}
 
-    if( g_flags & M_DISPLAY) {
-	fprintf( stderr, "%s\t %s %s\n", argv[ 0], argv[ 1], argv[ 2]);
+    if (g_flags & M_DISPLAY) {
+		fprintf(stderr, "%s\t %s %s\n", argv[0], argv[1], argv[2]);
     }
 
     /**
@@ -658,73 +672,69 @@ int	cmdModuleAlias(	ClientData	 client_data,
      **  Conditionally split up the passed <module>/<version> pair.
      **/
 
-    trg_alias = FindName( (char *) argv[ 2], aliaslist, &tmp);
-    if( !trg_alias) {
+    trg_alias = FindName((char *)argv[2], aliaslist, &tmp);
+    if (!trg_alias) {
+    	if ((char *)NULL == (module = CheckModuleVersion((char *)argv[2]))) {
+			module = (char *)argv[2];
+		}
 
-    	if((char *) NULL == (module = CheckModuleVersion( (char *) argv[2])))
-	    module = (char *) argv[ 2];
-
-    	if((char *) NULL != (version = strrchr( module, '/')))
-	    *version++ = '\0';
+    	if ((char *)NULL != (version = strrchr(module, '/'))) {
+			*version++ = '\0';
+		}
     }
 
     /**
-     **  Any alias record existing with this name?
-     **  If it does, we're finished ...
+     **  Does any alias record exist with this name?
+     **  If one does exist, then we should be finished ...
      **/
+    if (ptr = FindName((char *)argv[1], aliaslist, &tmp)) {
+		if (!ptr->ptr || !ptr->ptr->name || !trg_alias &&
+			(!ptr->ptr->module || !ptr->ptr->module->module)) {
+			ErrorLogger(ERR_INTERAL, LOC, NULL);
+			return (TCL_ERROR); /** -------- EXIT (FAILURE) -------> **/
+		}
 
-    if( ptr = FindName( (char *) argv[ 1], aliaslist, &tmp)) {
+		if (trg_alias && !strcmp(ptr->ptr->name, argv[2]) || !trg_alias &&
+			!strcmp(ptr->ptr->name, version) &&
+			!strcmp(ptr->ptr->module->module, module)) {
+			return (TCL_OK); /** -------- EXIT (SUCCESS) -------> **/
+		}
 
-	if( !ptr->ptr || !ptr->ptr->name ||
-	    !trg_alias && (!ptr->ptr->module || !ptr->ptr->module->module) ) {
-	    ErrorLogger( ERR_INTERAL, LOC, NULL);
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
-	}
-
-	if( trg_alias && !strcmp( ptr->ptr->name, argv[ 2]) ||
-	    !trg_alias && !strcmp( ptr->ptr->name, version) &&
-		!strcmp( ptr->ptr->module->module, module))
-	    return( TCL_OK);		/** -------- EXIT (SUCCESS) -------> **/
-
-	if( OK != ErrorLogger( ERR_DUP_ALIAS, LOC, argv[1], NULL))
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
-
+		if (OK != ErrorLogger(ERR_DUP_ALIAS, LOC, argv[1], NULL)) {
+			return (TCL_ERROR); /** -------- EXIT (FAILURE) -------> **/
+		}
     } else {
-
-	/**
-	 **  We have to allocate a new alias entry
-	 **/
-
-	if((ModName *) NULL == (ptr = AddName((char *) argv[ 1],
-		&aliaslist,NULL))) {
-	    ErrorLogger( ERR_INTERAL, LOC, NULL);
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
-	}
+		/**
+		 **  We have to allocate a new alias entry:
+		 **/
+		if ((ModName *)NULL == (ptr = AddName((char *)argv[ 1],
+											  &aliaslist, NULL))) {
+			ErrorLogger(ERR_INTERAL, LOC, NULL);
+			return (TCL_ERROR); /** -------- EXIT (FAILURE) -------> **/
+		}
     }
 
     /**
      **  Now ptr points to the affected module alias record ...
      **  Conditionally we have to create the module and the version record now.
      **/
-
-    if( trg_alias) {
-	ptr->ptr = trg_alias;
-
+    if (trg_alias) {
+		ptr->ptr = trg_alias;
     } else {
-	if((ModModule *) NULL == (modptr = AddModule( module))) {
-	    ErrorLogger( ERR_BADMODNAM, LOC, argv[2], NULL);
-	    ptr->ptr = (ModName *) NULL;
-	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
-	}
-	ptr->ptr = AddName( (version ? version : _default), &modptr->version,
-	    modptr);
+		if ((ModModule *)NULL == (modptr = AddModule(module))) {
+			ErrorLogger(ERR_BADMODNAM, LOC, argv[2], NULL);
+			ptr->ptr = (ModName *)NULL;
+			return (TCL_ERROR); /** -------- EXIT (FAILURE) -------> **/
+		}
+		ptr->ptr = AddName((version ? version : _default), &modptr->version,
+						   modptr);
     }
 
 #if WITH_DEBUGGING_CALLBACK
-    ErrorLogger( NO_ERR_END, LOC, _proc_cmdModuleAlias, NULL);
-#endif
+    ErrorLogger(NO_ERR_END, LOC, _proc_cmdModuleAlias, NULL);
+#endif /* WITH_DEBUGGING_CALLBACK */
 
-    return( TCL_OK);
+    return (TCL_OK);
 
 } /** End of 'cmdModuleAlias' **/
 
@@ -874,20 +884,19 @@ int	VersionLookup(	char *name, char **module, char **version)
      **  We call it success, if we do not find a registered name.
      **  In this case <module>/<version> will be returned as passed.
      **/
-    if((ModModule *) NULL == (mptr = FindModule( *module, &mtmp))) {
-	return( 1);			/** -------- EXIT (SUCCESS) -------> **/
+    if ((ModModule *)NULL == (mptr = FindModule(*module, &mtmp))) {
+		return (1);			/** -------- EXIT (SUCCESS) -------> **/
     }
 
     /**
-     **  This is for preventing from endless loops
+     **  This is for preventing from endless loops:
      **/
     histsize = HISTTAB;
     histndx = 0;
 
-    if((ModName **) NULL == (history = (ModName **) module_malloc( histsize *
-	sizeof( ModName *)))) {
-	ErrorLogger( ERR_ALLOC, LOC, NULL);
-	return( 0);			/** -------- EXIT (FAILURE) -------> **/
+    if ((ModName **)NULL == (history = (ModName **)module_malloc((size_t)((unsigned long)histsize * sizeof(ModName *))))) {
+		ErrorLogger(ERR_ALLOC, LOC, NULL);
+		return (0);			/** -------- EXIT (FAILURE) -------> **/
     }
 
     /**
@@ -920,20 +929,21 @@ int	VersionLookup(	char *name, char **module, char **version)
 		}
 	    }
 
-	    if( !*version)
-		break;
-
-	    if( histndx >= histsize) {
-		histsize += HISTTAB;
-
-		if(!(history = (ModName **) module_realloc(
-		    history, histsize * sizeof( ModName *)))) {
-		    ErrorLogger( ERR_ALLOC, LOC, NULL);
-		    return( 0);		/** -------- EXIT (FAILURE) -------> **/
+	    if (!*version) {
+			break;
 		}
+
+	    if (histndx >= histsize) {
+			histsize += HISTTAB;
+
+			if (!(history = (ModName **)module_realloc(history,
+													   ((unsigned long)histsize * sizeof(ModName *))))) {
+				ErrorLogger(ERR_ALLOC, LOC, NULL);
+				return (0);		/** -------- EXIT (FAILURE) -------> **/
+			}
 	    }
 
-	    history[ histndx++] = vptr;
+	    history[histndx++] = vptr;
 
 	} else {
 	    break;
@@ -1252,16 +1262,14 @@ static	ModName	*AddName(	char	 *name,
  ** ************************************************************************ **
  ++++*/
 
-static	ModName	*FindName(	char	 *name,
-				ModName  *start,
-				ModName	**prev)
+static ModName *FindName(char *name, ModName *start, ModName **prev)
 {
     ModName	*ptr = start;
     int		 cmp = 1;
 
 #if WITH_DEBUGGING_UTIL_1
-    ErrorLogger( NO_ERR_START, LOC, _proc_FindName, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_FindName, NULL);
+#endif /* WITH_DEBUGGING_UTIL_1 */
 
     *prev = (ModName *) NULL;
     while( ptr && 0 < (cmp = strcmp( name, ptr->name))) {
@@ -1270,9 +1278,11 @@ static	ModName	*FindName(	char	 *name,
     }
 
 #if WITH_DEBUGGING_UTIL_1
-    ErrorLogger( NO_ERR_END, LOC, _proc_FindName, NULL);
-#endif
+    ErrorLogger(NO_ERR_END, LOC, _proc_FindName, NULL);
+#endif /* WITH_DEBUGGING_UTIL_1 */
 
-    return( cmp ? (ModName *) NULL : ptr);
+    return (cmp ? (ModName *)NULL : ptr);
 
 } /** End of 'FindName' **/
+
+/* EOF */

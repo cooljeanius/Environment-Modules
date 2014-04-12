@@ -117,12 +117,12 @@ static int out_substr(FILE *stream, char *start, char *end) {
 
 int	ModuleCmd_Init(Tcl_Interp *interp, int argc, char *argv[])
 {
-    char	 *home_pathname,
+    char *home_pathname,
 		 *home_pathname2,
-		 **shell_startups;	/** A list of all startup files our **/
-					/** invoking shell will source       **/
-    int		  max_home_path = (MOD_BUFSIZE + 40);
-    char	**modlist,
+		 **shell_startups;	/** A list of all startup files that our
+							 ** invoking shell will source **/
+    int max_home_path = (MOD_BUFSIZE + 40);
+    char **modlist,
 		 *home,
 		 *buffer,
 		  ch,
@@ -131,8 +131,8 @@ int	ModuleCmd_Init(Tcl_Interp *interp, int argc, char *argv[])
 	"^([ \t]*module[ \t]+)(load|add)[ \t]+([^#\n]*)([#.\n]*)";
     static Tcl_Obj	 *modcmdObj;
     static Tcl_RegExp	  modcmdPtr;
-    FILE	 *fileptr, *newfileptr;
-    int		  i, j,
+    FILE *fileptr, *newfileptr;
+    int	  i, j,
 		  found_module_command = 0,
 		  found_modload_flag = 0,
 		  shell_num = 0,
@@ -141,54 +141,69 @@ int	ModuleCmd_Init(Tcl_Interp *interp, int argc, char *argv[])
 		  new_file,
 		  homelen, home_end, path_end;
 
+	/* dummy condition to use 'max_home_path': */
+	if (max_home_path == 0) {
+		;
+	}
 #if WITH_DEBUGGING_MODULECMD
     ErrorLogger(NO_ERR_START, LOC, _proc_ModuleCmd_Init, NULL);
-#endif
+#endif /* WITH_DEBUGGING_MODULECMD */
 
     /**
-     **  If called with no arguments and the flags don't say that there's some-
-     **  thing to do - exit now!
+     **  If called with no arguments, and the flags do NOT say that there is
+	 **  something to do - exit now!
      **/
-    if (argc < 1 && !(g_flags & (M_DISPLAY | M_CLEAR)))
-	goto success0;
+    if ((argc < 1) && !(g_flags & (M_DISPLAY | M_CLEAR))) {
+		goto success0;
+	}
 
-    if (!modcmdObj)
-	modcmdObj = Tcl_NewStringObj(Modcmd,strlen(Modcmd));
-    if (!modcmdPtr)
-	modcmdPtr = Tcl_GetRegExpFromObj(interp,modcmdObj,TCL_REG_ADVANCED);
+    if (!modcmdObj) {
+		modcmdObj = Tcl_NewStringObj(Modcmd, (int)strlen(Modcmd));
+	}
+    if (!modcmdPtr) {
+		modcmdPtr = Tcl_GetRegExpFromObj(interp, modcmdObj, TCL_REG_ADVANCED);
+	}
     /**
      **  Parameter check for the initswitch command
      **/
     if (g_flags & M_SWITCH) {
-	argc--;
-	if (argc != 1)
-	    if (OK != ErrorLogger(ERR_USAGE, LOC,
-				  "initswitch oldmodule newmodule", NULL))
-		goto unwind0;
+		argc--;
+		if (argc != 1) {
+			if (OK != ErrorLogger(ERR_USAGE, LOC,
+								  "initswitch oldmodule newmodule", NULL)) {
+				goto unwind0;
+			}
+		}
     }
 
     /**
-     **  Where's my HOME?
+     **  Where is my HOME?
      **/
-    if ((char *) NULL == (home = (char *) getenv("HOME")))
-	if (OK != ErrorLogger(ERR_HOME, LOC, NULL))
-	    goto unwind1;
+    if ((char *)NULL == (home = (char *)getenv("HOME"))) {
+		if (OK != ErrorLogger(ERR_HOME, LOC, NULL)) {
+			goto unwind1;
+		}
+	}
 
     /**
      **  Put HOME into a buffer and store a slash where the end of HOME is
      **  for quick concatination of the shell startup files.
      **/
-    homelen = strlen(home) + 40;
-    if ((char *) NULL ==
-	(home_pathname = stringer(NULL, homelen, home, "/", NULL)))
-	if (OK != ErrorLogger(ERR_STRING, LOC, NULL))
-	    goto unwind0;
+    homelen = (int)(strlen(home) + 40);
+    if ((char *)NULL == (home_pathname = stringer(NULL, homelen,
+												  home, "/", NULL))) {
+		if (OK != ErrorLogger(ERR_STRING, LOC, NULL)) {
+			goto unwind0;
+		}
+	}
 
-    if ((char *) NULL == (home_pathname2 = stringer(NULL, homelen, NULL)))
-	if (OK != ErrorLogger(ERR_STRING, LOC, NULL))
-	    goto unwind1;
+    if ((char *) NULL == (home_pathname2 = stringer(NULL, homelen, NULL))) {
+		if (OK != ErrorLogger(ERR_STRING, LOC, NULL)) {
+			goto unwind1;
+		}
+	}
 
-    home_end = strlen(home_pathname);
+    home_end = (int)strlen(home_pathname);
 
     /**
      **  Allocate a buffer for fgets ...
@@ -219,8 +234,8 @@ int	ModuleCmd_Init(Tcl_Interp *interp, int argc, char *argv[])
 	 **  ... when the startup file exists ...
 	 **  open a new startupfile with the extension -NEW for output
 	 **/
-	path_end = strlen(home_pathname);
-	if ((char *) NULL == stringer(home_pathname + path_end,
+	path_end = (int)strlen(home_pathname);
+	if ((char *)NULL == stringer(home_pathname + path_end,
 				      homelen - path_end, "-NEW", NULL))
 	    if (OK != ErrorLogger(ERR_STRING, LOC, NULL))
 		goto unwind3;
@@ -484,9 +499,9 @@ int	ModuleCmd_Init(Tcl_Interp *interp, int argc, char *argv[])
 	    }
 
 	    /**
-	     **  So far we're successful so
-	     **  Create a -OLD name
-	     **  Unlink ~/.startup-OLD
+	     **  So far we are/were successful, so:
+	     **  - Create a name with a suffix of "-OLD"
+	     **  - Unlink ~/.startup-OLD
 	     **/
 	    if ((char *) NULL == stringer(home_pathname2, homelen,
 					  home_pathname, "-OLD", NULL))
@@ -504,34 +519,38 @@ int	ModuleCmd_Init(Tcl_Interp *interp, int argc, char *argv[])
     } /** while( shell_startups) **/
 
     /**
-     **  Free up internal I/O buffers
+     **  Free up internal I/O buffers:
      **/
-    null_free((void *) &buffer);
+    null_free((void *)&buffer);
 
-    if (!found_module_command)
-	if (OK != ErrorLogger(ERR_INIT_STUP, LOC, shell_name, NULL))
-	    goto unwind2;
+    if (!found_module_command) {
+		if (OK != ErrorLogger(ERR_INIT_STUP, LOC, shell_name, NULL)) {
+			goto unwind2;
+		}
+	}
 
 #if WITH_DEBUGGING_MODULECMD
     ErrorLogger(NO_ERR_END, LOC, _proc_ModuleCmd_Init, NULL);
-#endif
+#endif /* WITH_DEBUGGING_MODULECMD */
 
     /**
-     **  Free up memory
+     **  Free up memory:
      **/
-    null_free((void *) &home_pathname2);
-    null_free((void *) &home_pathname);
+    null_free((void *)&home_pathname2);
+    null_free((void *)&home_pathname);
 
 success0:
     return (TCL_OK);			/** -------- EXIT (SUCCESS) -------> **/
 
 unwind3:
-    null_free((void *) &buffer);
+    null_free((void *)&buffer);
 unwind2:
-    null_free((void *) &home_pathname2);
+    null_free((void *)&home_pathname2);
 unwind1:
-    null_free((void *) &home_pathname);
+    null_free((void *)&home_pathname);
 unwind0:
     return (TCL_ERROR);			/** -------- EXIT (FAILURE) -------> **/
 
-} /** end of 'ModuleCmd_Init' **/
+} /** end of 'ModuleCmd_Init' (that was a lengthy one...) **/
+
+/* EOF */
