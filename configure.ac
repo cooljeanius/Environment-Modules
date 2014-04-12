@@ -17,6 +17,7 @@ dnl#-----------------------------------------------------------------------
 dnl#
 
 AC_INIT([modules],[3.2],[modules-interest@lists.sourceforge.net])
+AC_PREFIX_DEFAULT([/usr/local/Modules])dnl
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_TARGET
@@ -229,13 +230,14 @@ LT_LANG([C])
 XORG_LD_WRAP
 AC_SEARCH_LIBS([strerror],[cposix]) dnl# used to be AC\_ISC\_POSIX
 AC_PATH_PROG([UNAME],[uname],[:])dnl
-AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.18.3])
-SC_ENABLE_LANGINFO
-AX_PROG_TCL([8.3])
 AX_CHECK_GNU_MAKE
 AX_CVS([anonymous@cvs.modules.sourceforge.net:/cvsroot/modules])
 PKG_PROG_PKG_CONFIG([0.9])
+
+dnl# I18N support:
+AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_VERSION([0.18.3])
+SC_ENABLE_LANGINFO
 
 dnl#
 dnl#-----------------------------------------------------------------------
@@ -246,6 +248,7 @@ AM_PATH_PYTHON
 AM_PATH_LISPDIR
 CMAKE_FIND_BINARY
 XORG_WITH_PERL
+AX_PROG_TCL([8.3])
 
 dnl#
 dnl#-----------------------------------------------------------------------
@@ -298,9 +301,9 @@ AC_FUNC_STAT
 AC_FUNC_STRCOLL
 AC_FUNC_STRNLEN
 AC_CHECK_FUNCS([atexit dup2 exit feof fread gethostname getdomainname \
-        ioctl memset mktemp qsort setlocale strchr strcpy strcspn strdup \
-        strlen strncmp strncpy strrchr strstr strtok syslog \
-        tmpnam tempnam umask uname])dnl
+        ioctl memset mktemp qsort setlocale strcasecmp strchr strcpy \
+        strcspn strdup strlen strncmp strncpy strrchr strstr strtok \
+        syslog tmpnam tempnam umask uname])dnl
 AC_CHECK_DECLS([buffer, environ, index, remove, shell_name, strtok])
 
 dnl#
@@ -1022,7 +1025,7 @@ SC_TCL_LINK_LIBS
 
 dnl#
 dnl#--------------------------------------------------------------------
-dnl# Load the tclConfig.sh file
+dnl# Load the tclConfig.sh file:
 dnl#--------------------------------------------------------------------
 dnl#
 
@@ -1033,7 +1036,7 @@ EM_CHECK_TCL
 
 dnl#
 dnl#--------------------------------------------------------------------
-dnl# Also check for Tk
+dnl# Also check for Tk:
 dnl#--------------------------------------------------------------------
 dnl#
 
@@ -1042,7 +1045,7 @@ SC_LOAD_TKCONFIG
 
 dnl#
 dnl#--------------------------------------------------------------------
-dnl# Check for other Tcl features
+dnl# Check for other Tcl features:
 dnl#--------------------------------------------------------------------
 dnl#
 
@@ -1296,9 +1299,10 @@ AC_CONFIG_FILES([Makefile modules.lsm .spec doc/Makefile
 	ext/Makefile ext/add.ext ext/mkroot
 	ext/common/.cshrc ext/common/.login 
 	ext/common/.kshenv ext/common/.profile 
-	modulefiles/Makefile modulefiles/modules
+	modulefiles/Makefile modulefiles/modules modulefiles/module-cvs
 	modulefiles/module-git modulefiles/module-info modulefiles/null
 	modulefiles/use.own modulefiles/dot modulefiles/version
+	modulefiles/HOME modulefiles/notavail
 	po/Makefile])dnl
 
 dnl# We want these to be recreated for each install:

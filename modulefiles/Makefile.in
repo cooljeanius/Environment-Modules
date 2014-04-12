@@ -83,9 +83,10 @@ host_triplet = @host@
 target_triplet = @target@
 subdir = modulefiles
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
-	$(srcdir)/modules.in $(srcdir)/module-git.in \
-	$(srcdir)/module-info.in $(srcdir)/null.in \
-	$(srcdir)/use.own.in $(srcdir)/dot.in $(srcdir)/version.in
+	$(srcdir)/modules.in $(srcdir)/module-cvs.in \
+	$(srcdir)/module-git.in $(srcdir)/module-info.in \
+	$(srcdir)/null.in $(srcdir)/use.own.in $(srcdir)/dot.in \
+	$(srcdir)/version.in $(srcdir)/HOME.in $(srcdir)/notavail.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/autobuild.m4 \
 	$(top_srcdir)/m4/ax_ac_append_to_file.m4 \
@@ -115,8 +116,8 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = modules module-git module-info null use.own dot \
-	version
+CONFIG_CLEAN_FILES = modules module-cvs module-git module-info null \
+	use.own dot version HOME notavail
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -392,8 +393,17 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign no-installinfo -Wall
 BASEMODULES = \
-	dot module-git module-info modules null use.own
+	HOME dot module-cvs module-git module-info modules null use.own \
+	notavail
 
+
+# add any new languages for the lang/ modulefiles here
+# and in the lang/.mklang script
+LANGUAGES = \
+	lang/de lang/en lang/es lang/fi lang/fr lang/gr			\
+	lang/it lang/ja lang/no lang/ru lang/us lang/zh
+
+ALLMODULES = ${BASEMODULES} ${LANGUAGES} lang/.mklang
 EXTRA_SCRIPTS = ${BASEMODULES} version
 all: all-am
 
@@ -430,6 +440,8 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 $(am__aclocal_m4_deps):
 modules: $(top_builddir)/config.status $(srcdir)/modules.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+module-cvs: $(top_builddir)/config.status $(srcdir)/module-cvs.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 module-git: $(top_builddir)/config.status $(srcdir)/module-git.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 module-info: $(top_builddir)/config.status $(srcdir)/module-info.in
@@ -441,6 +453,10 @@ use.own: $(top_builddir)/config.status $(srcdir)/use.own.in
 dot: $(top_builddir)/config.status $(srcdir)/dot.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 version: $(top_builddir)/config.status $(srcdir)/version.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+HOME: $(top_builddir)/config.status $(srcdir)/HOME.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+notavail: $(top_builddir)/config.status $(srcdir)/notavail.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 mostlyclean-libtool:
@@ -648,6 +664,9 @@ uninstall-am: uninstall-local
 
 all:	${EXTRA_SCRIPTS}
 
+${LANGUAGES} : lang/.mklang
+	-(cd lang; ./.mklang)
+
 install-data-local : install-basemodules install-version
 
 install-basemodules : $(BASEMODULES)
@@ -705,6 +724,10 @@ regen_dot : dot.in ../config.status
 	(cd ..; config.status modulefiles/dot)
 .PHONY: regen_dot
 
+regen_module-cvs : module-cvs.in ../config.status
+	(cd ..; config.status modulefiles/module-cvs)
+.PHONY: regen_module-cvs
+
 regen_module-git : module-git.in ../config.status
 	(cd ..; config.status modulefiles/module-git)
 .PHONY: regen_module-git
@@ -732,7 +755,8 @@ regen_version : version.in ../config.status
 check :
 
 clean-local :
-	rm -f ${BASEMODULES}
+	-rm -f ${BASEMODULES}
+	-(cd lang; ./.mklang clean)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -17,6 +17,7 @@
 ###########################################################################
 ###########################################################################
 
+
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -149,8 +150,8 @@ CONFIG_CLEAN_FILES = modules.lsm .spec etc/skel/.cshrc etc/skel/.login \
 	ext/common/.cshrc ext/common/.login ext/common/.kshenv \
 	ext/common/.profile
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" \
-	"$(DESTDIR)$(man4dir)"
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" \
+	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(man4dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_modulecmd_OBJECTS = modulecmd-ModuleCmd_Avail.$(OBJEXT) \
 	modulecmd-ModuleCmd_Clear.$(OBJEXT) \
@@ -175,8 +176,10 @@ am_modulecmd_OBJECTS = modulecmd-ModuleCmd_Avail.$(OBJEXT) \
 	modulecmd-cmdVersion.$(OBJEXT) modulecmd-cmdVerbose.$(OBJEXT) \
 	modulecmd-cmdWhatis.$(OBJEXT) modulecmd-init.$(OBJEXT) \
 	modulecmd-locate_module.$(OBJEXT) modulecmd-utility.$(OBJEXT) \
-	modulecmd-main.$(OBJEXT) modulecmd-error.$(OBJEXT) \
-	modulecmd-getopt.$(OBJEXT) modulecmd-version.$(OBJEXT)
+	modulecmd-utilmem.$(OBJEXT) modulecmd-main.$(OBJEXT) \
+	modulecmd-error.$(OBJEXT) modulecmd-getopt.$(OBJEXT) \
+	modulecmd-version.$(OBJEXT) modulecmd-uvec.$(OBJEXT) \
+	modulecmd-ovec.$(OBJEXT)
 modulecmd_OBJECTS = $(am_modulecmd_OBJECTS)
 modulecmd_DEPENDENCIES =
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -186,6 +189,34 @@ am__v_lt_1 =
 modulecmd_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(modulecmd_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__uninstall_files_from_dir = { \
+  test -z "$$files" \
+    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+         $(am__cd) "$$dir" && rm -f $$files; }; \
+  }
+SCRIPTS = $(bin_SCRIPTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -235,33 +266,6 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
-am__install_max = 40
-am__nobase_strip_setup = \
-  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
-am__nobase_strip = \
-  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
-am__nobase_list = $(am__nobase_strip_setup); \
-  for p in $$list; do echo "$$p $$p"; done | \
-  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
-  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
-    if (++n[$$2] == $(am__install_max)) \
-      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
-    END { for (dir in files) print dir, files[dir] }'
-am__base_list = \
-  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
-  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__uninstall_files_from_dir = { \
-  test -z "$$files" \
-    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
-    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
-         $(am__cd) "$$dir" && rm -f $$files; }; \
-  }
 man1dir = $(mandir)/man1
 man4dir = $(mandir)/man4
 NROFF = nroff
@@ -375,7 +379,7 @@ CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATE = @DATE@
 DEFAULTPATH = @DEFAULTPATH@
-DEFS = @DEFS@
+DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
 DL_LIBS = @DL_LIBS@
@@ -563,7 +567,7 @@ install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
 lispdir = @lispdir@
-localedir = @localedir@
+localedir = $(datadir)/locale
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
@@ -603,13 +607,23 @@ DIST_SUBDIRS = . init modulefiles etc ext doc
 SOURCES_H = modules_def.h getopt.h config.h gettext.h
 DISTCLEANFILES = *~ .DS_Store config/*~ m4/*~ m4/.DS_Store po/*~ autoscan.log
 MAINTAINERCLEANFILES = aminclude_static.am configure.scan
-EXTRA_DIST = config/config.rpath  [config]dnl/config.rpath  modules_def.h getopt.h testsuite INSTALL.RH7x		\
+EXTRA_DIST = config/config.rpath config/mkinstalldirs	\
+	modules_def.h getopt.h uvec.h ovec.h testsuite INSTALL.RH7x	\
 	init/filter init/bash.in init/sh.in init/zsh.in			\
 	init/csh.in init/ksh.in init/perl.pm.in init/python.py.in	\
 	init/ruby.rb.in init/cmake.in init/bash_completion.in		\
-	LICENSE.GPL ChangeLog
+	modulefiles/lang/.mklang					\
+	LICENSE.GPL ABOUT-NLS ChangeLog
 
-modulecmd_CFLAGS = @TCLX_INCLUDE_SPEC@ @TCL_INCLUDE_SPEC@ @X_CFLAGS@ $(BASE_CFLAGS)
+bin_SCRIPTS = etc/mkroot etc/add.modules ext/add.ext
+modulecmd_CFLAGS = \
+	-DSYSCONFDIR=\"$(sysconfdir)\"					\
+	-DBASEPREFIX=\"$(BASEPREFIX)\"					\
+	-DMODULEPATH=\"$(MODULEPATH)\"					\
+	-DVERSIONPATH=\"$(VERSIONPATH)\"				\
+	-DINITPATH=\"$(INITPATH)\"					\
+	@TCLX_INCLUDE_SPEC@ @TCL_INCLUDE_SPEC@ @X_CFLAGS@ $(BASE_CFLAGS)
+
 modulecmd_LDADD = @TCLX_LIB_SPEC@ @TCL_LIB_SPEC@ @X_LIBS@ @X_EXTRA_LIBS@ @LIBS@
 modulecmd_SOURCES = \
 	ModuleCmd_Avail.c \
@@ -621,7 +635,7 @@ modulecmd_SOURCES = \
 	cmdModule.c cmdPath.c cmdSetenv.c cmdUname.c cmdXResource.c \
 	cmdUlvl.c cmdLog.c cmdChdir.c cmdTrace.c cmdVersion.c \
 	cmdVerbose.c cmdWhatis.c init.c locate_module.c utility.c \
-	main.c error.c getopt.c version.c
+	utilmem.c main.c error.c getopt.c version.c uvec.c ovec.c
 
 GZIP = gzip
 BZIP2 = bzip2
@@ -765,6 +779,41 @@ clean-binPROGRAMS:
 modulecmd$(EXEEXT): $(modulecmd_OBJECTS) $(modulecmd_DEPENDENCIES) $(EXTRA_modulecmd_DEPENDENCIES) 
 	@rm -f modulecmd$(EXEEXT)
 	$(AM_V_CCLD)$(modulecmd_LINK) $(modulecmd_OBJECTS) $(modulecmd_LDADD) $(LIBS)
+install-binSCRIPTS: $(bin_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n' \
+	    -e 'h;s|.*|.|' \
+	    -e 'p;x;s,.*/,,;$(transform)' | sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1; } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) { files[d] = files[d] " " $$1; \
+	      if (++n[d] == $(am__install_max)) { \
+		print "f", d, files[d]; n[d] = 0; files[d] = "" } } \
+	    else { print "f", d "/" $$4, $$1 } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	     test -z "$$files" || { \
+	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	     } \
+	; done
+
+uninstall-binSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	       sed -e 's,.*/,,;$(transform)'`; \
+	dir='$(DESTDIR)$(bindir)'; $(am__uninstall_files_from_dir)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -807,7 +856,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modulecmd-init.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modulecmd-locate_module.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modulecmd-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modulecmd-ovec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modulecmd-utility.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modulecmd-utilmem.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modulecmd-uvec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modulecmd-version.Po@am__quote@
 
 .c.o:
@@ -1293,6 +1345,20 @@ modulecmd-utility.obj: utility.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modulecmd_CFLAGS) $(CFLAGS) -c -o modulecmd-utility.obj `if test -f 'utility.c'; then $(CYGPATH_W) 'utility.c'; else $(CYGPATH_W) '$(srcdir)/utility.c'; fi`
 
+modulecmd-utilmem.o: utilmem.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modulecmd_CFLAGS) $(CFLAGS) -MT modulecmd-utilmem.o -MD -MP -MF $(DEPDIR)/modulecmd-utilmem.Tpo -c -o modulecmd-utilmem.o `test -f 'utilmem.c' || echo '$(srcdir)/'`utilmem.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modulecmd-utilmem.Tpo $(DEPDIR)/modulecmd-utilmem.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utilmem.c' object='modulecmd-utilmem.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modulecmd_CFLAGS) $(CFLAGS) -c -o modulecmd-utilmem.o `test -f 'utilmem.c' || echo '$(srcdir)/'`utilmem.c
+
+modulecmd-utilmem.obj: utilmem.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modulecmd_CFLAGS) $(CFLAGS) -MT modulecmd-utilmem.obj -MD -MP -MF $(DEPDIR)/modulecmd-utilmem.Tpo -c -o modulecmd-utilmem.obj `if test -f 'utilmem.c'; then $(CYGPATH_W) 'utilmem.c'; else $(CYGPATH_W) '$(srcdir)/utilmem.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modulecmd-utilmem.Tpo $(DEPDIR)/modulecmd-utilmem.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utilmem.c' object='modulecmd-utilmem.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modulecmd_CFLAGS) $(CFLAGS) -c -o modulecmd-utilmem.obj `if test -f 'utilmem.c'; then $(CYGPATH_W) 'utilmem.c'; else $(CYGPATH_W) '$(srcdir)/utilmem.c'; fi`
+
 modulecmd-main.o: main.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modulecmd_CFLAGS) $(CFLAGS) -MT modulecmd-main.o -MD -MP -MF $(DEPDIR)/modulecmd-main.Tpo -c -o modulecmd-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modulecmd-main.Tpo $(DEPDIR)/modulecmd-main.Po
@@ -1348,6 +1414,34 @@ modulecmd-version.obj: version.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='version.c' object='modulecmd-version.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modulecmd_CFLAGS) $(CFLAGS) -c -o modulecmd-version.obj `if test -f 'version.c'; then $(CYGPATH_W) 'version.c'; else $(CYGPATH_W) '$(srcdir)/version.c'; fi`
+
+modulecmd-uvec.o: uvec.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modulecmd_CFLAGS) $(CFLAGS) -MT modulecmd-uvec.o -MD -MP -MF $(DEPDIR)/modulecmd-uvec.Tpo -c -o modulecmd-uvec.o `test -f 'uvec.c' || echo '$(srcdir)/'`uvec.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modulecmd-uvec.Tpo $(DEPDIR)/modulecmd-uvec.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='uvec.c' object='modulecmd-uvec.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modulecmd_CFLAGS) $(CFLAGS) -c -o modulecmd-uvec.o `test -f 'uvec.c' || echo '$(srcdir)/'`uvec.c
+
+modulecmd-uvec.obj: uvec.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modulecmd_CFLAGS) $(CFLAGS) -MT modulecmd-uvec.obj -MD -MP -MF $(DEPDIR)/modulecmd-uvec.Tpo -c -o modulecmd-uvec.obj `if test -f 'uvec.c'; then $(CYGPATH_W) 'uvec.c'; else $(CYGPATH_W) '$(srcdir)/uvec.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modulecmd-uvec.Tpo $(DEPDIR)/modulecmd-uvec.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='uvec.c' object='modulecmd-uvec.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modulecmd_CFLAGS) $(CFLAGS) -c -o modulecmd-uvec.obj `if test -f 'uvec.c'; then $(CYGPATH_W) 'uvec.c'; else $(CYGPATH_W) '$(srcdir)/uvec.c'; fi`
+
+modulecmd-ovec.o: ovec.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modulecmd_CFLAGS) $(CFLAGS) -MT modulecmd-ovec.o -MD -MP -MF $(DEPDIR)/modulecmd-ovec.Tpo -c -o modulecmd-ovec.o `test -f 'ovec.c' || echo '$(srcdir)/'`ovec.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modulecmd-ovec.Tpo $(DEPDIR)/modulecmd-ovec.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ovec.c' object='modulecmd-ovec.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modulecmd_CFLAGS) $(CFLAGS) -c -o modulecmd-ovec.o `test -f 'ovec.c' || echo '$(srcdir)/'`ovec.c
+
+modulecmd-ovec.obj: ovec.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modulecmd_CFLAGS) $(CFLAGS) -MT modulecmd-ovec.obj -MD -MP -MF $(DEPDIR)/modulecmd-ovec.Tpo -c -o modulecmd-ovec.obj `if test -f 'ovec.c'; then $(CYGPATH_W) 'ovec.c'; else $(CYGPATH_W) '$(srcdir)/ovec.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/modulecmd-ovec.Tpo $(DEPDIR)/modulecmd-ovec.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ovec.c' object='modulecmd-ovec.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(modulecmd_CFLAGS) $(CFLAGS) -c -o modulecmd-ovec.obj `if test -f 'ovec.c'; then $(CYGPATH_W) 'ovec.c'; else $(CYGPATH_W) '$(srcdir)/ovec.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1787,10 +1881,10 @@ distcleancheck: distclean
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU check-local
 check: check-recursive
-all-am: Makefile $(PROGRAMS) $(MANS) config.h
+all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(MANS) config.h
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(man4dir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(man4dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-recursive
@@ -1855,7 +1949,7 @@ install-dvi: install-dvi-recursive
 
 install-dvi-am:
 
-install-exec-am: install-binPROGRAMS
+install-exec-am: install-binPROGRAMS install-binSCRIPTS
 
 install-html: install-html-recursive
 
@@ -1897,7 +1991,7 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-man
+uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS uninstall-man
 
 uninstall-man: uninstall-man1 uninstall-man4
 
@@ -1913,16 +2007,17 @@ uninstall-man: uninstall-man1 uninstall-man4
 	distclean-libtool distclean-local distclean-tags \
 	distcleancheck distdir distuninstallcheck dvi dvi-am html \
 	html-am info info-am install install-am install-binPROGRAMS \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-man1 \
-	install-man4 install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs installdirs-am maintainer-clean \
+	install-binSCRIPTS install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-man1 install-man4 install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS \
-	uninstall-man uninstall-man1 uninstall-man4
+	uninstall-binSCRIPTS uninstall-man uninstall-man1 \
+	uninstall-man4
 
 
 test: check-local
@@ -1932,6 +2027,7 @@ check-local:	modulecmd
 	TESTSUITEDIR=$(srcdir)/testsuite; export TESTSUITEDIR; \
 	$(RUNTEST) --srcdir $$TESTSUITEDIR \
 	$(AM_RUNTESTFLAGS) $(RUNTESTFLAGS) --tool=modules
+	test -x `which submitdiaginfo` || pwd
 
 ctags-local: CTAGS
 CTAGS-local: $(modulecmd_SOURCES)
@@ -1969,8 +2065,12 @@ tag:
 ChangeLog: CL
 
 CL: rmChangeLog ./gitlog2changelog.py
-	@echo "Updating ChangeLog"
+	@echo "Updating ChangeLog (git-style)"
 	-@./gitlog2changelog.py
+
+CL-cvs: rmChangeLog ./cvs2cl.pl
+	@echo "Updating ChangeLog (cvs-style)"
+	-@./cvs2cl.pl
 
 rmChangeLog: NEWS
 	-@rm -f ChangeLog

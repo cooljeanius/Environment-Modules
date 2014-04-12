@@ -182,9 +182,7 @@ static  void     EscapeCmakeString(const char* in, char* out);
  ** ************************************************************************ **
  ++++*/
 
-int store_hash_value(	Tcl_HashTable* htable,
-        		const char*    key,
-        		const char*    value)
+int store_hash_value(Tcl_HashTable* htable, const char* key, const char* value)
 {
     int   		 new;		/** Return from Tcl_CreateHashEntry  **/
 					/** which indicates creation or ref- **/
@@ -193,8 +191,8 @@ int store_hash_value(	Tcl_HashTable* htable,
     Tcl_HashEntry	*hentry;	/** Hash entry reference	     **/
 
 #if WITH_DEBUGGING_UTIL_2
-    ErrorLogger( NO_ERR_START, LOC, _proc_store_hash_value, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_store_hash_value, NULL);
+#endif /* WITH_DEBUGGING_UTIL_2 */
 
     /**
      **  Create a hash entry for the key to be stored. If there exists one
@@ -202,23 +200,24 @@ int store_hash_value(	Tcl_HashTable* htable,
      **  All values in this hash are pointers to allocated memory areas.
      **/
 
-    hentry = Tcl_CreateHashEntry( htable, (char*) key, &new);
-    if( !new) {
-	tmp = (char *) Tcl_GetHashValue( hentry);
-    	if( tmp)
-	    null_free((void *) &tmp);
+    hentry = Tcl_CreateHashEntry(htable, (char*) key, &new);
+    if (!new) {
+		tmp = (char *)Tcl_GetHashValue(hentry);
+    	if (tmp) {
+			null_free((void *)&tmp);
+		}
     }
 
     /**
      **  Set up the new value. strdup allocates!
      **/
+    if (value) {
+        Tcl_SetHashValue(hentry, (char*)stringer(NULL, 0, (char *)value, NULL));
+    } else {
+        Tcl_SetHashValue(hentry, (char*)NULL);
+	}
 
-    if( value)
-        Tcl_SetHashValue( hentry, (char*) stringer(NULL,0, (char *)value,NULL));
-    else
-        Tcl_SetHashValue( hentry, (char*) NULL);
-
-    return( TCL_OK);
+    return (TCL_OK);
 
 } /** End of 'store_hash_value' **/
 

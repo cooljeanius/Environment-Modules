@@ -595,6 +595,7 @@ PACKAGE_STRING='modules 3.2'
 PACKAGE_BUGREPORT='modules-interest@lists.sourceforge.net'
 PACKAGE_URL=''
 
+ac_default_prefix=/usr/local/Modules
 ac_unique_file="version.c"
 # Factoring default headers for most tests.
 ac_includes_default="\
@@ -708,6 +709,8 @@ DL_OBJS
 DL_LIBS
 CWARNFLAGS
 BASE_CFLAGS
+WISH
+TCLSH
 HAVE_PERL_FALSE
 HAVE_PERL_TRUE
 PERL
@@ -724,21 +727,6 @@ PYTHON_EXEC_PREFIX
 PYTHON_PREFIX
 PYTHON_VERSION
 PYTHON
-PKG_CONFIG_LIBDIR
-PKG_CONFIG_PATH
-PKG_CONFIG
-ax_cvs_enabled_FALSE
-ax_cvs_enabled_TRUE
-USEREMAIL
-USERNAME
-CVSROOT
-CVSEDITOR
-GAWK
-CVS
-ANON_CVSROOT
-ifGNUmake
-WISH
-TCLSH
 POSUB
 LTLIBINTL
 LIBINTL
@@ -756,6 +744,19 @@ GMSGFMT
 MSGFMT
 GETTEXT_MACRO_VERSION
 USE_NLS
+PKG_CONFIG_LIBDIR
+PKG_CONFIG_PATH
+PKG_CONFIG
+ax_cvs_enabled_FALSE
+ax_cvs_enabled_TRUE
+USEREMAIL
+USERNAME
+CVSROOT
+CVSEDITOR
+GAWK
+CVS
+ANON_CVSROOT
+ifGNUmake
 UNAME
 HAVE_LD_WRAP_FALSE
 HAVE_LD_WRAP_TRUE
@@ -909,12 +910,12 @@ enable_fast_install
 with_gnu_ld
 with_sysroot
 enable_libtool_lock
+enable_cvs_support
 enable_nls
 enable_rpath
 with_libiconv_prefix
 with_libintl_prefix
 enable_langinfo
-enable_cvs_support
 with_lispdir
 with_perl
 enable_selective_werror
@@ -1649,15 +1650,15 @@ Optional Features:
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
-  --disable-nls           do not use Native Language Support
-  --disable-rpath         do not hardcode runtime library paths
-  --enable-langinfo	  use nl_langinfo if possible to determine
-			  encoding at startup, otherwise use old heuristic
   --enable-cvs-support=ARG
                           enable cvs support. Used by the $PACKAGE developers.
                           ARG can be "yes" or "no". If the CVSROOT is found,
                           then the default is yes, otherwise the default is
                           no.
+  --disable-nls           do not use Native Language Support
+  --disable-rpath         do not hardcode runtime library paths
+  --enable-langinfo	  use nl_langinfo if possible to determine
+			  encoding at startup, otherwise use old heuristic
   --disable-selective-werror
                           Turn off selective compiler errors. (default:
                           enabled)
@@ -16765,6 +16766,557 @@ $as_echo "no" >&6; }
 fi
 
 
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GNU make" >&5
+$as_echo_n "checking for GNU make... " >&6; }
+if ${ax_cv_gnu_make_command+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+                ax_cv_gnu_make_command='';
+                for a in "${MAKE}" make gmake gnumake ; do
+                        if test -z "${a}" ; then continue ; fi ;
+                        if  ( sh -c "${a} --version" 2> /dev/null | grep GNU  2>&1 > /dev/null ) ;  then
+                                ax_cv_gnu_make_command=${a};
+                                break;
+                        fi
+                done ;
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_gnu_make_command" >&5
+$as_echo "$ax_cv_gnu_make_command" >&6; } ;
+        if test "x${ax_cv_gnu_make_command}" != "x"; then
+                ifGNUmake='';
+        else
+                ifGNUmake='#';
+                { $as_echo "$as_me:${as_lineno-$LINENO}: result: \"Not found\"" >&5
+$as_echo "\"Not found\"" >&6; };
+        fi
+
+
+
+
+    AX_MAJOR_VERSION=`echo "$VERSION" | $SED 's/\([^.][^.]*\).*/\1/'`
+    AX_MINOR_VERSION=`echo "$VERSION" | $SED 's/[^.][^.]*.\([^.][^.]*\).*/\1/'`
+    AX_POINT_VERSION=`echo "$VERSION" | $SED 's/[^.][^.]*.[^.][^.]*.\(.*\)/\1/'`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking Major version" >&5
+$as_echo_n "checking Major version... " >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $AX_MAJOR_VERSION" >&5
+$as_echo "$AX_MAJOR_VERSION" >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking Minor version" >&5
+$as_echo_n "checking Minor version... " >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $AX_MINOR_VERSION" >&5
+$as_echo "$AX_MINOR_VERSION" >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking Point version" >&5
+$as_echo_n "checking Point version... " >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $AX_POINT_VERSION" >&5
+$as_echo "$AX_POINT_VERSION" >&6; }
+
+
+AX_DOLLAR="\$"
+AX_SRB="\\135"
+AX_SLB="\\133"
+AX_BS="\\\\"
+AX_DQ="\""
+
+
+
+
+
+
+
+
+
+ANON_CVSROOT=anonymous@cvs.modules.sourceforge.net:/cvsroot/modules
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking ANON_CVSROOT" >&5
+$as_echo_n "checking ANON_CVSROOT... " >&6; }
+if test "x$ANON_CVSROOT" != "x"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ANON_CVSROOT" >&5
+$as_echo "$ANON_CVSROOT" >&6; }
+else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: not found" >&5
+$as_echo "not found" >&6; }
+    as_fn_error $? "An anonymous CVSROOT must be specified to enable CVS support" "$LINENO" 5
+fi
+
+
+# Check whether --enable-cvs-support was given.
+if test "${enable_cvs_support+set}" = set; then :
+  enableval=$enable_cvs_support; AX_USING_CVS=$enableval
+fi
+
+
+if test "x$AX_USING_CVS" != "xno"; then
+
+    if test "x$CVS" = "x"; then
+        for ac_prog in cvs
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_CVS+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$CVS"; then
+  ac_cv_prog_CVS="$CVS" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CVS="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+CVS=$ac_cv_prog_CVS
+if test -n "$CVS"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CVS" >&5
+$as_echo "$CVS" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$CVS" && break
+done
+
+    fi
+    if test "x$CVS" = "x"; then
+        if test "x$AX_USING_CVS" = "x"; then
+	    AX_USING_CVS=no
+	else
+	    as_fn_error $? "CVS support cannot be enabled: cvs executable not found" "$LINENO" 5
+	fi
+    fi
+
+fi
+
+if test "x$AX_USING_CVS" != "xno"; then
+
+   if test "x$GAWK" = "x"; then
+      for ac_prog in gawk
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_GAWK+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$GAWK"; then
+  ac_cv_prog_GAWK="$GAWK" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_GAWK="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+GAWK=$ac_cv_prog_GAWK
+if test -n "$GAWK"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GAWK" >&5
+$as_echo "$GAWK" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$GAWK" && break
+done
+
+   fi
+   if test "x$GAWK" = "x"; then
+       if test "x$AX_USING_CVS" = "x"; then
+	    AX_USING_CVS=no
+	else
+	    as_fn_error $? "CVS support cannot be enabled: gawk could not be found" "$LINENO" 5
+	fi
+    fi
+
+fi
+
+if test "x$AX_USING_CVS" != "xno"; then
+
+    if test "x$CVSEDITOR" = "x"; then
+        if test "x$EDITOR" = "x"; then
+           for ac_prog in vim vi emacs
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_CVSEDITOR+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$CVSEDITOR"; then
+  ac_cv_prog_CVSEDITOR="$CVSEDITOR" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CVSEDITOR="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+CVSEDITOR=$ac_cv_prog_CVSEDITOR
+if test -n "$CVSEDITOR"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CVSEDITOR" >&5
+$as_echo "$CVSEDITOR" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$CVSEDITOR" && break
+done
+
+	else
+           for ac_prog in $EDITOR vim vi emacs
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_CVSEDITOR+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$CVSEDITOR"; then
+  ac_cv_prog_CVSEDITOR="$CVSEDITOR" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CVSEDITOR="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+CVSEDITOR=$ac_cv_prog_CVSEDITOR
+if test -n "$CVSEDITOR"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CVSEDITOR" >&5
+$as_echo "$CVSEDITOR" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$CVSEDITOR" && break
+done
+
+	fi
+    fi
+    if test "x$CVSEDITOR" = "x"; then
+        if test "x$AX_USING_CVS" = "x"; then
+	    AX_USING_CVS=no
+	else
+	    as_fn_error $? "CVS support cannot be enabled: CVSEDITOR not set and editor not found" "$LINENO" 5
+	fi
+    fi
+
+fi
+
+if test "x$AX_USING_CVS" != "xno"; then
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking CVSROOT" >&5
+$as_echo_n "checking CVSROOT... " >&6; }
+    if test -e "$srcdir/CVS/Root"; then
+        CVSROOT=`cat $srcdir/CVS/Root`;
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $CVSROOT" >&5
+$as_echo "$CVSROOT" >&6; }
+    else
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: not found" >&5
+$as_echo "not found" >&6; }
+        if test "x$AX_USING_CVS" = "x"; then
+	    AX_USING_CVS=no
+	else
+	    as_fn_error $? "CVS support cannot be enabled: CVSROOT not found.  Did you check out from CVS?" "$LINENO" 5
+	fi
+    fi
+
+fi
+
+if test "x$AX_USING_CVS" != "xno"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking USERNAME" >&5
+$as_echo_n "checking USERNAME... " >&6; }
+    if test "x$USERNAME" != "x"; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: $USERNAME" >&5
+$as_echo "$USERNAME" >&6; }
+    else
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: not set" >&5
+$as_echo "not set" >&6; }
+        if test "x$AX_USING_CVS" = "x"; then
+	    AX_USING_CVS=no
+	else
+            as_fn_error $? "CVS support cannot be enabled: USERNAME enviorment variable not set" "$LINENO" 5
+	fi
+    fi
+
+fi
+
+if test "x$AX_USING_CVS" != "xno"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking USEREMAIL" >&5
+$as_echo_n "checking USEREMAIL... " >&6; }
+    if test "x$USERNAME" != "x"; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: $USEREMAIL" >&5
+$as_echo "$USEREMAIL" >&6; }
+    else
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: not set" >&5
+$as_echo "not set" >&6; }
+        if test "x$AX_USING_CVS" = "x"; then
+	    AX_USING_CVS=no
+	else
+            as_fn_error $? "CVS support cannot be enabled: USEREMAIL enviorment variable not set" "$LINENO" 5
+	fi
+    fi
+
+fi
+
+
+if test "x$AX_USING_CVS" != "xno"; then
+   { $as_echo "$as_me:${as_lineno-$LINENO}: cvs support enabled" >&5
+$as_echo "$as_me: cvs support enabled" >&6;}
+
+
+
+printf "
+
+BEGIN {
+    if( change <= 0 )
+        exit -1;
+}
+
+/AC_INIT/ {
+    if( ${AX_DOLLAR}2 ~ /\\)${AX_DOLLAR}/ )
+        {
+            ver = substr( ${AX_DOLLAR}2, 0, length( ${AX_DOLLAR}2 ) - 1 );
+            tail=\")\";
+        }
+    else
+        ver = ${AX_DOLLAR}2;
+
+    if( ${AX_DOLLAR}2 ~ /${AX_BS}${AX_SRB}${AX_DOLLAR}/ )
+        {
+            ver = substr( ${AX_DOLLAR}2, 0, length( ${AX_DOLLAR}2 ) - 1 );
+            tail=\"${AX_SRB}\";
+        }
+    else
+        ver = ${AX_DOLLAR}2;
+
+    if( ${AX_DOLLAR}2 ~ /\\,${AX_DOLLAR}/ )
+        {
+            ver = substr( ${AX_DOLLAR}2, 0, length( ${AX_DOLLAR}2 ) - 1 );
+            tail=\",\";
+        }
+    else
+        ver = ${AX_DOLLAR}2;
+
+    n = split( ver, ver_array, \".\" );
+
+    while( change > n )
+        ver_array[ ++n ] = 0;
+
+    ver_array[ change ]++;
+
+    while( ++change <= n )
+        ver_array[ change ] = 0;
+
+    ${AX_DOLLAR}2 = \"\";
+    for( i = 1; i < n; ++i )
+        ${AX_DOLLAR}2 = ${AX_DOLLAR}2 ver_array[ i ] \".\";
+    ${AX_DOLLAR}2 = ${AX_DOLLAR}2 ver_array[ n ];
+    if( tail )
+        ${AX_DOLLAR}2 = ${AX_DOLLAR}2 tail;
+}
+
+{ print ${AX_DOLLAR}0; }
+
+" > "ax_cvs_rel.awk"
+
+fi
+ if test "x$AX_USING_CVS" != "xno"; then
+  ax_cvs_enabled_TRUE=
+  ax_cvs_enabled_FALSE='#'
+else
+  ax_cvs_enabled_TRUE='#'
+  ax_cvs_enabled_FALSE=
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
+	if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
+set dummy ${ac_tool_prefix}pkg-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_PKG_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PKG_CONFIG="$PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+PKG_CONFIG=$ac_cv_path_PKG_CONFIG
+if test -n "$PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PKG_CONFIG" >&5
+$as_echo "$PKG_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+if test -z "$ac_cv_path_PKG_CONFIG"; then
+  ac_pt_PKG_CONFIG=$PKG_CONFIG
+  # Extract the first word of "pkg-config", so it can be a program name with args.
+set dummy pkg-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_ac_pt_PKG_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $ac_pt_PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_ac_pt_PKG_CONFIG="$ac_pt_PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_ac_pt_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+ac_pt_PKG_CONFIG=$ac_cv_path_ac_pt_PKG_CONFIG
+if test -n "$ac_pt_PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_pt_PKG_CONFIG" >&5
+$as_echo "$ac_pt_PKG_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+  if test "x$ac_pt_PKG_CONFIG" = x; then
+    PKG_CONFIG=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    PKG_CONFIG=$ac_pt_PKG_CONFIG
+  fi
+else
+  PKG_CONFIG="$ac_cv_path_PKG_CONFIG"
+fi
+
+fi
+if test -n "$PKG_CONFIG"; then
+	_pkg_min_version=0.9
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking pkg-config is at least version $_pkg_min_version" >&5
+$as_echo_n "checking pkg-config is at least version $_pkg_min_version... " >&6; }
+	if $PKG_CONFIG --atleast-pkgconfig-version $_pkg_min_version; then
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+		PKG_CONFIG=""
+	fi
+fi
+
+
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether NLS is requested" >&5
 $as_echo_n "checking whether NLS is requested... " >&6; }
     # Check whether --enable-nls was given.
@@ -18883,659 +19435,6 @@ $as_echo "#define HAVE_LANGINFO 1" >>confdefs.h
 $as_echo "$langinfo_ok" >&6; }
 
 
-#-- check for tclsh in PATH
-# Extract the first word of "tclsh", so it can be a program name with args.
-set dummy tclsh; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_path_TCLSH+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  case $TCLSH in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_TCLSH="$TCLSH" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_TCLSH="$as_dir/$ac_word$ac_exec_ext"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_path_TCLSH" && ac_cv_path_TCLSH="no"
-  ;;
-esac
-fi
-TCLSH=$ac_cv_path_TCLSH
-if test -n "$TCLSH"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $TCLSH" >&5
-$as_echo "$TCLSH" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-if (test x"$TCLSH" == x"no") && (test x"8.3" != x"0"); then
-        as_fn_error $? "tclsh not found" "$LINENO" 5
-fi
-
-#-- check for wish in PATH
-# Extract the first word of "wish", so it can be a program name with args.
-set dummy wish; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_path_WISH+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  case $WISH in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_WISH="$WISH" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_WISH="$as_dir/$ac_word$ac_exec_ext"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_path_WISH" && ac_cv_path_WISH="no"
-  ;;
-esac
-fi
-WISH=$ac_cv_path_WISH
-if test -n "$WISH"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $WISH" >&5
-$as_echo "$WISH" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-
-#-- check vor tcl version
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking tcl version" >&5
-$as_echo_n "checking tcl version... " >&6; }
-version=`echo "puts [set tcl_version]" | tclsh -`
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $version" >&5
-$as_echo "$version" >&6; }
-
-#-- compare tcl version with min-version
-required=8.3
-if (test x"8.3" != x"") && (test "${required/./}" -gt "${version/./}"); then
-        as_fn_error $? "tcl version 8.3 required" "$LINENO" 5
-fi
-
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GNU make" >&5
-$as_echo_n "checking for GNU make... " >&6; }
-if ${ax_cv_gnu_make_command+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-
-                ax_cv_gnu_make_command='';
-                for a in "${MAKE}" make gmake gnumake ; do
-                        if test -z "${a}" ; then continue ; fi ;
-                        if  ( sh -c "${a} --version" 2> /dev/null | grep GNU  2>&1 > /dev/null ) ;  then
-                                ax_cv_gnu_make_command=${a};
-                                break;
-                        fi
-                done ;
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_gnu_make_command" >&5
-$as_echo "$ax_cv_gnu_make_command" >&6; } ;
-        if test "x${ax_cv_gnu_make_command}" != "x"; then
-                ifGNUmake='';
-        else
-                ifGNUmake='#';
-                { $as_echo "$as_me:${as_lineno-$LINENO}: result: \"Not found\"" >&5
-$as_echo "\"Not found\"" >&6; };
-        fi
-
-
-
-
-    AX_MAJOR_VERSION=`echo "$VERSION" | $SED 's/\([^.][^.]*\).*/\1/'`
-    AX_MINOR_VERSION=`echo "$VERSION" | $SED 's/[^.][^.]*.\([^.][^.]*\).*/\1/'`
-    AX_POINT_VERSION=`echo "$VERSION" | $SED 's/[^.][^.]*.[^.][^.]*.\(.*\)/\1/'`
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking Major version" >&5
-$as_echo_n "checking Major version... " >&6; }
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $AX_MAJOR_VERSION" >&5
-$as_echo "$AX_MAJOR_VERSION" >&6; }
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking Minor version" >&5
-$as_echo_n "checking Minor version... " >&6; }
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $AX_MINOR_VERSION" >&5
-$as_echo "$AX_MINOR_VERSION" >&6; }
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking Point version" >&5
-$as_echo_n "checking Point version... " >&6; }
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $AX_POINT_VERSION" >&5
-$as_echo "$AX_POINT_VERSION" >&6; }
-
-
-AX_DOLLAR="\$"
-AX_SRB="\\135"
-AX_SLB="\\133"
-AX_BS="\\\\"
-AX_DQ="\""
-
-
-
-
-
-
-
-
-
-ANON_CVSROOT=anonymous@cvs.modules.sourceforge.net:/cvsroot/modules
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking ANON_CVSROOT" >&5
-$as_echo_n "checking ANON_CVSROOT... " >&6; }
-if test "x$ANON_CVSROOT" != "x"; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ANON_CVSROOT" >&5
-$as_echo "$ANON_CVSROOT" >&6; }
-else
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: not found" >&5
-$as_echo "not found" >&6; }
-    as_fn_error $? "An anonymous CVSROOT must be specified to enable CVS support" "$LINENO" 5
-fi
-
-
-# Check whether --enable-cvs-support was given.
-if test "${enable_cvs_support+set}" = set; then :
-  enableval=$enable_cvs_support; AX_USING_CVS=$enableval
-fi
-
-
-if test "x$AX_USING_CVS" != "xno"; then
-
-    if test "x$CVS" = "x"; then
-        for ac_prog in cvs
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_CVS+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$CVS"; then
-  ac_cv_prog_CVS="$CVS" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_CVS="$ac_prog"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-CVS=$ac_cv_prog_CVS
-if test -n "$CVS"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CVS" >&5
-$as_echo "$CVS" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-  test -n "$CVS" && break
-done
-
-    fi
-    if test "x$CVS" = "x"; then
-        if test "x$AX_USING_CVS" = "x"; then
-	    AX_USING_CVS=no
-	else
-	    as_fn_error $? "CVS support cannot be enabled: cvs executable not found" "$LINENO" 5
-	fi
-    fi
-
-fi
-
-if test "x$AX_USING_CVS" != "xno"; then
-
-   if test "x$GAWK" = "x"; then
-      for ac_prog in gawk
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_GAWK+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$GAWK"; then
-  ac_cv_prog_GAWK="$GAWK" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_GAWK="$ac_prog"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-GAWK=$ac_cv_prog_GAWK
-if test -n "$GAWK"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GAWK" >&5
-$as_echo "$GAWK" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-  test -n "$GAWK" && break
-done
-
-   fi
-   if test "x$GAWK" = "x"; then
-       if test "x$AX_USING_CVS" = "x"; then
-	    AX_USING_CVS=no
-	else
-	    as_fn_error $? "CVS support cannot be enabled: gawk could not be found" "$LINENO" 5
-	fi
-    fi
-
-fi
-
-if test "x$AX_USING_CVS" != "xno"; then
-
-    if test "x$CVSEDITOR" = "x"; then
-        if test "x$EDITOR" = "x"; then
-           for ac_prog in vim vi emacs
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_CVSEDITOR+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$CVSEDITOR"; then
-  ac_cv_prog_CVSEDITOR="$CVSEDITOR" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_CVSEDITOR="$ac_prog"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-CVSEDITOR=$ac_cv_prog_CVSEDITOR
-if test -n "$CVSEDITOR"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CVSEDITOR" >&5
-$as_echo "$CVSEDITOR" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-  test -n "$CVSEDITOR" && break
-done
-
-	else
-           for ac_prog in $EDITOR vim vi emacs
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_CVSEDITOR+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$CVSEDITOR"; then
-  ac_cv_prog_CVSEDITOR="$CVSEDITOR" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_CVSEDITOR="$ac_prog"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-CVSEDITOR=$ac_cv_prog_CVSEDITOR
-if test -n "$CVSEDITOR"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CVSEDITOR" >&5
-$as_echo "$CVSEDITOR" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-  test -n "$CVSEDITOR" && break
-done
-
-	fi
-    fi
-    if test "x$CVSEDITOR" = "x"; then
-        if test "x$AX_USING_CVS" = "x"; then
-	    AX_USING_CVS=no
-	else
-	    as_fn_error $? "CVS support cannot be enabled: CVSEDITOR not set and editor not found" "$LINENO" 5
-	fi
-    fi
-
-fi
-
-if test "x$AX_USING_CVS" != "xno"; then
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking CVSROOT" >&5
-$as_echo_n "checking CVSROOT... " >&6; }
-    if test -e "$srcdir/CVS/Root"; then
-        CVSROOT=`cat $srcdir/CVS/Root`;
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $CVSROOT" >&5
-$as_echo "$CVSROOT" >&6; }
-    else
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: not found" >&5
-$as_echo "not found" >&6; }
-        if test "x$AX_USING_CVS" = "x"; then
-	    AX_USING_CVS=no
-	else
-	    as_fn_error $? "CVS support cannot be enabled: CVSROOT not found.  Did you check out from CVS?" "$LINENO" 5
-	fi
-    fi
-
-fi
-
-if test "x$AX_USING_CVS" != "xno"; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking USERNAME" >&5
-$as_echo_n "checking USERNAME... " >&6; }
-    if test "x$USERNAME" != "x"; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: $USERNAME" >&5
-$as_echo "$USERNAME" >&6; }
-    else
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: not set" >&5
-$as_echo "not set" >&6; }
-        if test "x$AX_USING_CVS" = "x"; then
-	    AX_USING_CVS=no
-	else
-            as_fn_error $? "CVS support cannot be enabled: USERNAME enviorment variable not set" "$LINENO" 5
-	fi
-    fi
-
-fi
-
-if test "x$AX_USING_CVS" != "xno"; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking USEREMAIL" >&5
-$as_echo_n "checking USEREMAIL... " >&6; }
-    if test "x$USERNAME" != "x"; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: $USEREMAIL" >&5
-$as_echo "$USEREMAIL" >&6; }
-    else
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: not set" >&5
-$as_echo "not set" >&6; }
-        if test "x$AX_USING_CVS" = "x"; then
-	    AX_USING_CVS=no
-	else
-            as_fn_error $? "CVS support cannot be enabled: USEREMAIL enviorment variable not set" "$LINENO" 5
-	fi
-    fi
-
-fi
-
-
-if test "x$AX_USING_CVS" != "xno"; then
-   { $as_echo "$as_me:${as_lineno-$LINENO}: cvs support enabled" >&5
-$as_echo "$as_me: cvs support enabled" >&6;}
-
-
-
-printf "
-
-BEGIN {
-    if( change <= 0 )
-        exit -1;
-}
-
-/AC_INIT/ {
-    if( ${AX_DOLLAR}2 ~ /\\)${AX_DOLLAR}/ )
-        {
-            ver = substr( ${AX_DOLLAR}2, 0, length( ${AX_DOLLAR}2 ) - 1 );
-            tail=\")\";
-        }
-    else
-        ver = ${AX_DOLLAR}2;
-
-    if( ${AX_DOLLAR}2 ~ /${AX_BS}${AX_SRB}${AX_DOLLAR}/ )
-        {
-            ver = substr( ${AX_DOLLAR}2, 0, length( ${AX_DOLLAR}2 ) - 1 );
-            tail=\"${AX_SRB}\";
-        }
-    else
-        ver = ${AX_DOLLAR}2;
-
-    if( ${AX_DOLLAR}2 ~ /\\,${AX_DOLLAR}/ )
-        {
-            ver = substr( ${AX_DOLLAR}2, 0, length( ${AX_DOLLAR}2 ) - 1 );
-            tail=\",\";
-        }
-    else
-        ver = ${AX_DOLLAR}2;
-
-    n = split( ver, ver_array, \".\" );
-
-    while( change > n )
-        ver_array[ ++n ] = 0;
-
-    ver_array[ change ]++;
-
-    while( ++change <= n )
-        ver_array[ change ] = 0;
-
-    ${AX_DOLLAR}2 = \"\";
-    for( i = 1; i < n; ++i )
-        ${AX_DOLLAR}2 = ${AX_DOLLAR}2 ver_array[ i ] \".\";
-    ${AX_DOLLAR}2 = ${AX_DOLLAR}2 ver_array[ n ];
-    if( tail )
-        ${AX_DOLLAR}2 = ${AX_DOLLAR}2 tail;
-}
-
-{ print ${AX_DOLLAR}0; }
-
-" > "ax_cvs_rel.awk"
-
-fi
- if test "x$AX_USING_CVS" != "xno"; then
-  ax_cvs_enabled_TRUE=
-  ax_cvs_enabled_FALSE='#'
-else
-  ax_cvs_enabled_TRUE='#'
-  ax_cvs_enabled_FALSE=
-fi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
-	if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
-set dummy ${ac_tool_prefix}pkg-config; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_path_PKG_CONFIG+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  case $PKG_CONFIG in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_PKG_CONFIG="$PKG_CONFIG" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  ;;
-esac
-fi
-PKG_CONFIG=$ac_cv_path_PKG_CONFIG
-if test -n "$PKG_CONFIG"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PKG_CONFIG" >&5
-$as_echo "$PKG_CONFIG" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-fi
-if test -z "$ac_cv_path_PKG_CONFIG"; then
-  ac_pt_PKG_CONFIG=$PKG_CONFIG
-  # Extract the first word of "pkg-config", so it can be a program name with args.
-set dummy pkg-config; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_path_ac_pt_PKG_CONFIG+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  case $ac_pt_PKG_CONFIG in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_ac_pt_PKG_CONFIG="$ac_pt_PKG_CONFIG" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_ac_pt_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  ;;
-esac
-fi
-ac_pt_PKG_CONFIG=$ac_cv_path_ac_pt_PKG_CONFIG
-if test -n "$ac_pt_PKG_CONFIG"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_pt_PKG_CONFIG" >&5
-$as_echo "$ac_pt_PKG_CONFIG" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-  if test "x$ac_pt_PKG_CONFIG" = x; then
-    PKG_CONFIG=""
-  else
-    case $cross_compiling:$ac_tool_warned in
-yes:)
-{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
-$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
-ac_tool_warned=yes ;;
-esac
-    PKG_CONFIG=$ac_pt_PKG_CONFIG
-  fi
-else
-  PKG_CONFIG="$ac_cv_path_PKG_CONFIG"
-fi
-
-fi
-if test -n "$PKG_CONFIG"; then
-	_pkg_min_version=0.9
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking pkg-config is at least version $_pkg_min_version" >&5
-$as_echo_n "checking pkg-config is at least version $_pkg_min_version... " >&6; }
-	if $PKG_CONFIG --atleast-pkgconfig-version $_pkg_min_version; then
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-		PKG_CONFIG=""
-	fi
-fi
-
 
 
 
@@ -20065,6 +19964,109 @@ else
   HAVE_PERL_FALSE=
 fi
 
+
+
+#-- check for tclsh in PATH
+# Extract the first word of "tclsh", so it can be a program name with args.
+set dummy tclsh; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_TCLSH+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $TCLSH in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_TCLSH="$TCLSH" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_TCLSH="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_path_TCLSH" && ac_cv_path_TCLSH="no"
+  ;;
+esac
+fi
+TCLSH=$ac_cv_path_TCLSH
+if test -n "$TCLSH"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $TCLSH" >&5
+$as_echo "$TCLSH" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+if (test x"$TCLSH" == x"no") && (test x"8.3" != x"0"); then
+        as_fn_error $? "tclsh not found" "$LINENO" 5
+fi
+
+#-- check for wish in PATH
+# Extract the first word of "wish", so it can be a program name with args.
+set dummy wish; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_WISH+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $WISH in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_WISH="$WISH" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_WISH="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_path_WISH" && ac_cv_path_WISH="no"
+  ;;
+esac
+fi
+WISH=$ac_cv_path_WISH
+if test -n "$WISH"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $WISH" >&5
+$as_echo "$WISH" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+
+#-- check vor tcl version
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking tcl version" >&5
+$as_echo_n "checking tcl version... " >&6; }
+version=`echo "puts [set tcl_version]" | tclsh -`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $version" >&5
+$as_echo "$version" >&6; }
+
+#-- compare tcl version with min-version
+required=8.3
+if (test x"8.3" != x"") && (test "${required/./}" -gt "${version/./}"); then
+        as_fn_error $? "tcl version 8.3 required" "$LINENO" 5
+fi
 
 
 
@@ -28764,9 +28766,9 @@ esac
 
 
 for ac_func in atexit dup2 exit feof fread gethostname getdomainname \
-        ioctl memset mktemp qsort setlocale strchr strcpy strcspn strdup \
-        strlen strncmp strncpy strrchr strstr strtok syslog \
-        tmpnam tempnam umask uname
+        ioctl memset mktemp qsort setlocale strcasecmp strchr strcpy \
+        strcspn strdup strlen strncmp strncpy strrchr strstr strtok \
+        syslog tmpnam tempnam umask uname
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -34579,7 +34581,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile modules.lsm .spec doc/Makefile init/Makefile init/.modulespath doc/module.1 doc/modulefile.4 etc/Makefile etc/add.modules etc/mkroot etc/skel/.cshrc etc/skel/.login etc/skel/.kshenv etc/skel/.profile etc/global/csh.cshrc etc/global/csh.login etc/global/csh.modules etc/global/bashrc etc/global/profile etc/global/profile.modules ext/Makefile ext/add.ext ext/mkroot ext/common/.cshrc ext/common/.login ext/common/.kshenv ext/common/.profile modulefiles/Makefile modulefiles/modules modulefiles/module-git modulefiles/module-info modulefiles/null modulefiles/use.own modulefiles/dot modulefiles/version po/Makefile"
+ac_config_files="$ac_config_files Makefile modules.lsm .spec doc/Makefile init/Makefile init/.modulespath doc/module.1 doc/modulefile.4 etc/Makefile etc/add.modules etc/mkroot etc/skel/.cshrc etc/skel/.login etc/skel/.kshenv etc/skel/.profile etc/global/csh.cshrc etc/global/csh.login etc/global/csh.modules etc/global/bashrc etc/global/profile etc/global/profile.modules ext/Makefile ext/add.ext ext/mkroot ext/common/.cshrc ext/common/.login ext/common/.kshenv ext/common/.profile modulefiles/Makefile modulefiles/modules modulefiles/module-cvs modulefiles/module-git modulefiles/module-info modulefiles/null modulefiles/use.own modulefiles/dot modulefiles/version modulefiles/HOME modulefiles/notavail po/Makefile"
 
 
 ac_config_commands="$ac_config_commands default"
@@ -35747,12 +35749,15 @@ do
     "ext/common/.profile") CONFIG_FILES="$CONFIG_FILES ext/common/.profile" ;;
     "modulefiles/Makefile") CONFIG_FILES="$CONFIG_FILES modulefiles/Makefile" ;;
     "modulefiles/modules") CONFIG_FILES="$CONFIG_FILES modulefiles/modules" ;;
+    "modulefiles/module-cvs") CONFIG_FILES="$CONFIG_FILES modulefiles/module-cvs" ;;
     "modulefiles/module-git") CONFIG_FILES="$CONFIG_FILES modulefiles/module-git" ;;
     "modulefiles/module-info") CONFIG_FILES="$CONFIG_FILES modulefiles/module-info" ;;
     "modulefiles/null") CONFIG_FILES="$CONFIG_FILES modulefiles/null" ;;
     "modulefiles/use.own") CONFIG_FILES="$CONFIG_FILES modulefiles/use.own" ;;
     "modulefiles/dot") CONFIG_FILES="$CONFIG_FILES modulefiles/dot" ;;
     "modulefiles/version") CONFIG_FILES="$CONFIG_FILES modulefiles/version" ;;
+    "modulefiles/HOME") CONFIG_FILES="$CONFIG_FILES modulefiles/HOME" ;;
+    "modulefiles/notavail") CONFIG_FILES="$CONFIG_FILES modulefiles/notavail" ;;
     "po/Makefile") CONFIG_FILES="$CONFIG_FILES po/Makefile" ;;
     "default") CONFIG_COMMANDS="$CONFIG_COMMANDS default" ;;
 

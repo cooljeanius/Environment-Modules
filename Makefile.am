@@ -28,16 +28,25 @@ DIST_SUBDIRS = . init modulefiles etc ext doc
 SOURCES_H = modules_def.h getopt.h config.h gettext.h
 DISTCLEANFILES = *~ .DS_Store config/*~ m4/*~ m4/.DS_Store po/*~ autoscan.log
 MAINTAINERCLEANFILES = aminclude_static.am configure.scan
-EXTRA_DIST = config/config.rpath  [config]dnl/config.rpath  modules_def.h getopt.h testsuite INSTALL.RH7x		\
+EXTRA_DIST = config/config.rpath config/mkinstalldirs	\
+	modules_def.h getopt.h uvec.h ovec.h testsuite INSTALL.RH7x	\
 	init/filter init/bash.in init/sh.in init/zsh.in			\
 	init/csh.in init/ksh.in init/perl.pm.in init/python.py.in	\
 	init/ruby.rb.in init/cmake.in init/bash_completion.in		\
-	LICENSE.GPL ChangeLog
+	modulefiles/lang/.mklang					\
+	LICENSE.GPL ABOUT-NLS ChangeLog
 
 bin_PROGRAMS = modulecmd
+bin_SCRIPTS = etc/mkroot etc/add.modules ext/add.ext
 ## BASE_CFLAGS is subst-ed by the "XORG_COMPILER_FLAGS" macro called by the
 ## "XORG_CWARNFLAGS" macro in configure.ac:
-modulecmd_CFLAGS=@TCLX_INCLUDE_SPEC@ @TCL_INCLUDE_SPEC@ @X_CFLAGS@ $(BASE_CFLAGS)
+modulecmd_CFLAGS=							\
+	-DSYSCONFDIR=\"$(sysconfdir)\"					\
+	-DBASEPREFIX=\"$(BASEPREFIX)\"					\
+	-DMODULEPATH=\"$(MODULEPATH)\"					\
+	-DVERSIONPATH=\"$(VERSIONPATH)\"				\
+	-DINITPATH=\"$(INITPATH)\"					\
+	@TCLX_INCLUDE_SPEC@ @TCL_INCLUDE_SPEC@ @X_CFLAGS@ $(BASE_CFLAGS)
 modulecmd_LDADD= @TCLX_LIB_SPEC@ @TCL_LIB_SPEC@ @X_LIBS@ @X_EXTRA_LIBS@ @LIBS@
 modulecmd_SOURCES = \
 	ModuleCmd_Avail.c \
@@ -49,7 +58,11 @@ modulecmd_SOURCES = \
 	cmdModule.c cmdPath.c cmdSetenv.c cmdUname.c cmdXResource.c \
 	cmdUlvl.c cmdLog.c cmdChdir.c cmdTrace.c cmdVersion.c \
 	cmdVerbose.c cmdWhatis.c init.c locate_module.c utility.c \
-	main.c error.c getopt.c version.c
+	utilmem.c main.c error.c getopt.c version.c uvec.c ovec.c
+
+localedir = $(datadir)/locale
+
+DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
 
 test: check-local
 
@@ -58,6 +71,7 @@ check-local:	modulecmd
 	TESTSUITEDIR=$(srcdir)/testsuite; export TESTSUITEDIR; \
 	$(RUNTEST) --srcdir $$TESTSUITEDIR \
 	$(AM_RUNTESTFLAGS) $(RUNTESTFLAGS) --tool=modules
+	test -x `which submitdiaginfo` || pwd
 
 ctags-local: CTAGS
 CTAGS-local: $(modulecmd_SOURCES)
@@ -101,8 +115,12 @@ tag:
 ChangeLog: CL
 
 CL: rmChangeLog ./gitlog2changelog.py
-	@echo "Updating ChangeLog"
+	@echo "Updating ChangeLog (git-style)"
 	-@./gitlog2changelog.py
+
+CL-cvs: rmChangeLog ./cvs2cl.pl
+	@echo "Updating ChangeLog (cvs-style)"
+	-@./cvs2cl.pl
 
 rmChangeLog: NEWS
 	-@rm -f ChangeLog

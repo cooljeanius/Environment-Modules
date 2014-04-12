@@ -10,11 +10,23 @@
 AUTOMAKE_OPTIONS = foreign no-installinfo -Wall
 
 BASEMODULES = \
-	dot module-git module-info modules null use.own
+	HOME dot module-cvs module-git module-info modules null use.own \
+	notavail
+
+# add any new languages for the lang/ modulefiles here
+# and in the lang/.mklang script
+LANGUAGES= \
+	lang/de lang/en lang/es lang/fi lang/fr lang/gr			\
+	lang/it lang/ja lang/no lang/ru lang/us lang/zh
+
+ALLMODULES=${BASEMODULES} ${LANGUAGES} lang/.mklang
 
 EXTRA_SCRIPTS = ${BASEMODULES} version
 
 all:	${EXTRA_SCRIPTS}
+
+${LANGUAGES} : lang/.mklang
+	-(cd lang; ./.mklang)
 
 install-data-local : install-basemodules install-version
 
@@ -73,6 +85,10 @@ regen_dot : dot.in ../config.status
 	(cd ..; config.status modulefiles/dot)
 .PHONY: regen_dot
 
+regen_module-cvs : module-cvs.in ../config.status
+	(cd ..; config.status modulefiles/module-cvs)
+.PHONY: regen_module-cvs
+
 regen_module-git : module-git.in ../config.status
 	(cd ..; config.status modulefiles/module-git)
 .PHONY: regen_module-git
@@ -100,4 +116,5 @@ regen_version : version.in ../config.status
 check :
 
 clean-local :
-	rm -f ${BASEMODULES}
+	-rm -f ${BASEMODULES}
+	-(cd lang; ./.mklang clean)

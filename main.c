@@ -394,8 +394,8 @@ void module_usage(FILE *output)
      **/
 
 #if WITH_DEBUGGING_MODULECMD
-    ErrorLogger( NO_ERR_START, LOC, _proc_Module_Usage, NULL);
-#endif
+    ErrorLogger(NO_ERR_START, LOC, _proc_Module_Usage, NULL);
+#endif /* WITH_DEBUGGING_MODULECMD */
 
 	fprintf(output,
 			"\n  Modules Release %s %s (Copyright GNU GPL v2 1991):\n\n",
@@ -425,7 +425,7 @@ void module_usage(FILE *output)
 			"	+ unuse			dir [dir ...]\n"
 #ifdef BEGINENV
 			"	+ update\n"
-#endif
+#endif /* BEGINENV */
 			"	+ refresh\n"
 			"	+ purge\n"
 			"	+ list\n"
@@ -439,6 +439,7 @@ void module_usage(FILE *output)
 			"	+ initswitch		modulefile1 modulefile2\n"
 			"	+ initlist\n"
 			"	+ initclear\n\n");
+	/* this string is too long... */
 
 } /** End of 'module_usage' **/
 

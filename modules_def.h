@@ -762,6 +762,9 @@ extern	char 	 *EMGetEnv(Tcl_Interp *, char const *);
 extern	char 	 *EMSetEnv(Tcl_Interp *, char const *, char const *);
 extern	int	  is_interactive(void);
 
+/** utilmem.c **/
+extern void *module_calloc(size_t nmemb, size_t size);
+
 #ifndef HAVE_STRDUP
 #  undef strdup
 extern	char	 *strdup( char*);
