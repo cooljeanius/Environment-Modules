@@ -6,6 +6,7 @@ PortSystem          1.0
 name                environment-modules
 set my_name         modules
 version             3.2.10
+revision            1
 categories          sysutils tcl
 platforms           darwin
 maintainers         gwmail.gwu.edu:egall openmaintainer
@@ -21,7 +22,8 @@ long_description    ${description}, which typically instruct the module \
 
 homepage            http://${my_name}.sourceforge.net
 distname            ${my_name}-${version}
-# For some reason I couldn't get this to fetch using the sourceforge fetchgroup...
+# For some reason I couldn't get this to fetch using the sourceforge
+# fetchgroup...
 master_sites        http://sourceforge.net/projects/${my_name}/files/Modules/${distname}/
 
 checksums           rmd160  8e6833c1679d31c905cee695c3d3b14ea000fef7 \
@@ -99,9 +101,5 @@ variant x11 {
                     --x-libraries=${prefix}/lib
 }
 
-# Making this a variant until https://trac.macports.org/ticket/38208 is solved
-variant tests description {Enable tests} {
-    depends_build-append \
-                    port:dejagnu
-    test.run        yes
-}
+depends_test-append port:dejagnu
+test.run yes
