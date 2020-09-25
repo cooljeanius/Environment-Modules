@@ -78,32 +78,32 @@
 		A523129318F8D57300A22E25 /* uvec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uvec.h; sourceTree = "<group>"; };
 		A523129818F8D57D00A22E25 /* ovec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ovec.c; sourceTree = "<group>"; };
 		A523129918F8D57D00A22E25 /* ovec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ovec.h; sourceTree = "<group>"; };
-		A563BBE518F75C8100D199D6 /* cmdAlias.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdAlias.c; sourceTree = "<group>"; };
+		A563BBE518F75C8100D199D6 /* cmdAlias.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdAlias.c; sourceTree = "<group>"; tabWidth = 8; };
 		A563BBE618F75C8100D199D6 /* cmdChdir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdChdir.c; sourceTree = "<group>"; };
-		A563BBE718F75C8100D199D6 /* cmdConflict.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdConflict.c; sourceTree = "<group>"; };
+		A563BBE718F75C8100D199D6 /* cmdConflict.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdConflict.c; sourceTree = "<group>"; tabWidth = 8; };
 		A563BBE818F75C8100D199D6 /* cmdInfo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdInfo.c; sourceTree = "<group>"; };
 		A563BBE918F75C8100D199D6 /* cmdIsLoaded.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdIsLoaded.c; sourceTree = "<group>"; };
 		A563BBEA18F75C8100D199D6 /* cmdLog.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdLog.c; sourceTree = "<group>"; };
 		A563BBEB18F75C8100D199D6 /* cmdMisc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdMisc.c; sourceTree = "<group>"; };
-		A563BBEC18F75C8100D199D6 /* cmdModule.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdModule.c; sourceTree = "<group>"; };
-		A563BBED18F75C8100D199D6 /* cmdPath.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdPath.c; sourceTree = "<group>"; };
+		A563BBEC18F75C8100D199D6 /* cmdModule.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdModule.c; sourceTree = "<group>"; tabWidth = 8; };
+		A563BBED18F75C8100D199D6 /* cmdPath.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdPath.c; sourceTree = "<group>"; tabWidth = 8; };
 		A563BBEE18F75C8100D199D6 /* cmdSetenv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdSetenv.c; sourceTree = "<group>"; };
-		A563BBEF18F75C8100D199D6 /* cmdTrace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdTrace.c; sourceTree = "<group>"; };
+		A563BBEF18F75C8100D199D6 /* cmdTrace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdTrace.c; sourceTree = "<group>"; tabWidth = 8; };
 		A563BBF018F75C8100D199D6 /* cmdUlvl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdUlvl.c; sourceTree = "<group>"; };
 		A563BBF118F75C8100D199D6 /* cmdUname.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdUname.c; sourceTree = "<group>"; };
 		A563BBF218F75C8100D199D6 /* cmdVerbose.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdVerbose.c; sourceTree = "<group>"; };
-		A563BBF318F75C8100D199D6 /* cmdVersion.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdVersion.c; sourceTree = "<group>"; };
+		A563BBF318F75C8100D199D6 /* cmdVersion.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdVersion.c; sourceTree = "<group>"; tabWidth = 8; };
 		A563BBF418F75C8100D199D6 /* cmdWhatis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdWhatis.c; sourceTree = "<group>"; };
-		A563BBF518F75C8100D199D6 /* cmdXResource.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdXResource.c; sourceTree = "<group>"; };
+		A563BBF518F75C8100D199D6 /* cmdXResource.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdXResource.c; sourceTree = "<group>"; tabWidth = 8; };
 		A563BC0C18F75CAF00D199D6 /* error.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = error.c; sourceTree = "<group>"; };
 		A563BC0D18F75CAF00D199D6 /* getopt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = getopt.c; sourceTree = "<group>"; };
 		A563BC0E18F75CAF00D199D6 /* getopt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = getopt.h; sourceTree = "<group>"; };
 		A563BC0F18F75CAF00D199D6 /* gettext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gettext.h; sourceTree = "<group>"; };
 		A563BC1018F75CAF00D199D6 /* init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = init.c; sourceTree = "<group>"; };
-		A563BC1118F75CAF00D199D6 /* locate_module.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = locate_module.c; sourceTree = "<group>"; };
-		A563BC1218F75CAF00D199D6 /* ModuleCmd_Avail.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ModuleCmd_Avail.c; sourceTree = "<group>"; };
+		A563BC1118F75CAF00D199D6 /* locate_module.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = locate_module.c; sourceTree = "<group>"; tabWidth = 8; };
+		A563BC1218F75CAF00D199D6 /* ModuleCmd_Avail.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ModuleCmd_Avail.c; sourceTree = "<group>"; tabWidth = 8; };
 		A563BC1318F75CAF00D199D6 /* ModuleCmd_Clear.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ModuleCmd_Clear.c; sourceTree = "<group>"; };
-		A563BC1418F75CAF00D199D6 /* ModuleCmd_Display.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ModuleCmd_Display.c; sourceTree = "<group>"; };
+		A563BC1418F75CAF00D199D6 /* ModuleCmd_Display.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ModuleCmd_Display.c; sourceTree = "<group>"; tabWidth = 8; };
 		A563BC1518F75CAF00D199D6 /* ModuleCmd_Help.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ModuleCmd_Help.c; sourceTree = "<group>"; };
 		A563BC1618F75CAF00D199D6 /* ModuleCmd_Init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ModuleCmd_Init.c; sourceTree = "<group>"; };
 		A563BC1718F75CAF00D199D6 /* ModuleCmd_List.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ModuleCmd_List.c; sourceTree = "<group>"; };
@@ -422,7 +422,6 @@
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
 				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
 				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
-				GCC_WARN_MISSING_PARENTHESES = YES;
 				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = YES;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
 				GCC_WARN_PEDANTIC = YES;
@@ -434,7 +433,6 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_PARAMETER = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				GENERATE_PKGINFO_FILE = YES;
@@ -464,9 +462,7 @@
 					"-Wimplicit",
 					"-Wpointer-arith",
 					"-Wmissing-declarations",
-					"-Wformat=2",
 					"-Wnonnull",
-					"-Wformat-nonliteral",
 					"-Wformat-security",
 					"-Wformat-y2k",
 					"-Wstrict-prototypes",

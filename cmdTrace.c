@@ -44,7 +44,7 @@ static void *UseId[] = { &UseId, Id };
 
 typedef	struct	_mod_trace	{
     char	 **re_ptr;		/** Pointer to the reqular expr.     **/
-					/** which identifies the command     **/
+    /** which identifies the command     **/
     char const	 *cmd;			/** The spelled command for printing **/
     char	 *tracing;		/** The tracing setup	  	     **/
     char	  alloc;		/** Alloc flag		    	     **/
@@ -207,19 +207,19 @@ static	ModTrace	TraceSelect[] = {
 /** ************************************************************************ **/
 
 static	int	GetTraceTable(	Tcl_Interp *interp,
-				char *cmd,
-				int num);
+			      char *cmd,
+			      int num);
 
 static	int	ChangeTraceSel(	Tcl_Interp *interp,
-				char	*cmd_tab,
-				int	 cmd_tab_size,
-				char	 on_off,
-				char	*module_pat);
+			       char	*cmd_tab,
+			       int	 cmd_tab_size,
+			       char	 on_off,
+			       char	*module_pat);
 
 static	int	CheckTracingPat(	Tcl_Interp *interp,
-					char	*pattern,
-					char	*modulefile);
-
+				char	*pattern,
+				char	*modulefile);
+
 /*++++
  ** ** Function-Header ***************************************************** **
  ** 									     **
@@ -246,9 +246,9 @@ static	int	CheckTracingPat(	Tcl_Interp *interp,
  ++++*/
 
 int	cmdModuleTrace(	ClientData	 client_data,
-	      		Tcl_Interp	*interp,
-	      		int		 argc,
-	      		CONST84 char	*argv[])
+		       Tcl_Interp	*interp,
+		       int		 argc,
+		       CONST84 char	*argv[])
 {
     char 	  on_off = '+';		/** The first argument		     **/
     char	**args;			/** Argument pointer for scanning    **/
@@ -256,26 +256,26 @@ int	cmdModuleTrace(	ClientData	 client_data,
     int		  cmd_tab_size;
     char	 *cmd_table;		/** Command table		     **/
     int		  ret = TCL_OK;
-
+    
 #if WITH_DEBUGGING_CALLBACK
     ErrorLogger( NO_ERR_START, LOC, _proc_cmdModuleTrace, NULL);
 #endif
-
+    
     /**
      **  Whatis mode?
      **/
     if( g_flags & (M_WHATIS | M_HELP))
         return( TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
-
+    
     /**
      **  Parameter check
      **/
     if( argc < 2) {
 	if( OK != ErrorLogger( ERR_USAGE, LOC, argv[0], "on|off",
-	    "[cmd [cmd ...]]", "[ -module module [module ...]]", NULL))
+			      "[cmd [cmd ...]]", "[ -module module [module ...]]", NULL))
 	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
     }
-
+    
     /**
      **  On or off?
      **/
@@ -285,19 +285,19 @@ int	cmdModuleTrace(	ClientData	 client_data,
 	on_off = '-';
     else {
 	if( OK != ErrorLogger( ERR_USAGE, LOC, argv[0], "on|off",
-	    "[cmd [cmd ...]]", "[ -module module [module ...]]", NULL))
+			      "[cmd [cmd ...]]", "[ -module module [module ...]]", NULL))
 	    return( TCL_ERROR);		/** -------- EXIT (FAILURE) -------> **/
     }
-
-
+    
+    
     /**
      **  Non-persist mode?
      **/
-
+    
     if (g_flags & M_NONPERSIST) {
 	return (TCL_OK);
     }
-
+    
     /**
      **  Display mode?
      **/
@@ -308,34 +308,34 @@ int	cmdModuleTrace(	ClientData	 client_data,
 	fprintf( stderr, "\n");
         return( TCL_OK);		/** ------- EXIT PROCEDURE -------> **/
     }
-
+    
     /**
      **  We need a table of module command involved in this trace selection.
      **  Allocate one and initialize it.
      **/
     cmd_tab_size = (sizeof(TraceSelect) / sizeof(TraceSelect[0]));
     if ((char *)NULL ==
-		(cmd_table = (char *)module_malloc((size_t)cmd_tab_size))) {
-		return ((OK == ErrorLogger(ERR_ALLOC, LOC, NULL)) ? TCL_OK : TCL_ERROR);
-	}
-
+	(cmd_table = (char *)module_malloc((size_t)cmd_tab_size))) {
+	return ((OK == ErrorLogger(ERR_ALLOC, LOC, NULL)) ? TCL_OK : TCL_ERROR);
+    }
+    
     /**
      **  Scan all commands specified as options. The last option to be scanned
      **  is either the real last one, or the '-module' one
      **/
     args = ((char **)argv + 2);
-	i = (argc - 2);
+    i = (argc - 2);
     memset(cmd_table, !i, (size_t)cmd_tab_size);
-
+    
     while( i--) {
-		char *tmp = *args++;
-
+	char *tmp = *args++;
+	
 	/**
 	 **  Check for '-module'
 	 **/
 	if( !strncmp( tmp, "-module", strlen( tmp)))
 	    break;
-
+	
 	/**
 	 **  This should be a module command.
 	 **  Check it against the TraceSelect table
@@ -348,36 +348,36 @@ int	cmdModuleTrace(	ClientData	 client_data,
 		return( TCL_ERROR);
 	    }
 	}
-
+	
     } /** while( i--) **/
-
+    
     /**
      **  Now scan all Modulefiles concerned in the current command
      **  If we ran to the end of the argument list (i==0), ALL files are
      **  concerned in this ...
      **/
     if( 0 >= i) {
-		ret = ChangeTraceSel(interp, cmd_table, cmd_tab_size, on_off, _all);
+	ret = ChangeTraceSel(interp, cmd_table, cmd_tab_size, on_off, _all);
     } else {
-		while (i-- && (TCL_OK == ret)) {
-			ret = ChangeTraceSel(interp, cmd_table, cmd_tab_size,
-								 on_off, *args++);
-		}
+	while (i-- && (TCL_OK == ret)) {
+	    ret = ChangeTraceSel(interp, cmd_table, cmd_tab_size,
+				 on_off, *args++);
+	}
     }
-
+    
     /**
      **  Cleanup finally and return
      **/
     null_free((void *) &cmd_table);
-
+    
 #if WITH_DEBUGGING_CALLBACK
     ErrorLogger( NO_ERR_END, LOC, _proc_cmdModuleTrace, NULL);
 #endif
-
+    
     return( ret);
-
+    
 } /** End of 'cmdModuleTrace' **/
-
+
 /*++++
  ** ** Function-Header ***************************************************** **
  ** 									     **
@@ -400,17 +400,17 @@ int	cmdModuleTrace(	ClientData	 client_data,
 static	int	GetTraceTable(Tcl_Interp *interp, char *cmd, int num)
 {
     int k;
-
+    
     for( k=0; k < num; k++) {
 	if( Tcl_RegExpMatch(interp, cmd, *(TraceSelect[k].re_ptr)))
 	    return( k);			/** ----------- Got it ------------> **/
     } /** for( k) **/
-
+    
     /**
      **  Not found ..
      **/
     return( -1);
-
+    
 } /** End of 'GetTraceTable' **/
 
 /*++++
@@ -431,19 +431,19 @@ static	int	GetTraceTable(Tcl_Interp *interp, char *cmd, int num)
  ** ************************************************************************ **
  ++++*/
 
-char	*GetTraceSel(	Tcl_Interp *interp,
-			char	*cmd)
+char	*GetTraceSel(Tcl_Interp *interp,
+		     char	*cmd)
 {
     int k;
-
+    
     if( -1 == (k = GetTraceTable(interp, cmd,
-	(sizeof( TraceSelect) / sizeof( TraceSelect[ 0]) ))))
+				 (sizeof( TraceSelect) / sizeof( TraceSelect[ 0]) ))))
 	return((char *) NULL);
-
+    
     return( TraceSelect[ k].tracing);
-
+    
 } /** End of 'GetTraceSel' **/
-
+
 /*++++
  ** ** Function-Header ***************************************************** **
  ** 									     **
@@ -471,120 +471,120 @@ char	*GetTraceSel(	Tcl_Interp *interp,
  ++++*/
 
 static int ChangeTraceSel(Tcl_Interp *interp, char *cmd_table,
-						  int cmd_tab_size, char on_off, char *module_pat)
+			  int cmd_tab_size, char on_off, char *module_pat)
 {
     char	*pattern, *s, *t, *tmp;
     int		 len;
     int 	 i;
     int		 ret = TCL_OK;
-
-	len = (int)strlen(module_pat);
-
+    
+    len = (int)strlen(module_pat);
+    
     /**
      **  Need a buffer for to build the complete pattern
      **/
     if ((char *)NULL == (pattern = (char *)module_malloc((size_t)(len + 2)))) {
-		ErrorLogger(ERR_ALLOC, LOC, NULL);
-		return (TCL_ERROR);
+	ErrorLogger(ERR_ALLOC, LOC, NULL);
+	return (TCL_ERROR);
     }
-
+    
     /**
      **  Check if this is the ALL pattern. If it is, replace all affected
      **  entries with '_all_on' or '_all_off'
      **/
     if (!strcmp(module_pat, _all)) {
-		for ((i = 0); (i < cmd_tab_size); i++) {
-			if (cmd_table[i]) {
-				if (TraceSelect[ i].alloc) {
-					null_free((void *)&(TraceSelect[i].tracing));
-				}
-				TraceSelect[i].alloc = 0;
-
-				TraceSelect[i].tracing = (('+' == on_off) ?
-										  _all_on : _all_off);
-			}
+	for ((i = 0); (i < cmd_tab_size); i++) {
+	    if (cmd_table[i]) {
+		if (TraceSelect[ i].alloc) {
+		    null_free((void *)&(TraceSelect[i].tracing));
 		}
+		TraceSelect[i].alloc = 0;
+		
+		TraceSelect[i].tracing = (('+' == on_off) ?
+					  _all_on : _all_off);
+	    }
+	}
     } else { /** if (ALL pattern) **/
-		/**
-		 **  Check the pattern for colons ...
-		 **/
-		if (strchr(module_pat, ':')) {
-			if (OK != ErrorLogger(ERR_COLON, LOC, module_pat, NULL)) {
-				ret = TCL_ERROR;
+	/**
+	 **  Check the pattern for colons ...
+	 **/
+	if (strchr(module_pat, ':')) {
+	    if (OK != ErrorLogger(ERR_COLON, LOC, module_pat, NULL)) {
+		ret = TCL_ERROR;
+	    }
+	}
+	if (TCL_OK == ret) {
+	    /**
+	     **  Build the complete pattern:
+	     **/
+	    *pattern = on_off;
+	    strcpy((pattern + 1), module_pat);
+	    len += 1;
+	    
+	    /**
+	     **  Loop for all entries to be changed
+	     **/
+	    for ((i = 0); (i < cmd_tab_size); i++) {
+		if (cmd_table[i]) {
+		    /**
+		     **  allocate a buffer for the new pattern
+		     **/
+		    if ((char *)NULL == (tmp = (char *)module_malloc((size_t)((unsigned long)(len + 2) + strlen(TraceSelect[i].tracing))))) {
+			if (OK == ErrorLogger(ERR_ALLOC, LOC, NULL)) {
+			    continue;
+			} else {
+			    ret = TCL_ERROR;
+			    break;
 			}
-		}
-		if (TCL_OK == ret) {
-			/**
-			 **  Build the complete pattern:
-			 **/
-			*pattern = on_off;
-			strcpy((pattern + 1), module_pat);
-			len += 1;
-
-			/**
-			 **  Loop for all entries to be changed
-			 **/
-			for ((i = 0); (i < cmd_tab_size); i++) {
-				if (cmd_table[i]) {
-					/**
-					 **  allocate a buffer for the new pattern
-					 **/
-					if ((char *)NULL == (tmp = (char *)module_malloc((size_t)((unsigned long)(len + 2) + strlen(TraceSelect[i].tracing))))) {
-						if (OK == ErrorLogger(ERR_ALLOC, LOC, NULL)) {
-							continue;
-						} else {
-							ret = TCL_ERROR;
-							break;
-						}
-					}
-
-					/**
-					 **  Copy the new pattern to the buffer at first
-					 **/
-					strcpy(tmp, pattern);
-					t = (tmp + len);
-
-					/**
-					 **  Tokenize the old pattern and remove duplicates
-					 **/
-					for ((s = strtok(TraceSelect[i].tracing, ":")); s;
-						 (s = strtok( NULL, ":"))) {
-						if (strcmp((s + 1), module_pat)) {
-							*t++ = ':';
-							/* not sure what the original intent was here: */
-							while (*t++ = *s++) {
-								;
-								/* do nothing (?) */
-								/* (or maybe the semicolon was a mistake and
-								 * the 't--;' below was supposed to go in
-								 * here? idk...) */
-							}
-							t--;
-						}
-					} /** end for-loop **/
-
-					/**
-					 **  Finally check if we have to dealloc and set up the
-					 **  new pattern
-					 **/
-					if (TraceSelect[i].alloc) {
-						null_free((void *)&(TraceSelect[i].tracing));
-					}
-					TraceSelect[i].tracing = tmp;
-					TraceSelect[i].alloc = 1;
-				} /** end if (cmd_table[i]) **/
-			} /** end for-loop **/
-		} /** end if (ret) **/
+		    }
+		    
+		    /**
+		     **  Copy the new pattern to the buffer at first
+		     **/
+		    strcpy(tmp, pattern);
+		    t = (tmp + len);
+		    
+		    /**
+		     **  Tokenize the old pattern and remove duplicates
+		     **/
+		    for ((s = strtok(TraceSelect[i].tracing, ":")); s;
+			 (s = strtok( NULL, ":"))) {
+			if (strcmp((s + 1), module_pat)) {
+			    *t++ = ':';
+			    /* not sure what the original intent was here: */
+			    while (*t++ = *s++) {
+				;
+				/* do nothing (?) */
+				/* (or maybe the semicolon was a mistake and
+				 * the 't--;' below was supposed to go in
+				 * here? idk...) */
+			    }
+			    t--;
+			}
+		    } /** end for-loop **/
+		    
+		    /**
+		     **  Finally check if we have to dealloc and set up the
+		     **  new pattern
+		     **/
+		    if (TraceSelect[i].alloc) {
+			null_free((void *)&(TraceSelect[i].tracing));
+		    }
+		    TraceSelect[i].tracing = tmp;
+		    TraceSelect[i].alloc = 1;
+		} /** end if (cmd_table[i]) **/
+	    } /** end for-loop **/
+	} /** end if (ret) **/
     } /** end if (ALL pattern) **/
-
+    
     /**
      **  Free what has been allocated an return
      **/
     null_free((void *)&pattern);
     return (ret);
-
+    
 } /** End of 'ChangeTraceSel' **/
-
+
 /*++++
  ** ** Function-Header ***************************************************** **
  ** 									     **
@@ -605,27 +605,27 @@ static int ChangeTraceSel(Tcl_Interp *interp, char *cmd_table,
  ++++*/
 
 int	CheckTracing(	Tcl_Interp *interp,
-			char	*cmd,
-			char	*modulefile)
+		     char	*cmd,
+		     char	*modulefile)
 {
     int 	 k;
-
+    
     /**
      **  Get the TraceSelect table index
      **/
-
+    
     if( -1 == (k = GetTraceTable(interp, cmd,
-	(sizeof( TraceSelect) / sizeof( TraceSelect[0]) )))) {
+				 (sizeof( TraceSelect) / sizeof( TraceSelect[0]) )))) {
 	ErrorLogger( ERR_COMMAND, LOC, cmd, NULL);
 	return( 0);
     }
-
+    
     /**
      **  Now check this guy ...
      **/
-
+    
     return( CheckTracingPat(interp, TraceSelect[ k].tracing, modulefile));
-
+    
 } /** End of 'CheckTracing' **/
 
 /*++++
@@ -648,34 +648,34 @@ int	CheckTracing(	Tcl_Interp *interp,
  ++++*/
 
 static	int	CheckTracingPat(	Tcl_Interp *interp,
-					char	*pattern,
-					char	*modulefile)
+				char	*pattern,
+				char	*modulefile)
 {
     char	*s;
     int		 ret;
-
+    
     /**
      **  Tokenize the pattern and check if it matches ...
      **/
-
+    
     for( s = strtok( pattern, ":");
-	 s;
-	 s = strtok( NULL, ":") ) {
-
+	s;
+	s = strtok( NULL, ":") ) {
+	
 	ret = ('+' == *s++);
 	if( Tcl_RegExpMatch(interp, modulefile, s))
 	    return( ret);
-
+	
     } /** for **/
-
+    
     /**
      **  No pattern matched the module file name ...
      **/
-
+    
     return( 0);
-
+    
 } /** End of 'CheckTracingPat' **/
-
+
 /*++++
  ** ** Function-Header ***************************************************** **
  ** 									     **
@@ -697,31 +697,31 @@ static	int	CheckTracingPat(	Tcl_Interp *interp,
  ++++*/
 
 int	CheckTracingList(	Tcl_Interp *interp,
-				char	 *cmd,
-				int	  count,
-				char	**modules)
+			 char	 *cmd,
+			 int	  count,
+			 char	**modules)
 {
     int 	 k;
-
+    
     /**
      **  Get the TraceSelect table index
      **/
-
+    
     if( -1 == (k = GetTraceTable(interp, cmd,
-	(sizeof( TraceSelect) / sizeof( TraceSelect[0]) )))) {
+				 (sizeof( TraceSelect) / sizeof( TraceSelect[0]) )))) {
 	ErrorLogger( ERR_COMMAND, LOC, cmd, NULL);
 	return( 0);
     }
-
+    
     /**
      **  Now check whether one of them requires tracing
      **/
-
+    
     while( count--)
         if( CheckTracingPat(interp, TraceSelect[ k].tracing, *modules++))
 	    return( 1);
-
+    
     return( 0);
-
+    
 } /** End of 'CheckTracingList' **/
 

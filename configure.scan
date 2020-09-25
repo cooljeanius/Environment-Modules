@@ -42,7 +42,5 @@ AC_CONFIG_FILES([Makefile
                  ext/Makefile
                  init/Makefile
                  modulefiles/Makefile
-                 po/Makefile
-                 tcl/Makefile
-                 tcl/init/Makefile])
+                 po/Makefile])
 AC_OUTPUT
