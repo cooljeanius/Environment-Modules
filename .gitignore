@@ -33,6 +33,9 @@ modules.lsm
 *.build
 *.pbxuser
 *.perspectivev3
+*.xcodeproj/*/xcuserdata/*
+*.xcuserdatad
+*.xcuserstate
 build/*
 *.tar.bz2
 *.tar.gz

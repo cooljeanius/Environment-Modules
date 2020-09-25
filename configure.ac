@@ -270,6 +270,11 @@ AC_CHECK_HEADERS([assert.h ctype.h dejagnu.h fcntl.h libintl.h \
 gl_AC_HEADER_INTTYPES_H
 SC_MISSING_POSIX_HEADERS
 
+if test "x${ac_cv_header_strings_h}" = "x"; then
+  test -z "${ac_cv_header_strings_h}"
+  AC_CHECK_HEADERS([strings.h])
+fi
+
 dnl#
 dnl#-----------------------------------------------------------------------
 dnl# Checks for typedefs, structures, and compiler characteristics.
@@ -303,11 +308,13 @@ AC_FUNC_REALLOC
 AC_FUNC_STAT
 AC_FUNC_STRCOLL
 AC_FUNC_STRNLEN
+  ## unexpected EOF somewhere after here? Add this space to try to avoid it.
 AC_CHECK_FUNCS([atexit dup2 exit feof fread gethostname getdomainname \
         ioctl memset mktemp qsort setlocale strcasecmp strchr strcpy \
         strcspn strdup strlen strncmp strncpy strrchr strstr strtok \
         syslog tmpnam tempnam umask uname])dnl
-AC_CHECK_DECLS([buffer, environ, index, remove, shell_name, strtok])
+  ## decls, too:
+AC_CHECK_DECLS([buffer, environ, index, remove, shell_name, strtok])dnl
 
 dnl#
 dnl#-----------------------------------------------------------------------

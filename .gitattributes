@@ -1,0 +1,14 @@
+config/ar-lib linguist-vendored
+config/compile linguist-vendored
+config/config.guess linguist-vendored
+config/config.rpath linguist-vendored
+config/config.sub linguist-vendored
+config/depcomp linguist-vendored
+config/install-sh linguist-vendored
+config/ltmain.sh linguist-vendored
+config/missing linguist-vendored
+config/mkinstalldirs linguist-vendored
+
+# Gnulib's git-merge-changelog driver:
+ChangeLog merge=cl-merge
+ChangeLog-pre-git merge=cl-merge

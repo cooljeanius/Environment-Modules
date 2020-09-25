@@ -1,9 +1,9 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.69.185-b502e])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
-AC_CONFIG_SRCDIR([cmdAlias.c])
+AC_CONFIG_SRCDIR([ModuleCmd_Init.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
@@ -20,7 +20,7 @@ AC_PROG_RANLIB
 
 # Checks for header files.
 AC_PATH_X
-AC_CHECK_HEADERS([fcntl.h libintl.h locale.h memory.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h syslog.h termio.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h libintl.h strings.h sys/ioctl.h sys/param.h syslog.h termio.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_UID_T
