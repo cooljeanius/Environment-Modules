@@ -910,18 +910,15 @@ static	int _getopt_internal(	int			 argc,
 		 **  allow it to be used on enums.
 		 **/
 
-		if( pfound->has_arg)
+		if (pfound->has_arg) {
 		    optarg = nameend + 1;
-
-		else {
-
-		    if (opterr)
-
+		} else {
+		    if (opterr) {
 			/**
 			 **  ERROR: --option w/o argument
 			 **/
 
-			if( argv[optind - 1][1] == '-')
+			if( argv[optind - 1][1] == '-') {
 #ifdef	_MODULES_DEF_H
 			    ErrorLogger( ERR_OPT_NOARG, LOC, pfound->name, NULL);
 #else
@@ -934,7 +931,7 @@ static	int _getopt_internal(	int			 argc,
 			 **  ERROR: +option or -option w/o argument
 			 **/
 
-			else {
+			} else {
 #ifdef	_MODULES_DEF_H
 			    char buffer[ BUFSIZ];
 			    sprintf( buffer, "%c%s", argv[optind - 1][0], pfound->name);
@@ -945,6 +942,7 @@ static	int _getopt_internal(	int			 argc,
 				argv[0], argv[optind - 1][0], pfound->name);
 #endif /* _MODULES_DEF_H */
 			}
+                    }
 
 		    nextchar += strlen( nextchar);
 		    return( '?');

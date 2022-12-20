@@ -877,7 +877,8 @@ unwind3:
 	ErrorLogger(ERR_CLOSEDIR, LOC, full_path, NULL);
     }
 unwind2:
-    null_free((void*)&full_path);
+    null_free((void *)&full_path);
+    goto unwind1;
 unwind1:
     FreeList(filelist, n);
     
@@ -1205,7 +1206,6 @@ int SourceVers( Tcl_Interp *interp, char *path, char *name)
     int Result = TCL_OK;
     char *version;
     char *new_argv[3];
-    char *mod, *ver;
     
     /**
      **  If there's a problem with the input parameters it means, that

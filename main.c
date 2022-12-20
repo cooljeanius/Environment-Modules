@@ -352,7 +352,7 @@ int	main(int argc, char *argv[], char *environ[]) {
 
     OutputExit();
     return (return_val ? return_val : g_retval);
-
+    goto unwind2;
 unwind2:
     null_free((void *)&rc_path);
 unwind1:

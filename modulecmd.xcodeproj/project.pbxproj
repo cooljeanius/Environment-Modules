@@ -378,7 +378,26 @@
 					"$(inherited)",
 					/opt/local/lib,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				PRODUCT_NAME = modulecmd;
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wimplicit",
+					"-Wpointer-arith",
+					"-Wmissing-declarations",
+					"-Wnonnull",
+					"-Wformat=2",
+					"-Wstrict-prototypes",
+					"-Wbad-function-cast",
+					"-Wold-style-definition",
+					"-Wdeclaration-after-statement",
+					"-Wmissing-noreturn",
+					"-Wnested-externs",
+					"-Wredundant-decls",
+					"-Wmissing-format-attribute",
+					"-Wno-quoted-include-in-framework-header",
+					"-Wno-expansion-to-defined",
+				);
 			};
 			name = Debug;
 		};
@@ -395,6 +414,7 @@
 					"$(inherited)",
 					/opt/local/lib,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				PRODUCT_NAME = modulecmd;
 			};
 			name = Release;
@@ -502,6 +522,7 @@
 					"-Wnested-externs",
 					"-Wredundant-decls",
 					"-Wmissing-format-attribute",
+					"-Wno-quoted-include-in-framework-header",
 				);
 			};
 			name = Debug;

@@ -340,12 +340,13 @@ int ModuleCmd_Avail(Tcl_Interp *interp, int argc, char *argv[])
      **  Free up what has been allocated and exit from this procedure
      **/
     /* if got here via this path ... it must have been OK */
-    if(Result < 0) Result = TCL_OK;
-    
+    if (Result < 0) Result = TCL_OK;
+    goto unwind2;
 unwind2:
 #ifdef CACHE_AVAIL
     null_free((void *) &namebuf);
 #endif
+    goto unwind1;
 unwind1:
     null_free((void *) &modpath);
     
@@ -607,7 +608,7 @@ unwind1:
     if (dir && selection) {
 	null_free((void *)&selection);
     }
-    
+    goto unwind0;
 unwind0:
     return (TCL_ERROR); /** ------- EXIT (FAILURE) --------> **/
     
@@ -694,13 +695,8 @@ static	int	check_cache( char *dir)
     
 } /** End of 'check_cache' **/
 
-#endif
+#endif /* CACHE_AVAIL */
 
-
-static int	test_version_dir(struct dirent	*dp)
-{
-    return 0;
-}
 /*++++
  ** ** Function-Header ***************************************************** **
  ** 									     **
@@ -823,9 +819,9 @@ fi_ent *get_dir(char *dir, char *prefix, int *listcount, int *total_count)
 	/**
 	 **  If it is a directory, recursively delve into it...
 	 **/
-        if (dirlst_cur->fi_stats.st_mode & S_IFDIR) {
-            char* np = NULL;
-            char* ndir;
+        if ((dirlst_cur != NULL) && (dirlst_cur->fi_stats.st_mode & S_IFDIR)) {
+            char *np = NULL;
+            char *ndir = NULL;
             int   tmpcount = 0;
 	    
 	    /**
@@ -1632,8 +1628,8 @@ void print_aligned_files(	Tcl_Interp	 *interp,
 	     **  change the function input
 	     **/
 	    
-	    if(path == (char *)NULL) {
-		int maxPrefixLength = 0;
+	    if (path == (char *)NULL) {
+		size_t maxPrefixLength = 0UL;
 		
 		if (modpath) {
 		    /**
@@ -1641,19 +1637,19 @@ void print_aligned_files(	Tcl_Interp	 *interp,
 		     ** Huge hack!
 		     **/
 		    
-		    int prefixLength;
+		    size_t prefixLength;
 		    char *colon;
 		    char *prefix = modpath;
 		    
 		    while ((prefix != (char *)NULL) && (*prefix != '\0')) {
 			colon = strchr(prefix, ':');
-			prefixLength = ((colon == NULL) ? (int)strlen(prefix) :
+			prefixLength = ((colon == NULL) ? strlen(prefix) :
 					(colon - prefix));
 			while (prefix[(prefixLength - 1)] == '/') {
 			    prefixLength -= 1;
 			}
 			if ((prefixLength > maxPrefixLength) &&
-			    !strncmp(*list, prefix, (size_t)prefixLength) &&
+			    !strncmp(*list, prefix, prefixLength) &&
 			    (*list)[prefixLength] == '/') {
 			    maxPrefixLength = prefixLength;
 			}

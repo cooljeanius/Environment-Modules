@@ -568,7 +568,7 @@ static void storeResProp(register ResourceDB *rdb)
 {
     Tcl_HashSearch	search;
     register int	mode = PropModeReplace;
-    register int	max = (XMaxRequestSize( dpy) << 2) - 28;
+    register int max = (int)((XMaxRequestSize(dpy) << 2) - 28);
     register int	left;
     register Tcl_HashEntry *entry = Tcl_FirstHashEntry( rdb->data, &search);
     unsigned char	*buf;

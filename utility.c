@@ -2308,7 +2308,7 @@ int Update_LoadedList(	Tcl_Interp	*interp,
 int check_magic(char *filename, char *magic_name, int magic_len)
 {
     int  fd;				/** File descriptor for reading in   **/
-    int  read_len;			/** Number of bytes read	     **/
+    ssize_t read_len;			/** Number of bytes read	     **/
     char buf[BUFSIZ];			/** Read buffer			     **/
 
 #if WITH_DEBUGGING_UTIL_2
@@ -2378,7 +2378,7 @@ int check_magic(char *filename, char *magic_name, int magic_len)
 
 void regex_quote(const char *path, char *newpath, int len)
 {
-    unsigned int path_len = strlen(path);	/** Length of the orig. path **/
+    size_t path_len = strlen(path);	/** Length of the orig. path **/
     int 	 i,				/** Read index		     **/
     		 j;				/** Write index		     **/
 
@@ -2648,7 +2648,7 @@ void *module_malloc(size_t size) {
 		size = 1;
 	}
 #ifdef TCL_MEM_DEBUG
-	ret = ckalloc(size);
+	ret = ckalloc((unsigned int)size);
 #else
 	ret = malloc(size);
 #endif /* TCL_MEM_DEBUG */
@@ -2661,7 +2661,7 @@ void *module_realloc(void * ptr, size_t size) {
 	void *ret;
 
 #ifdef TCL_MEM_DEBUG
-	ret = ckrealloc(ptr, size);
+	ret = ckrealloc(ptr, (unsigned int)size);
 #else
 	ret = realloc(ptr, size);
 #endif

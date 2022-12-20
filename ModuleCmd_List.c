@@ -57,8 +57,8 @@ static void *UseId[] = { &UseId, Id };
 /** 				    LOCAL DATA				     **/
 /** ************************************************************************ **/
 
-static	char	module_name[] = "ModuleCmd_List.c";	/** File name of this module **/
-static	char	_proc_ModuleCmd_List[] = "ModuleCmd_List";
+static const char module_name[] = "ModuleCmd_List.c";	/** File name of this module **/
+static const char _proc_ModuleCmd_List[] = "ModuleCmd_List";
 
 /** ************************************************************************ **/
 /**				    PROTOTYPES				     **/
@@ -105,6 +105,8 @@ int	ModuleCmd_List(Tcl_Interp *interp, int argc, char *argv[])
 
 #if WITH_DEBUGGING_MODULECMD
     ErrorLogger(NO_ERR_START, LOC, _proc_ModuleCmd_List, NULL);
+#else
+    (void)_proc_ModuleCmd_List;
 #endif /* WITH_DEBUGGING_MODULECMD */
 
     lmfiles = getLMFILES(interp);
@@ -194,6 +196,8 @@ int	ModuleCmd_List(Tcl_Interp *interp, int argc, char *argv[])
 
 #if WITH_DEBUGGING_MODULECMD
     ErrorLogger(NO_ERR_END, LOC, _proc_ModuleCmd_List, NULL);
+#else
+    (void)_proc_ModuleCmd_List;
 #endif /* WITH_DEBUGGING_MODULECMD */
 
     return (TCL_OK);

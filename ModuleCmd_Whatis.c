@@ -601,7 +601,7 @@ static int whatis_dir(char *dir, int argc, char **argv, FILE *cfp,
 #endif /* WITH_DEBUGGING_UTIL_1 */
 
     return (result);			/** ------- EXIT (result) --------> **/
-
+    goto unwind2;
 unwind2:
     delete_cache_list(list, start);
 unwind1:

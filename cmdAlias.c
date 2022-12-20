@@ -146,8 +146,8 @@ int cmdSetAlias(ClientData client_data, Tcl_Interp *interp, int argc,
     } else if (g_flags & M_SWSTATE2) {
         set_marked_entry(markAliasHashTable, (char *)argv[1], M_SWSTATE2);
     } else if (g_flags & M_SWSTATE3) {
-        int marked_val;
-        if (marked_val = chk_marked_entry(markAliasHashTable, (char *)argv[1])) {
+        intptr_t marked_val;
+        if ((marked_val = chk_marked_entry(markAliasHashTable, (char *)argv[1]))) {
             if (marked_val == M_SWSTATE1) {
                 store_hash_value(aliasUnsetHashTable, argv[1], argv[2]);
 	    } else {
