@@ -40,3 +40,4 @@ build/*
 *.tar.bz2
 *.tar.gz
 modules-*.*.*/*
+tags

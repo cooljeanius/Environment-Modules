@@ -148,6 +148,7 @@ am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 DEJATOOL = $(PACKAGE)
 RUNTESTDEFAULTFLAGS = --tool $$tool --srcdir $$srcdir
 EXPECT = expect
+RUNTEST = runtest
 am__DIST_COMMON = $(srcdir)/HOME.in $(srcdir)/Makefile.in \
 	$(srcdir)/dot.in $(srcdir)/module-cvs.in \
 	$(srcdir)/module-git.in $(srcdir)/module-info.in \
@@ -294,7 +295,8 @@ PYTHON_VERSION = @PYTHON_VERSION@
 RANLIB = @RANLIB@
 RAWCPP = @RAWCPP@
 RAWCPPFLAGS = @RAWCPPFLAGS@
-RUNTEST = @RUNTEST@
+RUNTEST_POSSIBLY_MISSING = @RUNTEST_POSSIBLY_MISSING@
+RUNTEST_PROG = @RUNTEST_PROG@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@

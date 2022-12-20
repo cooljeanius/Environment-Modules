@@ -1,4 +1,4 @@
-dnl# xorg-macros.m4 serial 110
+dnl# xorg-macros.m4 serial 111
 dnl# Originally generated from xorg-macros.m4.in xorgversion.m4 by configure.
 dnl
 dnl Copyright (c) 2005, 2006, Oracle and/or its affiliates. All rights reserved.
@@ -1623,6 +1623,7 @@ AC_LANG_CASE([C],[
 	XORG_TESTSET_CFLAG([[BASE_]PREFIX[FLAGS]], [-Wbad-function-cast])
 	XORG_TESTSET_CFLAG([[BASE_]PREFIX[FLAGS]], [-Wold-style-definition])
 	XORG_TESTSET_CFLAG([[BASE_]PREFIX[FLAGS]], [-Wdeclaration-after-statement])
+	XORG_TESTSET_CFLAG([[BASE_]PREFIX[FLAGS]], [-Wno-expansion-to-defined])
 ])
 
 # This chunk adds additional warnings that could catch undesired effects.

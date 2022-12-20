@@ -697,7 +697,8 @@ WITH_LOGGING
 LDFLAGS_DEFAULT
 CFLAGS_DEFAULT
 STATIC
-RUNTEST
+RUNTEST_PROG
+RUNTEST_POSSIBLY_MISSING
 _PHOST
 _CPPSTDIN
 XORG_MALLOC_DEBUG_ENV
@@ -3370,7 +3371,7 @@ gt_needs="$gt_needs "
 as_fn_append ac_header_c_list " sys/time.h sys_time_h HAVE_SYS_TIME_H"
 
 # Auxiliary files required by this configure script.
-ac_aux_files="config.rpath ltmain.sh ar-lib compile missing install-sh config.guess config.sub"
+ac_aux_files="config.rpath ltmain.sh ar-lib install-sh config.guess config.sub missing depcomp compile"
 
 # Locations in which to look for auxiliary files.
 ac_aux_dir_candidates="${srcdir}/config"
@@ -4269,7 +4270,6 @@ END
   fi
 fi
 
-
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether to enable maintainer-specific portions of Makefiles" >&5
 printf %s "checking whether to enable maintainer-specific portions of Makefiles... " >&6; }
     # Check whether --enable-maintainer-mode was given.
@@ -4294,9 +4294,7 @@ fi
 
 
 
-
 ac_config_headers="$ac_config_headers config.h"
-
 
 
 
@@ -24640,6 +24638,130 @@ printf "%s\n" "$supported" >&6; }
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+xorg_testset_save_CFLAGS="$CFLAGS"
+
+if test "x$xorg_testset_cc_unknown_warning_option" = "x" ; then
+	CFLAGS="$CFLAGS -Werror=unknown-warning-option"
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if $CC supports -Werror=unknown-warning-option" >&5
+printf %s "checking if $CC supports -Werror=unknown-warning-option... " >&6; }
+if test ${xorg_cv_cc_flag_unknown_warning_option+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+int i;
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  xorg_cv_cc_flag_unknown_warning_option=yes
+else $as_nop
+  xorg_cv_cc_flag_unknown_warning_option=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $xorg_cv_cc_flag_unknown_warning_option" >&5
+printf "%s\n" "$xorg_cv_cc_flag_unknown_warning_option" >&6; }
+	xorg_testset_cc_unknown_warning_option=$xorg_cv_cc_flag_unknown_warning_option
+	CFLAGS="$xorg_testset_save_CFLAGS"
+fi
+
+if test "x$xorg_testset_cc_unused_command_line_argument" = "x" ; then
+	if test "x$xorg_testset_cc_unknown_warning_option" = "xyes" ; then
+		CFLAGS="$CFLAGS -Werror=unknown-warning-option"
+	fi
+	CFLAGS="$CFLAGS -Werror=unused-command-line-argument"
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if $CC supports -Werror=unused-command-line-argument" >&5
+printf %s "checking if $CC supports -Werror=unused-command-line-argument... " >&6; }
+if test ${xorg_cv_cc_flag_unused_command_line_argument+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+int i;
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  xorg_cv_cc_flag_unused_command_line_argument=yes
+else $as_nop
+  xorg_cv_cc_flag_unused_command_line_argument=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $xorg_cv_cc_flag_unused_command_line_argument" >&5
+printf "%s\n" "$xorg_cv_cc_flag_unused_command_line_argument" >&6; }
+	xorg_testset_cc_unused_command_line_argument=$xorg_cv_cc_flag_unused_command_line_argument
+	CFLAGS="$xorg_testset_save_CFLAGS"
+fi
+
+found="no"
+
+	if test $found = "no" ; then
+		if test "x$xorg_testset_unknown_warning_option" = "xyes" ; then
+			CFLAGS="$CFLAGS -Werror=unknown-warning-option"
+		fi
+
+		if test "x$xorg_testset_unused_command_line_argument" = "xyes" ; then
+			CFLAGS="$CFLAGS -Werror=unused-command-line-argument"
+		fi
+
+		CFLAGS="$CFLAGS -Wno-expansion-to-defined"
+
+		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if $CC supports -Wno-expansion-to-defined" >&5
+printf %s "checking if $CC supports -Wno-expansion-to-defined... " >&6; }
+		cacheid=xorg_cv_cc_flag__Wno_expansion_to_defined
+		if eval test \${$cacheid+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+int i;
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  eval $cacheid=yes
+else $as_nop
+  eval $cacheid=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+
+
+		CFLAGS="$xorg_testset_save_CFLAGS"
+
+		eval supported=\$$cacheid
+		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $supported" >&5
+printf "%s\n" "$supported" >&6; }
+		if test "$supported" = "yes" ; then
+			BASE_CFLAGS="$BASE_CFLAGS -Wno-expansion-to-defined"
+			found="yes"
+		fi
+	fi
+
+
+
+
 # This chunk adds additional warnings that could catch undesired effects.
 
 
@@ -33487,19 +33609,20 @@ else
 printf "%s\n" "no" >&6; }
 fi
 
-test "x${_PHOST}" != "x" && printf "%s\n" "#define PHOSTNAME \"$_PHOST\"" >>confdefs.h
+test "x${_PHOST}" != "x" && printf "%s\n" "#define PHOSTNAME \"${_PHOST}\"" >>confdefs.h
 
+RUNTEST_POSSIBLY_MISSING=${RUNTEST_POSSIBLY_MISSING-"${am_missing_run}runtest"}
 # Extract the first word of "runtest", so it can be a program name with args.
 set dummy runtest; ac_word=$2
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 printf %s "checking for $ac_word... " >&6; }
-if test ${ac_cv_path_RUNTEST+y}
+if test ${ac_cv_path_RUNTEST_PROG+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  case $RUNTEST in
+  case $RUNTEST_PROG in
   [\\/]* | ?:[\\/]*)
-  ac_cv_path_RUNTEST="$RUNTEST" # Let the user override the test with a path.
+  ac_cv_path_RUNTEST_PROG="$RUNTEST_PROG" # Let the user override the test with a path.
   ;;
   *)
   as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
@@ -33513,7 +33636,7 @@ do
   esac
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
-    ac_cv_path_RUNTEST="$as_dir$ac_word$ac_exec_ext"
+    ac_cv_path_RUNTEST_PROG="$as_dir$ac_word$ac_exec_ext"
     printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -33521,22 +33644,46 @@ done
   done
 IFS=$as_save_IFS
 
-  test -z "$ac_cv_path_RUNTEST" && ac_cv_path_RUNTEST=""./not_installed""
+  test -z "$ac_cv_path_RUNTEST_PROG" && ac_cv_path_RUNTEST_PROG=""./not_installed""
   ;;
 esac
 fi
-RUNTEST=$ac_cv_path_RUNTEST
-if test -n "$RUNTEST"; then
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $RUNTEST" >&5
-printf "%s\n" "$RUNTEST" >&6; }
+RUNTEST_PROG=$ac_cv_path_RUNTEST_PROG
+if test -n "$RUNTEST_PROG"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $RUNTEST_PROG" >&5
+printf "%s\n" "$RUNTEST_PROG" >&6; }
 else
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
 fi
 
-test "x${RUNTEST}" = "x" && echo "Install DEJAGNU and rerun configure if \
+  ## now do stuff with it:
+if test "x${RUNTEST_PROG}" = "x"
+then :
+
+  test -z "${RUNTEST_PROG}" && echo "Install DEJAGNU and rerun configure if \
 you want to run the testsuite"
 
+else $as_nop
+
+  if test "x${RUNTEST_PROG}" = "x./not_installed"
+then :
+
+    test ! -e "${RUNTEST_PROG}" && echo "Install DEJAGNU and rerun configure if \
+you want to run the testsuite"
+
+else $as_nop
+
+    test -n "${RUNTEST_PROG}" && test -x "${RUNTEST_PROG}" && test -z "${RUNTEST}" && export RUNTEST="${RUNTEST_PROG}"
+
+fi
+fi  ## one other way:
+if test "x${RUNTEST}" = "x" && test "${RUNTEST_POSSIBLY_MISSING}" != "x"
+then :
+
+  test -n "${RUNTEST_POSSIBLY_MISSING}" && test -x "${RUNTEST_POSSIBLY_MISSING}" && test -z "${RUNTEST}" && export RUNTEST="${RUNTEST_POSSIBLY_MISSING}"
+
+fi
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if /bin/csh supports large environment variables" >&5
 printf %s "checking if /bin/csh supports large environment variables... " >&6; }

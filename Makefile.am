@@ -17,7 +17,7 @@ MY_WARNFLAGS = -Wall -Wimplicit -Wmissing-prototypes -Wreturn-type \
 -Wmissing-braces -Wparentheses -Wswitch -Wunused-parameter \
 -Wunused-variable -Wunused-value -Wunknown-pragmas -Wshadow \
 -Wfour-char-constants -Wsign-compare -Wnewline-eof -Wconversion \
--Wshorten-64-to-32 -Wno-unused-label
+-Wshorten-64-to-32 -Wno-unused-label -Wno-expansion-to-defined
 ## CWARNFLAGS is subst-ed by the "XORG_CWARNFLAGS" macro in configure.ac:
 AM_WARNFLAGS = $(CWARNFLAGS)
 AM_CFLAGS = $(AM_WARNFLAGS)
@@ -71,11 +71,11 @@ check-local:	modulecmd
 	TESTSUITEDIR=$(srcdir)/testsuite; export TESTSUITEDIR; \
 	$(RUNTEST) --srcdir $$TESTSUITEDIR \
 	$(AM_RUNTESTFLAGS) $(RUNTESTFLAGS) --tool=modules
-	test -x `which submitdiaginfo` || pwd
+	test -x "`which submitdiaginfo`" || pwd
 
 ctags-local: CTAGS
 CTAGS-local: $(modulecmd_SOURCES)
-	ctags $(modulecmd_SOURCES) $(SOURCES_H)
+	$(CTAGS) $(modulecmd_SOURCES) $(SOURCES_H)
 
 cxref:
 	$(MAKE) clean
@@ -143,24 +143,24 @@ ftp-local: dist
 	@echo "placing $(DISTNAME).tar.{gz|bz2}"
 	-@if [ -e $(DISTNAME).tar.gz ]; then \
 		cp $(DISTNAME).tar.gz /u/ftp/pub/rkowen/modules; \
-	else echo "Can't find $(DISTNAME).tar.gz"; fi
+	else echo "Cannot find $(DISTNAME).tar.gz"; fi
 	-@if [ -e $(DISTNAME).tar.bz2 ]; then \
 		cp $(DISTNAME).tar.bz2 /u/ftp/pub/rkowen/modules; \
-	else echo "Can't find $(DISTNAME).tar.bz2"; fi
+	else echo "Cannot find $(DISTNAME).tar.bz2"; fi
 	-@XXX=modules-`${SED} -n -e 's/^.*OLD TAG.*"modules-\([0-9]*\)-\([0-9]*\)-\([0-9]*\)".*$$/\1.\2.\3/p' ${srcdir}/version.c`-`${SED} -n -e 's/^.*NEW TAG.*"modules-\([0-9]*\)-\([0-9]*\)-\([0-9]*\)".*$$/\1.\2.\3/p' ${srcdir}/version.c`.diff.gz ; \
 	echo "placing $$XXX"; \
 	if [ -e $$XXX ]; then \
 		cp $$XXX /u/ftp/pub/rkowen/modules; \
-	else echo "Can't find $$XXX"; fi
+	else echo "Cannot find $$XXX"; fi
 	-@XXX=modules-`${SED} -n -e 's/^.*OLD TAG.*"modules-\([0-9]*\)-\([0-9]*\)-\([0-9]*\)".*$$/\1.\2.\3/p' ${srcdir}/version.c`-`${SED} -n -e 's/^.*NEW TAG.*"modules-\([0-9]*\)-\([0-9]*\)-\([0-9]*\)".*$$/\1.\2.\3/p' ${srcdir}/version.c`.diff.bz2 ; \
 	echo "placing $$XXX"; \
 	if [ -e $$XXX ]; then \
 		cp $$XXX /u/ftp/pub/rkowen/modules; \
-	else echo "Can't find $$XXX"; fi
+	else echo "Cannot find $$XXX"; fi
 	-@echo "placing modules.lsm"
 	-@if [ -e modules.lsm ]; then \
 		cp modules.lsm /u/ftp/pub/rkowen/modules; \
-	else echo "Can't find modules.lsm"; fi
+	else echo "Cannot find modules.lsm"; fi
 
 dist-hook: CL
 	-rm -rf `find $(distdir) -name CVS`

@@ -16,16 +16,19 @@ dnl#
 dnl#-----------------------------------------------------------------------
 dnl#
 
-AC_INIT([modules],[3.2],[modules-interest@lists.sourceforge.net])
+AC_INIT([modules],[3.2],[modules-interest@lists.sourceforge.net])dnl
 AC_PREFIX_DEFAULT([/usr/local/Modules])dnl
-AC_CONFIG_AUX_DIR([config])
-AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_AUX_DIR([config])dnl
+AC_REQUIRE_AUX_FILE([compile])dnl
+AC_REQUIRE_AUX_FILE([depcomp])dnl
+AC_REQUIRE_AUX_FILE([missing])dnl
+AC_CONFIG_MACRO_DIR([m4])dnl
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.9.6 foreign dejagnu no-installinfo dist-bzip2 -Wall])
+AM_INIT_AUTOMAKE([1.9.6 foreign dejagnu no-installinfo dist-bzip2 -Wall])dnl
 AM_MAINTAINER_MODE
 AC_EXEEXT
-AC_CONFIG_SRCDIR([version.c])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_SRCDIR([version.c])dnl
+AC_CONFIG_HEADERS([config.h])dnl
 AC_PREREQ([2.69])dnl
 
 dnl#
@@ -393,10 +396,25 @@ PHOSTNAME:
 Last resort to get the hostname, if uname() and gethostname()
 are not available.])dnl
 AC_PATH_PROG([_PHOST],[hostname],[""])dnl
-test "x${_PHOST}" != "x" && AC_DEFINE_UNQUOTED(PHOSTNAME, "$_PHOST")
-AC_PATH_PROG([RUNTEST],[runtest],["./not_installed"])dnl
-test "x${RUNTEST}" = "x" && echo "Install DEJAGNU and rerun configure if \
+test "x${_PHOST}" != "x" && AC_DEFINE_UNQUOTED([PHOSTNAME],["${_PHOST}"])dnl
+AM_MISSING_PROG([RUNTEST_POSSIBLY_MISSING],[runtest])dnl
+AC_PATH_PROG([RUNTEST_PROG],[runtest],["./not_installed"])dnl
+  ## now do stuff with it:
+AS_IF([test "x${RUNTEST_PROG}" = "x"],[
+  test -z "${RUNTEST_PROG}" && echo "Install DEJAGNU and rerun configure if \
 you want to run the testsuite"
+],[
+  AS_IF([test "x${RUNTEST_PROG}" = "x./not_installed"],[
+    test ! -e "${RUNTEST_PROG}" && echo "Install DEJAGNU and rerun configure if \
+you want to run the testsuite"
+  ],[
+    test -n "${RUNTEST_PROG}" && test -x "${RUNTEST_PROG}" && test -z "${RUNTEST}" && export RUNTEST="${RUNTEST_PROG}"
+  ])dnl
+])dnl
+  ## one other way:
+AS_IF([test "x${RUNTEST}" = "x" && test "${RUNTEST_POSSIBLY_MISSING}" != "x"],[
+  test -n "${RUNTEST_POSSIBLY_MISSING}" && test -x "${RUNTEST_POSSIBLY_MISSING}" && test -z "${RUNTEST}" && export RUNTEST="${RUNTEST_POSSIBLY_MISSING}"
+])dnl
 
 dnl#
 dnl#-----------------------------------------------------------------------
