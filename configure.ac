@@ -26,7 +26,7 @@ AM_MAINTAINER_MODE
 AC_EXEEXT
 AC_CONFIG_SRCDIR([version.c])
 AC_CONFIG_HEADERS([config.h])
-AC_PREREQ([2.69])
+AC_PREREQ([2.69])dnl
 
 dnl#
 dnl#-----------------------------------------------------------------------
@@ -60,7 +60,7 @@ AH_TOP([
 
 AH_BOTTOM([
 #endif /* !__CONFIG_H__ */
-])
+])dnl
 
 dnl#
 dnl#-----------------------------------------------------------------------
@@ -235,7 +235,7 @@ AC_SEARCH_LIBS([strerror],[cposix]) dnl# used to be AC\_ISC\_POSIX
 AC_PATH_PROG([UNAME],[uname],[:])dnl
 AX_CHECK_GNU_MAKE
 AX_CVS([anonymous@cvs.modules.sourceforge.net:/cvsroot/modules])
-PKG_PROG_PKG_CONFIG([0.9])
+PKG_PROG_PKG_CONFIG([0.9])dnl
 
 dnl# I18N support:
 AM_GNU_GETTEXT([external])
@@ -251,7 +251,7 @@ AM_PATH_PYTHON
 AM_PATH_LISPDIR
 CMAKE_FIND_BINARY
 XORG_WITH_PERL
-AX_PROG_TCL([8.3])
+AX_PROG_TCL([8.3])dnl
 
 dnl#
 dnl#-----------------------------------------------------------------------

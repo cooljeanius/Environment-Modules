@@ -237,6 +237,9 @@
 /* Define to 1 if you have the `memset' function. */
 #undef HAVE_MEMSET
 
+/* Define to 1 if you have the <minix/config.h> header file. */
+#undef HAVE_MINIX_CONFIG_H
+
 /* Define to 1 if you have the `mktemp' function. */
 #undef HAVE_MKTEMP
 
@@ -288,8 +291,7 @@
 /* Define to 1 if you have the <stdio.h> header file. */
 #undef HAVE_STDIO_H
 
-/* Always define to 1, for backward compatibility. You can assume <stdlib.h>
-   exists. */
+/* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
 
 /* Define to 1 if you have the `strcasecmp' function. */
@@ -314,8 +316,7 @@
 /* Define to 1 if you have the <strings.h> header file. */
 #undef HAVE_STRINGS_H
 
-/* Always define to 1, for backward compatibility. You can assume <string.h>
-   exists. */
+/* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
 /* Define to 1 if you have the `strlen' function. */
@@ -434,6 +435,9 @@
 /* Define to 1 if you have the <varargs.h> header file. */
 #undef HAVE_VARARGS_H
 
+/* Define to 1 if you have the <wchar.h> header file. */
+#undef HAVE_WCHAR_H
+
 /* LMSPLIT_SIZE: This symbol, if defined, will force the environment variable
    _LM_FILES_ to be split into smaller "chunks". */
 #undef LMSPLIT_SIZE
@@ -521,8 +525,9 @@
 /* Define to 1 if the `S_IS*' macros in <sys/stat.h> do not work properly. */
 #undef STAT_MACROS_BROKEN
 
-/* Always define to 1, for backward compatibility. You can assume the C90
-   standard headers exist. */
+/* Define to 1 if all of the C90 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
 
 /* Defined to 1 if compiling for debugging */
@@ -597,11 +602,39 @@
 #ifndef _DARWIN_C_SOURCE
 # undef _DARWIN_C_SOURCE
 #endif
+/* Enable general extensions on Solaris.  */
+#ifndef __EXTENSIONS__
+# undef __EXTENSIONS__
+#endif
 /* Enable GNU extensions on systems that have them.  */
 #ifndef _GNU_SOURCE
 # undef _GNU_SOURCE
 #endif
-/* Enable threading extensions on Solaris.  */
+/* Identify the host operating system as Minix.
+   This macro does not affect the system headers' behavior.
+   A future release of Autoconf may stop defining this macro.  */
+#ifndef _MINIX
+# undef _MINIX
+#endif
+/* Enable general extensions on NetBSD.
+   Enable NetBSD compatibility extensions on Minix.  */
+#ifndef _NETBSD_SOURCE
+# undef _NETBSD_SOURCE
+#endif
+/* Enable OpenBSD compatibility extensions on NetBSD.
+   Oddly enough, this does nothing on OpenBSD.  */
+#ifndef _OPENBSD_SOURCE
+# undef _OPENBSD_SOURCE
+#endif
+/* Define to 1 if needed for POSIX-compatible behavior.  */
+#ifndef _POSIX_SOURCE
+# undef _POSIX_SOURCE
+#endif
+/* Define to 2 if needed for POSIX-compatible behavior.  */
+#ifndef _POSIX_1_SOURCE
+# undef _POSIX_1_SOURCE
+#endif
+/* Enable POSIX-compatible threading on Solaris.  */
 #ifndef _POSIX_PTHREAD_SEMANTICS
 # undef _POSIX_PTHREAD_SEMANTICS
 #endif
@@ -637,15 +670,10 @@
 #ifndef _TANDEM_SOURCE
 # undef _TANDEM_SOURCE
 #endif
-/* Enable X/Open extensions if necessary.  HP-UX 11.11 defines
-   mbstate_t only if _XOPEN_SOURCE is defined to 500, regardless of
-   whether compiling with -Ae or -D_HPUX_SOURCE=1.  */
+/* Enable X/Open extensions.  Define to 500 only if necessary
+   to make mbstate_t available.  */
 #ifndef _XOPEN_SOURCE
 # undef _XOPEN_SOURCE
-#endif
-/* Enable general extensions on Solaris.  */
-#ifndef __EXTENSIONS__
-# undef __EXTENSIONS__
 #endif
 
 
@@ -773,24 +801,11 @@
 /* Test define */
 #undef _LARGEFILE64_SOURCE
 
-/* Define to 1 if on MINIX. */
-#undef _MINIX
-
-/* Define to 1 to make NetBSD features available. MINIX 3 needs this. */
-#undef _NETBSD_SOURCE
-
 /* A define which is needed in sys/socket.h */
 #undef _OE_SOCKETS
 
-/* Define to 2 if the system does not provide POSIX.1 features except with
-   this defined. */
-#undef _POSIX_1_SOURCE
-
 /* Defined to 1 if using POSIX pthread semantics */
 #undef _POSIX_PTHREAD_SEMANTICS
-
-/* Define to 1 if you need to in order for 'stat' and other things to work. */
-#undef _POSIX_SOURCE
 
 /* If not defined, then Solaris will not define thread-safe library routines.
    */
@@ -827,7 +842,7 @@
 /* Define to rpl_malloc if the replacement function should be used. */
 #undef malloc
 
-/* Define to `int' if <sys/types.h> does not define. */
+/* Define as a signed integer type capable of holding a process identifier. */
 #undef pid_t
 
 /* Define to rpl_realloc if the replacement function should be used. */
