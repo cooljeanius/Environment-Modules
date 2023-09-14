@@ -8,6 +8,7 @@ config/install-sh linguist-vendored
 config/ltmain.sh linguist-vendored
 config/missing linguist-vendored
 config/mkinstalldirs linguist-vendored
+xref/*.html linguist-documentation
 
 # Gnulib's git-merge-changelog driver:
 ChangeLog merge=cl-merge
