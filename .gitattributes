@@ -1,3 +1,4 @@
+aclocal.m4 linguist-generated
 config/ar-lib linguist-vendored
 config/compile linguist-vendored
 config/config.guess linguist-vendored
